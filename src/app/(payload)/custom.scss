@@ -1481,3 +1481,234 @@
 .payload-toast-container .payload-toast-close-button {
   display: none !important;
 }
+
+/* ==================================================================== *
+ * RESPONSIVE — mobile fixes + hamburger redesign (Phase 5, module 11)
+ *
+ * 1) Hamburger becomes a chip with a custom two-bar mark (the boxed
+ *    default reads dated); the nav's mobile close X becomes a matching
+ *    chip pinned to the RIGHT edge.
+ * 2) Small screens: Payload pulls the table full-bleed and moves the
+ *    Columns/Filters pills inside the search bar — we undo the bleed
+ *    (cards keep breathing room) and restack the search bar cleanly.
+ * ==================================================================== */
+@layer payload {
+  /* ---- hamburger (app header, mobile): chip + two-bar mark ---- */
+  .app-header__mobile-nav-toggler {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.12s ease;
+  }
+  /* only below Payload's nav breakpoint — forcing display everywhere
+   * would resurrect the toggler on desktop where Payload hides it */
+  @media (max-width: 1440px) {
+    .app-header__mobile-nav-toggler {
+      display: inline-flex;
+    }
+  }
+  .app-header__mobile-nav-toggler:hover,
+  .app-header__mobile-nav-toggler:focus-visible {
+    background: color-mix(in srgb, var(--pt-accent) 12%, transparent);
+  }
+  .app-header__mobile-nav-toggler .hamburger {
+    position: relative;
+    width: 20px;
+    height: 14px;
+    background: transparent; /* Payload paints the .hamburger box itself */
+    border-radius: 0;
+    box-shadow: none; /* the stock 1px ring is a box-shadow, not a border */
+  }
+  .pt-nav .nav__mobile-close .hamburger {
+    background: transparent; /* same stock box behind the close X */
+    border-radius: 0;
+    box-shadow: none;
+    width: auto;
+    height: auto;
+  }
+  .app-header__mobile-nav-toggler .hamburger > * {
+    display: none; /* replace the stock menu icon with our own bars */
+  }
+  .app-header__mobile-nav-toggler .hamburger::before,
+  .app-header__mobile-nav-toggler .hamburger::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--theme-elevation-800);
+  }
+  .app-header__mobile-nav-toggler .hamburger::before {
+    top: 2px;
+    width: 20px;
+  }
+  .app-header__mobile-nav-toggler .hamburger::after {
+    bottom: 2px;
+    width: 13px;
+  }
+
+  /* ---- nav mobile close: chip, pinned right ---- */
+  .pt-nav .nav__header-content {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .pt-nav .nav__mobile-close {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.12s ease;
+  }
+  .pt-nav .nav__mobile-close:hover,
+  .pt-nav .nav__mobile-close:focus-visible {
+    background: color-mix(in srgb, var(--pt-accent) 12%, transparent);
+  }
+}
+
+@media (max-width: 768px) {
+  @layer payload {
+    /* undo Payload's full-bleed table so the card keeps side margins
+     * (the bleed lives on .table-wrap, the table just fills it) */
+    .table,
+    .table-wrap {
+      margin-inline: 0;
+      padding-left: 0;
+      width: 100%;
+    }
+
+    /* search bar hosts the Columns/Filters pills on mobile: stack them
+     * cleanly inside a rounded-rect (a full pill radius on a two-row box
+     * is what caused the overlapping-outline mess) */
+    .search-bar {
+      height: auto;
+      flex-wrap: wrap;
+      align-items: center;
+      row-gap: 10px;
+      padding: 10px 14px;
+      border-radius: 16px;
+    }
+    .search-bar__actions {
+      width: 100%;
+      display: flex;
+      gap: 8px;
+    }
+    .search-bar__actions .pill {
+      flex: 1 1 0;
+      height: 32px;
+    }
+  }
+}
+
+/* ==================================================================== *
+ * LAYOUT V2 — content container + card-based forms (Phase 5, module 10)
+ *
+ * 1) Every page's content is centered and capped (~1280px) so ultra-wide
+ *    screens stop stretching forms edge to edge. Centering happens via
+ *    GROWING PADDING, not max-width: these gutters paint the well
+ *    background, so capping their box would leak white side bands.
+ * 2) Edit views (collections, account, globals — NOT drawers, hence the
+ *    direct-child scope on the page root): the main fields column is ONE
+ *    white card; each top-level group field (e.g. Seo) becomes its own
+ *    inset panel; the sidebar becomes a sticky card; the old full-height
+ *    divider goes away; doc-controls slims down on the well surface.
+ * ==================================================================== */
+@layer payload {
+  /* ---- 1) global content container ---- */
+  .template-default__wrap .gutter--left.gutter--right {
+    padding-inline: max(var(--gutter-h), calc((100% - 1280px) / 2));
+  }
+  .template-default__wrap > .collection-edit .document-fields {
+    width: 100%;
+    max-width: calc(1280px + 120px);
+    margin-inline: auto;
+  }
+
+  /* tables stay inside the container at every width — Payload full-bleeds
+   * them below its 1440px breakpoint; horizontal overflow scrolls INSIDE
+   * the rounded card instead of jutting past the toolbar */
+  .table-wrap,
+  .table {
+    width: 100%;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+
+  /* ---- 2) edit views: cards ---- */
+  /* main fields column = one card (outer gutter paddings preserved) */
+  .template-default__wrap > .collection-edit .document-fields__fields {
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: 16px;
+    padding: 28px 32px 32px;
+  }
+  html[data-theme='dark']
+    .template-default__wrap
+    > .collection-edit
+    .document-fields__fields {
+    background: var(--theme-elevation-50);
+    border-color: var(--theme-elevation-150);
+  }
+
+  /* the divider between main and sidebar is replaced by the cards */
+  .template-default__wrap > .collection-edit .document-fields__edit {
+    border-right: 0;
+  }
+
+  /* top-level group fields (Seo, …): their own inset panel on the well
+   * color, with a clear header — reads as a separate section */
+  .template-default__wrap > .collection-edit .group-field--top-level {
+    background: var(--theme-bg);
+    border: 1px solid var(--theme-border-color);
+    border-radius: 12px;
+    padding: 22px 26px 26px;
+    /* Payload bleeds top-level groups with negative side margins — reset
+     * so the panel stays inside the card instead of jutting out */
+    margin: 10px 0;
+    width: 100%;
+  }
+  .template-default__wrap
+    > .collection-edit
+    .group-field--top-level
+    > .group-field__header {
+    margin-bottom: 14px;
+  }
+
+  /* sidebar card — static per user preference (no sticky, no pinning).
+   * The card is the inner __sidebar-fields box: the outer __sidebar is
+   * the full-height column, so carding it painted a wall to the edge. */
+  .template-default__wrap > .collection-edit .document-fields__sidebar-wrap {
+    position: static;
+  }
+  .template-default__wrap > .collection-edit .document-fields__sidebar {
+    background: transparent;
+  }
+  .template-default__wrap > .collection-edit .document-fields__sidebar-fields {
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: 16px;
+    padding: 24px 26px;
+    margin: 30px 40px 0 0; /* top-align with the main card; keep a right gutter */
+  }
+  html[data-theme='dark']
+    .template-default__wrap
+    > .collection-edit
+    .document-fields__sidebar-fields {
+    background: var(--theme-elevation-50);
+    border-color: var(--theme-elevation-150);
+  }
+
+  /* ---- 3) doc-controls: slim toolbar on the well surface ---- */
+  .template-default__wrap > .collection-edit .doc-controls {
+    background: var(--theme-bg);
+  }
+  .template-default__wrap > .collection-edit .doc-controls__content {
+    padding: 12px 0;
+  }
+  .doc-controls__meta {
+    font-size: 0.88rem;
+  }
+}
