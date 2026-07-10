@@ -51,11 +51,15 @@
   :root {
     --theme-bg: #f4f4f6; /* faint gray page behind white cards */
     --theme-border-color: var(--theme-elevation-100); /* softer than the default 150 */
+    /* App-wide accent focus ring. Payload's outline is already 2px solid with
+     * a 2px offset (the shadcn geometry); we only swap the colour to accent. */
+    --accessibility-outline: 2px solid var(--pt-accent-ring);
   }
 
   html[data-theme='dark'] {
     --theme-bg: #17181c; /* comfortable dark, not the pure-black of `noir` */
     --theme-border-color: var(--theme-elevation-100);
+    --accessibility-outline: 2px solid var(--pt-accent-ring);
   }
 
   /* ------------------------------------------------------------------ *
@@ -76,12 +80,8 @@
     --btn-border: 1px solid var(--pt-accent);
     --hover-color: var(--pt-accent-hover);
     --hover-btn-border: 1px solid var(--pt-accent-hover);
-  }
-
-  /* Accent focus ring on buttons (translucent, so it reads as a glow). */
-  .btn:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--pt-accent-ring) 35%, transparent);
+    /* shadcn secondary/outline: a faint accent wash appears on hover. */
+    --hover-bg: color-mix(in srgb, var(--pt-accent) 10%, transparent);
   }
 }
 
@@ -129,5 +129,34 @@
   /* The pill replaces the little vertical indicator bar. */
   .nav__link-indicator {
     display: none;
+  }
+}
+
+/* ==================================================================== *
+ * BUTTONS — shape & state (Phase 3, module 2)
+ *
+ * Colour binding (primary/secondary accent) lives in the accent-binding
+ * section above; here we give buttons the shadcn silhouette. The visual
+ * box is `.btn` itself (it paints --bg-color / --btn-border); .btn__content
+ * is inner layout only. Radius is scoped to the text-button styles so we
+ * don't square off Payload's round icon buttons.
+ * ==================================================================== */
+@layer payload {
+  .btn {
+    transition:
+      background-color 0.12s ease,
+      border-color 0.12s ease,
+      color 0.12s ease;
+  }
+
+  .btn--style-primary,
+  .btn--style-secondary,
+  .btn--style-subtle {
+    border-radius: 6px; /* shadcn "md" — softer than Payload's 3px */
+  }
+
+  /* Payload's "pill" style (e.g. the list "Create New") becomes a true pill. */
+  .btn--style-pill {
+    border-radius: 999px;
   }
 }
