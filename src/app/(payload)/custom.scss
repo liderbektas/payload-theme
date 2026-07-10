@@ -1635,6 +1635,9 @@
     width: 100%;
     margin-inline: 0;
     padding-inline: 0;
+    /* Payload also shifts tables with position:relative + negative left
+     * at some breakpoints — pin them back inside the container */
+    inset-inline: 0;
   }
 
   /* ---- 2) edit views: cards ---- */
