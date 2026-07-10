@@ -1351,7 +1351,7 @@
 
   /* ---- tooltips: rounded bubble ---- */
   .tooltip {
-    border-radius: 8px;
+    border-radius: 14px;
     font-size: 0.8rem;
     font-weight: 500;
   }
@@ -1447,4 +1447,37 @@
     color: var(--theme-elevation-600);
     font-size: 0.85rem;
   }
+}
+
+/* ==================================================================== *
+ * POLISH — toast close, modal sizing, pill centering (Phase 5 fixes)
+ * ==================================================================== */
+@layer payload {
+  /* confirmation dialogs (delete / leave-without-saving): tighter box,
+   * but short messages must not collapse it into a cramped square */
+  .confirmation-modal__wrapper {
+    padding: 26px 30px;
+    gap: 14px;
+    min-width: min(620px, calc(100vw - 48px));
+  }
+
+  /* pill labels center within their capsule everywhere */
+  .pill {
+    justify-content: center;
+  }
+  .pill__label {
+    text-align: center;
+  }
+  .id-label {
+    border-radius: 999px;
+    justify-content: center;
+  }
+}
+
+/* UNLAYERED on purpose: sonner (toasts) ships unlayered CSS, which beats
+ * every cascade layer — same trick as the datepicker overrides. Toasts
+ * auto-dismiss; the floating X badge reads as clutter. */
+.payload-toast-container [data-close-button],
+.payload-toast-container .payload-toast-close-button {
+  display: none !important;
 }
