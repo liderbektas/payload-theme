@@ -476,6 +476,16 @@
   .table tbody td {
     border-bottom: 1px solid var(--theme-elevation-100);
   }
+
+  /* cell links: no underline (shadcn) — hover shifts to accent instead */
+  .table a {
+    text-decoration: none;
+  }
+  .table a:hover,
+  .table a:focus-visible {
+    text-decoration: none;
+    color: var(--pt-accent);
+  }
 }
 
 /* ==================================================================== *
@@ -788,5 +798,197 @@
     padding: 0;
     background: transparent;
     border: 0;
+  }
+
+  /* ==========================================================================
+   * DASHBOARD — widget grid (Phase 5, module 3)
+   *
+   * The custom Dashboard view renders an ordered list of widgets into one
+   * responsive grid: a full-row welcome block, then one card per visible
+   * collection (icon chip + plural label + large doc count + '+' quick
+   * action) and per global. Cards sit on the gray content well as white
+   * elevation-0 surfaces with the theme's signature 3px accent top stripe;
+   * hover feedback is a subtle accent border + ring — no transforms, nothing
+   * jumpy. All colours come from tokens so light/dark both just work.
+   * ======================================================================== */
+
+  .pt-dash__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .pt-dash__cell {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .pt-dash__cell--full {
+    grid-column: 1 / -1;
+  }
+
+  /* -- welcome (flat, no card: reads as the page heading) ------------------ */
+  .pt-dash__welcome {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-block: 4px 10px;
+  }
+  .pt-dash__welcome-title {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    color: var(--theme-text);
+  }
+  .pt-dash__welcome-user {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--theme-elevation-600);
+  }
+  .pt-dash__welcome-hint {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--theme-elevation-500);
+  }
+
+  /* -- entity cards (shadcn stat-card anatomy) ------------------------------
+   * Head row: accent icon chip + label side by side. Body: big count + muted
+   * caption. Clean card — no accent stripe; the icon chip carries the accent.
+   * In dark mode the card lifts to elevation-50 (the well and elevation-0
+   * are nearly the same black, which made cards read muddy). */
+  .pt-dash__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex: 1 1 auto;
+    padding: 17px 18px 16px;
+    background-color: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: 14px;
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.04),
+      0 4px 14px -8px rgb(0 0 0 / 0.08);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+  html[data-theme='dark'] .pt-dash__card {
+    background-color: var(--theme-elevation-50);
+    border-color: var(--theme-elevation-150);
+  }
+  .pt-dash__card:hover {
+    border-color: color-mix(in srgb, var(--pt-accent) 45%, var(--theme-border-color));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--pt-accent) 25%, transparent),
+      0 4px 14px -6px rgb(0 0 0 / 0.1);
+  }
+
+  .pt-dash__card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .pt-dash__card-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: var(--pt-accent-subtle);
+    color: var(--pt-accent);
+
+    svg {
+      width: 17px;
+      height: 17px;
+    }
+  }
+  .pt-dash__card-label {
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--theme-elevation-800);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .pt-dash__card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+  .pt-dash__card-count {
+    font-size: 1.9rem;
+    font-weight: 650;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    font-variant-numeric: tabular-nums;
+    color: var(--theme-text);
+  }
+  .pt-dash__card-caption {
+    font-size: 0.76rem;
+    font-weight: 500;
+    color: var(--theme-elevation-500);
+  }
+  /* Globals have no count — the entity name itself is the big line. */
+  .pt-dash__card-title {
+    font-size: 1.3rem;
+    font-weight: 650;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: var(--theme-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Stretched link: makes the whole card clickable without nesting anchors. */
+  .pt-dash__card-link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: 14px;
+  }
+  .pt-dash__card-link:focus-visible {
+    outline: 2px solid var(--pt-accent);
+    outline-offset: 2px;
+  }
+
+  /* '+' quick action sits above the stretched link. */
+  .pt-dash__card-create {
+    position: absolute;
+    top: 14px;
+    right: 13px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    color: var(--theme-elevation-500);
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+
+    svg {
+      width: 15px;
+      height: 15px;
+    }
+  }
+  .pt-dash__card-create:hover {
+    color: var(--pt-accent-contrast);
+    background: var(--pt-accent);
+  }
+  .pt-dash__card-create:focus-visible {
+    outline: 2px solid var(--pt-accent);
+    outline-offset: 2px;
   }
 }

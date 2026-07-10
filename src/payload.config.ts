@@ -19,6 +19,11 @@ export default buildConfig({
     user: Users.slug,
     components: {
       Nav: '/components/Nav#Nav',
+      views: {
+        dashboard: {
+          Component: '/components/Dashboard#Dashboard',
+        },
+      },
     },
     importMap: {
       baseDir: path.resolve(dirname),

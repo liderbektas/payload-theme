@@ -15,34 +15,11 @@ import {
   useTranslation,
 } from '@payloadcms/ui'
 import { PayloadLogo } from '@payloadcms/ui/graphics/Logo'
-import {
-  Folder,
-  Image,
-  LayoutDashboard,
-  Newspaper,
-  Settings,
-  Tag,
-  Users,
-} from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { formatAdminURL } from 'payload/shared'
 import React from 'react'
 
-/**
- * Maps a collection/global slug to its sidebar icon.
- * Edit this object to change icons; unknown slugs fall back to `fallbackIcon`.
- * (Becomes a plugin option — `nav.icons` — in Phase 5 of the package.)
- */
-const navIconMap: Record<string, LucideIcon> = {
-  dashboard: LayoutDashboard,
-  media: Image,
-  posts: Newspaper,
-  settings: Settings,
-  tags: Tag,
-  users: Users,
-}
-
-const fallbackIcon: LucideIcon = Folder
+import { fallbackIcon, navIconMap } from '../navIcons'
 
 type NavItem = {
   href: string
