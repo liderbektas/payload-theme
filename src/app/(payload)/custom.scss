@@ -1,5 +1,5 @@
 /*
- * payload-theme — playground stylesheet (Phase 2: tokens + soft preset)
+ * payload-theme — playground stylesheet (Phase 2 tokens/preset + Phase 3 restyle)
  *
  * Everything lives in @layer payload. Payload ships its defaults in
  * @layer payload-default and pre-declares the order `payload-default, payload`,
@@ -82,5 +82,52 @@
   .btn:focus-visible {
     outline: none;
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--pt-accent-ring) 35%, transparent);
+  }
+}
+
+/* ==================================================================== *
+ * NAV — active pill (Phase 3, module 1)
+ *
+ * Payload marks the active item by rendering it as `div.nav__link`
+ * (inactive items are `a.nav__link`); only the active one contains a
+ * `.nav__link-indicator`, so `:has()` targets it without relying on the
+ * element type. Filament-style full pill for the active item; inactive
+ * items get muted text (shadcn hierarchy) and a soft pill fill on hover.
+ * ==================================================================== */
+@layer payload {
+  .nav__link {
+    padding: 8px 14px;
+    padding-inline-end: 14px; /* override Payload's default 30px */
+    border-radius: 999px; /* full pill */
+    color: var(--theme-elevation-600); /* muted inactive text */
+    font-weight: 500;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+
+  /* Replace underline-on-hover with a soft accent pill fill. */
+  .nav a.nav__link:hover,
+  .nav a.nav__link:focus-visible {
+    text-decoration: none;
+    color: var(--theme-elevation-800);
+    background: color-mix(in srgb, var(--pt-accent) 12%, transparent);
+  }
+
+  /* Active item = filled accent pill with auto-contrast label. */
+  .nav__link:has(.nav__link-indicator) {
+    background: var(--pt-accent);
+    color: var(--pt-accent-contrast);
+    font-weight: 600;
+  }
+
+  .nav__link:has(.nav__link-indicator):hover {
+    background: var(--pt-accent-hover);
+    color: var(--pt-accent-contrast);
+  }
+
+  /* The pill replaces the little vertical indicator bar. */
+  .nav__link-indicator {
+    display: none;
   }
 }
