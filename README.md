@@ -1,130 +1,140 @@
-# Payload Theme
+# payload-theme
 
-A modern, Filament-inspired theme and UI plugin for the [Payload CMS 3.x](https://payloadcms.com) admin panel.
+**A beautiful theme for the Payload CMS admin panel — installed in 2 lines.**
 
-Install the plugin, pick a single accent color, and Payload's default admin interface becomes a refined panel: pill-shaped active navigation, an icon sidebar, soft cards with an accent top stripe, rounded inputs, checkboxes rendered as toggles, and a widget dashboard. Every interactive element — active nav state, buttons, focus rings, selected rows — is recolored automatically from that one accent.
-
-This repository is the development playground. The plugin itself is being extracted into a standalone, npm-publishable package (`payload-theme`) as the work progresses.
+Pick one accent color, and the whole panel repaints itself: pill-shaped active nav links, an icon sidebar with your logo on top, soft cards with an accent stripe, calm shadcn-style inputs, checkboxes that become toggles, and a dashboard with live collection counts. No forked components, no config surgery — just a plugin and a CSS import.
 
 ---
 
-## Goals
+## Installation
 
-- **Two-line setup.** On a fresh `create-payload-app` project, installation should never exceed two lines.
-- **One accent, whole panel.** A single hex value drives an entire OKLCH color scale; contrast text is chosen automatically to meet WCAG AA.
-- **Zero runtime dependencies for the color engine.** The hex-to-OKLCH conversion is computed once at plugin init and injected as CSS custom properties — no flash of unstyled content, SSR-safe.
-- **Never break Payload.** Form state, validation, and accessibility (focus visibility, contrast) are preserved. This is a restyle, not a fork.
+```bash
+pnpm add payload-theme
+# or: npm i payload-theme / yarn add payload-theme
+```
 
----
-
-## Target developer experience
+**Line 1** — add the plugin to your `payload.config.ts`:
 
 ```ts
-// payload.config.ts
 import { payloadTheme } from 'payload-theme'
 
 export default buildConfig({
-  // ...
   plugins: [
-    payloadTheme({
-      accent: '#e30613',
-      preset: 'soft',        // 'soft' | 'noir' | 'minimal'
-      radius: 'lg',
-      nav: { icons: { posts: 'newspaper', users: 'users' } },
-    }),
+    payloadTheme({ accent: '#4f4ece' }),
   ],
 })
 ```
 
+**Line 2** — import the stylesheet in `src/app/(payload)/custom.scss` (every `create-payload-app` project already has this file):
+
 ```scss
-// app/(payload)/custom.scss
 @import 'payload-theme/styles.css';
 ```
 
-That is the entire installation.
-
----
-
-## Configuration
-
-| Option         | Type                            | Description                                                   |
-| -------------- | ------------------------------- | ------------------------------------------------------------ |
-| `accent`       | `string` (hex)                  | The single accent color. Drives the full 50–950 OKLCH scale. |
-| `preset`       | `'soft' \| 'noir' \| 'minimal'` | Surface and neutral palette, independent of the accent.      |
-| `radius`       | `'sm' \| 'md' \| 'lg'`          | Global corner rounding.                                      |
-| `nav.icons`    | `Record<string, string>`        | Per-collection sidebar icons (lucide-react names).           |
-| `cssVariables` | `Record<string, string>`        | Escape hatch to override any raw design token directly.      |
-
-Invalid input fails loudly and clearly, for example:
-`Invalid accent color: 'mor'. Expected hex like #7c3aed`.
-
----
-
-## Architecture
-
-The plugin is built in three layers, each fully in place before the next begins.
-
-**1. Theme engine.** Pure functions convert the accent hex into an eleven-step OKLCH scale (50–950). Contrast text is selected by relative luminance for WCAG AA (a yellow accent gets black text, a purple accent gets white). Dark mode is mapped separately — the scale is never simply inverted; a brighter step becomes primary in dark. Semantic colors (error, warning, success) stay independent of the accent, and disabled states stay gray.
-
-**2. Restyle layer.** All CSS lives inside `@layer payload` so it wins specificity without a selector arms race. Modular SCSS (`_nav`, `_buttons`, `_forms`, `_table`, `_cards`, `_misc`) compiles to a single stylesheet. No component is swapped here — active nav pills, toggle checkboxes, soft inputs, accent-striped cards, and highlighted table rows are pure CSS, keeping Payload's behavior untouched.
-
-**3. Replacement layer.** Through Payload's `admin.components` and import-map system: an icon-grouped custom sidebar, a configurable logo and icon, and a widget-based dashboard. Selectors are kept shallow and prefer Payload's own `--theme-*` variables to stay resilient across minor Payload updates.
-
----
-
-## Presets
-
-Presets define the surface and neutral colors, independent of the accent. Each ships in both light and dark variants and coexists with Payload's own `data-theme` toggle.
-
-- **soft** — light and airy; white cards on a faint gray field.
-- **noir** — a near-black premium dark surface.
-- **minimal** — pure white, thin borders, low shadow.
-
----
-
-## Roadmap
-
-- [ ] **Phase 1** — Color engine: pure hex to OKLCH to scale, contrast selection, dark mapping (unit tested).
-- [ ] **Phase 2** — Tokens and the `soft` preset wired through `custom.scss`.
-- [ ] **Phase 3** — Restyle layer, module by module.
-- [ ] **Phase 4** — Extraction into the `payload-theme` package.
-- [ ] **Phase 5** — Replacement layer: nav, logo/icon, dashboard.
-- [ ] **Phase 6** — `noir` and `minimal` presets, documentation, npm publish.
-
----
-
-## Running the playground
-
-Requirements: Node `^18.20.2 || >=20.9.0` and pnpm. The playground uses SQLite, so no external database is needed.
+Then regenerate the import map so Payload can find the theme's components:
 
 ```bash
-pnpm install
-cp .env.example .env      # set PAYLOAD_SECRET and DATABASE_URI
-pnpm seed                 # populate demo content across every field type
-pnpm dev                  # http://localhost:3000/admin
+npx payload generate:importmap
 ```
 
-The seed data deliberately exercises every major Payload field type — rich text, relationships, uploads, arrays, blocks, groups, conditional fields, dates, and selects — so every admin screen the theme touches has real content to render.
+Restart your dev server, open the admin panel — that's it. 🎉
 
-### Scripts
+## Options
 
-| Script                    | Purpose                            |
-| ------------------------- | ---------------------------------- |
-| `pnpm dev`                | Start the admin in development.    |
-| `pnpm seed`               | Seed demo content.                 |
-| `pnpm test:int`           | Vitest integration and unit tests. |
-| `pnpm test:e2e`           | Playwright end-to-end tests.       |
-| `pnpm generate:types`     | Regenerate Payload types.          |
-| `pnpm generate:importmap` | Regenerate the admin import map.   |
+Everything is optional. This is the full surface:
 
----
+```ts
+payloadTheme({
+  // The one color that drives everything: buttons, active nav pill,
+  // focus rings, selected rows, links... Any hex works.
+  accent: '#e30613',
 
-## Tech stack
+  // Surface & neutral palette: 'soft' | 'noir' | 'minimal'
+  preset: 'soft',
 
-Payload CMS 3.85, Next.js 16, React 19, TypeScript (strict), SQLite for the playground, Vitest, and Playwright.
+  // Corner rounding: 'sm' | 'md' | 'lg'
+  radius: 'lg',
 
----
+  // Sidebar logo (shown at the top, links to the dashboard).
+  // A URL ('/logo.svg') or an import-map component path.
+  logo: '/logo.svg',
+
+  // Small mark used for the collapsed nav and the login screen.
+  icon: '/mark.svg',
+
+  // Sidebar icons per collection/global slug — any lucide.dev icon name.
+  nav: {
+    icons: {
+      posts: 'newspaper',
+      media: 'image',
+      users: 'users',
+      settings: 'settings',
+    },
+  },
+})
+```
+
+| Option | Type | Default | What it does |
+| --- | --- | --- | --- |
+| `accent` | `string` (hex) | `#4f4ece` | Generates a full 50–950 color scale in OKLCH and colors every interactive element with it. |
+| `preset` | `'soft' \| 'noir' \| 'minimal'` | `'soft'` | The surface/neutral look. Independent of the accent, and each has light **and** dark variants. |
+| `radius` | `'sm' \| 'md' \| 'lg'` | `'md'` | Global corner-rounding scale for cards, inputs and buttons. |
+| `logo` | `string` | Payload logo | Image URL or component path, rendered at the top of the sidebar. |
+| `icon` | `string` | — | Small logo for collapsed nav & login. |
+| `nav.icons` | `Record<slug, iconName>` | folder icon | Maps your collections/globals to [lucide](https://lucide.dev) icons. Unmapped ones get a folder. |
+| `cssVariables` | `Record<string, string>` | — | Escape hatch: override any raw `--pt-*` token directly. |
+
+### Presets
+
+- **`soft`** — light, airy; white cards on a soft gray canvas. *(default)*
+- **`noir`** — near-black premium dark.
+- **`minimal`** — pure white, hairline borders, barely-there shadows.
+
+All presets respect Payload's own light/dark toggle — `noir` in light mode and `soft` in dark mode both look intentional, not inverted.
+
+## What you get
+
+- **One accent, everywhere** — your hex becomes an 11-step OKLCH scale. Buttons, focus rings, active nav pill, selected table rows, pagination, tabs, links: all recolored consistently.
+- **Smart dark mode** — the scale is re-mapped for dark (brighter accent step, never a naive inversion), so your color stays vivid on dark surfaces.
+- **Automatic contrast** — text on the accent picks black or white by WCAG relative luminance. Yellow accent → black text, purple accent → white text. You never think about it.
+- **Custom sidebar** — your logo up top, icon + label links below, fully-rounded pill on the active item, collection groups supported.
+- **Themed dashboard** — welcome header plus a card per collection with live, access-controlled document counts (rendered on the server, no loading flash).
+- **Toggles, not checkboxes** — checkboxes are restyled into switches with pure CSS; form behavior and accessibility are untouched.
+- **Zero runtime dependencies for color math** — the scale is computed once at startup and injected as CSS custom properties. No FOUC, SSR-safe.
+- **Non-destructive** — everything ships in `@layer payload`, overriding Payload's defaults without specificity wars. Validation, form state and keyboard focus all keep working.
+
+## Fine-tuning with CSS variables
+
+Need to nudge something the options don't cover? Every token is a plain CSS custom property:
+
+```ts
+payloadTheme({
+  accent: '#0ea5e9',
+  cssVariables: {
+    '--pt-accent-subtle': 'oklch(0.95 0.03 240)',
+  },
+})
+```
+
+Or target them from your own `custom.scss` — the important ones:
+
+`--pt-accent-50` … `--pt-accent-950`, `--pt-accent`, `--pt-accent-hover`, `--pt-accent-active`, `--pt-accent-subtle`, `--pt-accent-contrast`, `--pt-accent-ring`.
+
+## Requirements
+
+- Payload **3.x**
+- Next.js **15+**, React **19**
+
+## Troubleshooting
+
+**"Component not found in import map"** — run `npx payload generate:importmap` after installing, then restart the dev server.
+
+**Styles not applying** — make sure `@import 'payload-theme/styles.css';` is in `src/app/(payload)/custom.scss` (the file Payload already loads into the admin panel).
+
+**`Invalid accent color: '…'`** — the accent must be a hex string like `#7c3aed`. Named colors aren't supported (yet!).
 
 ## License
 
-MIT
+MIT © [Lider Bektaş](https://github.com/liderbektas)
+
+Found a bug or want a preset? [Issues and PRs welcome](https://github.com/liderbektas/payload-theme/issues). 

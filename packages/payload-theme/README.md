@@ -86,7 +86,7 @@ payloadTheme({
 
 ### Presets
 
-- **`soft`** — light, airy; white cards on a soft gray canvas. The Filament feel. *(default)*
+- **`soft`** — light, airy; white cards on a soft gray canvas. *(default)*
 - **`noir`** — near-black premium dark.
 - **`minimal`** — pure white, hairline borders, barely-there shadows.
 

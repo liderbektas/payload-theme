@@ -1,7 +1,7 @@
 {
   "name": "payload-theme",
   "version": "0.1.0",
-  "description": "Filament-inspired, single-accent theme plugin for the Payload CMS admin panel.",
+  "description": "Single-accent theme plugin that redesigns the Payload CMS admin panel.",
   "license": "MIT",
   "author": "Lider Bektaş <liderbektas200@gmail.com>",
   "homepage": "https://github.com/liderbektas/payload-theme#readme",
@@ -20,8 +20,7 @@
     "admin",
     "theme",
     "ui",
-    "dashboard",
-    "filament"
+    "dashboard"
   ],
   "type": "module",
   "sideEffects": [

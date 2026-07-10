@@ -13,7 +13,7 @@
 @layer payload {
   /* ------------------------------------------------------------------ *
    * soft preset — surfaces & neutrals (independent of the accent)
-   * Filament-like feel: a faint gray field with white cards floating on
+   * A faint gray field with white cards floating on
    * top. We only retarget Payload's surface variables; elevation stays
    * intact so cards/inputs (elevation-0) keep their own contrast.
    * ------------------------------------------------------------------ */
@@ -60,7 +60,7 @@
  * Payload marks the active item by rendering it as `div.nav__link`
  * (inactive items are `a.nav__link`); only the active one contains a
  * `.nav__link-indicator`, so `:has()` targets it without relying on the
- * element type. Filament-style full pill for the active item; inactive
+ * element type. Full pill for the active item; inactive
  * items get muted text (shadcn hierarchy) and a soft pill fill on hover.
  * ==================================================================== */
 @layer payload {
@@ -627,7 +627,7 @@
   .pt-nav__group {
     display: flex;
     flex-direction: column;
-    gap: 4px; /* generous space between items — Filament feel */
+    gap: 4px; /* generous space between items */
     width: 100%;
   }
   .pt-nav__group-label {
@@ -1347,8 +1347,8 @@
  * AUTH SCREENS — login / forgot-password / reset (Phase 5, module 8)
  *
  * Payload renders auth views in `template-minimal` on the bare page
- * background. We turn the inner wrap into a centered card (Filament
- * login feel): logo on top, themed inputs (already styled by the FORMS
+ * background. We turn the inner wrap into a centered login card:
+ * logo on top, themed inputs (already styled by the FORMS
  * module), full-width accent submit.
  * ==================================================================== */
 @layer payload {

@@ -1,5 +1,5 @@
 /**
- * payload-theme — a Filament-inspired, single-accent theme for the Payload
+ * payload-theme — a single-accent theme for the Payload
  * admin panel. Drop it into your `plugins` array, add one CSS import, and the
  * whole panel is restyled and recolored from one accent hex.
  *

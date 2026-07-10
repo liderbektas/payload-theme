@@ -1,7 +1,7 @@
 {
   "name": "payload-theme-monorepo",
   "version": "1.0.0",
-  "description": "Filament-inspired theme plugin for the Payload CMS admin panel.",
+  "description": "Single-accent theme plugin that redesigns the Payload CMS admin panel.",
   "license": "MIT",
   "private": true,
   "type": "module",
