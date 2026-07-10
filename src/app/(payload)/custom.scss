@@ -542,3 +542,61 @@
     font-size: 0.82em;
   }
 }
+
+/* ==================================================================== *
+ * MISC — tabs, drawer/dialog, radio, links, loading (Phase 3, module 5)
+ *
+ * The remaining accent touches. Semantic pills (success/warning/error)
+ * stay independent of the accent.
+ * ==================================================================== */
+@layer payload {
+  /* ---- document tabs: accent underline + label on the active tab ---- */
+  .doc-tab--active .doc-tab__label {
+    color: var(--pt-accent);
+  }
+  .doc-tab--active .doc-tab__label::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: -1px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--pt-accent);
+  }
+  /* version-count badge on the active tab */
+  .doc-tab--active .pill-version-count {
+    background-color: color-mix(in srgb, var(--pt-accent) 16%, transparent);
+    color: var(--pt-accent);
+  }
+
+  /* ---- radio: accent when checked ---- */
+  .radio-input--checked .radio-input__styled-radio {
+    border-color: var(--pt-accent);
+  }
+  .radio-input--checked .radio-input__styled-radio::before {
+    background-color: var(--pt-accent);
+  }
+
+  /* ---- content links pick up the accent ---- */
+  .rich-text a,
+  .rich-text-lexical a {
+    color: var(--pt-accent);
+    text-decoration-color: color-mix(in srgb, var(--pt-accent) 40%, transparent);
+  }
+
+  /* ---- initial loading bars = accent ---- */
+  .loading-overlay__bars,
+  .loading-overlay__bar {
+    color: var(--pt-accent);
+  }
+
+  /* ---- drawer / dialog: shadcn feel (radius, shadow, soft overlay) ---- */
+  .drawer__content {
+    border-start-start-radius: 16px;
+    border-end-start-radius: 16px;
+    box-shadow: -8px 0 40px rgb(0 0 0 / 0.18);
+  }
+  .drawer__blur-bg {
+    background: rgb(0 0 0 / 0.4);
+  }
+}
