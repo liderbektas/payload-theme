@@ -1,10 +1,68 @@
 {
   "name": "payload-theme",
   "version": "0.1.0",
-  "private": true,
+  "description": "Filament-inspired, single-accent theme plugin for the Payload CMS admin panel.",
+  "license": "MIT",
   "type": "module",
-  "main": "./src/index.ts",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist"
+  ],
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/exports/client.d.ts",
+      "default": "./dist/exports/client.js"
+    },
+    "./rsc": {
+      "types": "./dist/exports/rsc.d.ts",
+      "default": "./dist/exports/rsc.js"
+    },
+    "./styles.css": "./dist/styles/theme.css"
+  },
+  "scripts": {
+    "build": "pnpm run clean && pnpm run build:swc && pnpm run build:types && pnpm run build:styles",
+    "build:swc": "swc src -d dist --strip-leading-paths --ignore \"**/*.test.ts\"",
+    "build:types": "tsc --emitDeclarationOnly --outDir dist",
+    "build:styles": "copyfiles -u 1 \"src/**/*.css\" dist",
+    "clean": "rm -rf dist",
+    "dev": "swc src -d dist --strip-leading-paths --ignore \"**/*.test.ts\" --watch",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "lucide-react": "^1.24.0"
+  },
+  "peerDependencies": {
+    "@payloadcms/next": "^3.0.0",
+    "@payloadcms/translations": "^3.0.0",
+    "@payloadcms/ui": "^3.0.0",
+    "next": ">=15",
+    "payload": "^3.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@payloadcms/next": "3.85.2",
+    "@payloadcms/translations": "3.85.2",
+    "@payloadcms/ui": "3.85.2",
+    "@swc/cli": "0.7.8",
+    "@swc/core": "1.13.5",
+    "@types/node": "22.19.9",
+    "@types/react": "19.2.14",
+    "@vitejs/plugin-react": "4.5.2",
+    "copyfiles": "2.4.1",
+    "next": "16.2.6",
+    "payload": "3.85.2",
+    "react": "19.2.6",
+    "typescript": "5.7.3",
+    "vitest": "4.0.18"
+  },
+  "engines": {
+    "node": "^18.20.2 || >=20.9.0"
   }
 }

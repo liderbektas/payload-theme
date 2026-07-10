@@ -1,6 +1,5 @@
 'use client'
 
-import type { LucideIcon } from 'lucide-react'
 import type { StaticLabel } from 'payload'
 
 import { getTranslation } from '@payloadcms/translations'
@@ -15,15 +14,18 @@ import {
   useTranslation,
 } from '@payloadcms/ui'
 import { PayloadLogo } from '@payloadcms/ui/graphics/Logo'
+import { DynamicIcon, type IconName } from 'lucide-react/dynamic'
 import { usePathname } from 'next/navigation'
 import { formatAdminURL } from 'payload/shared'
 import React from 'react'
 
-import { fallbackIcon, navIconMap } from '../navIcons'
+import type { ResolvedThemeConfig } from '../../options'
+
+import { resolveIconName } from '../navIcons'
 
 type NavItem = {
   href: string
-  Icon: LucideIcon
+  iconName: string
   id: string
   label: string
 }
@@ -38,7 +40,7 @@ const NavItemLink: React.FC<{ exact?: boolean; item: NavItem; pathname: string }
   item,
   pathname,
 }) => {
-  const { href, Icon, id, label } = item
+  const { href, iconName, id, label } = item
 
   // Same active check as Payload's DefaultNav: the link is active on its own
   // route and on any sub-route (e.g. a document edit view). `exact` restricts
@@ -47,13 +49,11 @@ const NavItemLink: React.FC<{ exact?: boolean; item: NavItem; pathname: string }
     ? pathname === href || pathname === `${href}/`
     : pathname.startsWith(href) && ['/', undefined].includes(pathname[href.length])
 
-  const className = ['pt-nav__link', isActive && 'pt-nav__link--active']
-    .filter(Boolean)
-    .join(' ')
+  const className = ['pt-nav__link', isActive && 'pt-nav__link--active'].filter(Boolean).join(' ')
 
   const content = (
     <React.Fragment>
-      <Icon aria-hidden="true" className="pt-nav__icon" strokeWidth={1.9} />
+      <DynamicIcon aria-hidden="true" className="pt-nav__icon" name={iconName as IconName} strokeWidth={1.9} />
       <span className="pt-nav__label">{label}</span>
     </React.Fragment>
   )
@@ -75,6 +75,9 @@ const NavItemLink: React.FC<{ exact?: boolean; item: NavItem; pathname: string }
   )
 }
 
+/** True for a Payload import-map component path (e.g. `/components/X#X`). */
+const isComponentPath = (value: string): boolean => value.includes('#')
+
 export const Nav: React.FC = () => {
   const pathname = usePathname()
   const { config } = useConfig()
@@ -83,6 +86,8 @@ export const Nav: React.FC = () => {
   const { isEntityVisible } = useEntityVisibility()
   const { hydrated, navOpen, navRef, setNavOpen, shouldAnimate } = useNav()
 
+  const theme = config.admin?.custom?.payloadTheme as ResolvedThemeConfig | undefined
+
   const {
     collections,
     globals,
@@ -90,14 +95,8 @@ export const Nav: React.FC = () => {
   } = config
 
   // ---- build nav groups (mirrors @payloadcms/ui's groupNavItems) ----------
-  const defaultCollectionsGroup: NavGroupData = {
-    entities: [],
-    label: i18n.t('general:collections'),
-  }
-  const defaultGlobalsGroup: NavGroupData = {
-    entities: [],
-    label: i18n.t('general:globals'),
-  }
+  const defaultCollectionsGroup: NavGroupData = { entities: [], label: i18n.t('general:collections') }
+  const defaultGlobalsGroup: NavGroupData = { entities: [], label: i18n.t('general:globals') }
   const groups: NavGroupData[] = [defaultCollectionsGroup, defaultGlobalsGroup]
 
   const addEntity = ({
@@ -109,9 +108,7 @@ export const Nav: React.FC = () => {
     group: false | Record<string, string> | string | undefined
     item: NavItem
   }) => {
-    if (group === false) {
-      return
-    }
+    if (group === false) return
     if (group) {
       const translated = getTranslation(group, i18n)
       let matched = groups.find((existing) => existing.label === translated)
@@ -127,15 +124,13 @@ export const Nav: React.FC = () => {
 
   for (const collection of collections) {
     const { slug } = collection
-    if (!isEntityVisible({ collectionSlug: slug }) || !permissions?.collections?.[slug]?.read) {
-      continue
-    }
+    if (!isEntityVisible({ collectionSlug: slug }) || !permissions?.collections?.[slug]?.read) continue
     addEntity({
       defaultGroup: defaultCollectionsGroup,
       group: collection.admin?.group,
       item: {
         href: formatAdminURL({ adminRoute, path: `/collections/${slug}` }),
-        Icon: navIconMap[slug] ?? fallbackIcon,
+        iconName: resolveIconName(theme, slug),
         id: `nav-${slug}`,
         label: getTranslation(collection.labels?.plural as StaticLabel, i18n),
       },
@@ -144,15 +139,13 @@ export const Nav: React.FC = () => {
 
   for (const global of globals) {
     const { slug } = global
-    if (!isEntityVisible({ globalSlug: slug }) || !permissions?.globals?.[slug]?.read) {
-      continue
-    }
+    if (!isEntityVisible({ globalSlug: slug }) || !permissions?.globals?.[slug]?.read) continue
     addEntity({
       defaultGroup: defaultGlobalsGroup,
       group: global.admin?.group,
       item: {
         href: formatAdminURL({ adminRoute, path: `/globals/${slug}` }),
-        Icon: navIconMap[slug] ?? fallbackIcon,
+        iconName: resolveIconName(theme, slug),
         id: `nav-global-${slug}`,
         label: getTranslation(global.label as StaticLabel, i18n),
       },
@@ -163,14 +156,15 @@ export const Nav: React.FC = () => {
 
   const dashboardItem: NavItem = {
     href: adminRoute,
-    Icon: navIconMap.dashboard ?? fallbackIcon,
+    iconName: theme?.nav?.icons?.dashboard ?? 'layout-dashboard',
     id: 'nav-dashboard',
     label: i18n.t('general:dashboard'),
   }
 
-  // ---- render --------------------------------------------------------------
-  // Keeps Payload's structural `nav` classes (geometry, open/close animation,
-  // scroll area) and layers `pt-nav__*` classes on top for the redesign.
+  // A plain image URL renders as the logo; a component-path or missing value
+  // falls back to Payload's own logo (adapts to light/dark automatically).
+  const logoIsImage = theme?.logo && !isComponentPath(theme.logo)
+
   const asideClasses = [
     'nav',
     'pt-nav',
@@ -184,19 +178,17 @@ export const Nav: React.FC = () => {
   return (
     <aside className={asideClasses} inert={!navOpen}>
       <div className="nav__scroll" ref={navRef}>
-        {/* Payload's own logo is the fallback until a custom `logo` option
-         *  is wired up (Phase 4/5). It fills with --theme-elevation-1000, so
-         *  it adapts to light/dark automatically. */}
         <Link aria-label="Dashboard" className="pt-nav__logo" href={adminRoute} prefetch={false}>
-          <PayloadLogo />
+          {logoIsImage ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img alt="" className="pt-nav__logo-img" src={theme!.logo} />
+          ) : (
+            <PayloadLogo />
+          )}
         </Link>
         <nav className="nav__wrap pt-nav__wrap">
           <div className="pt-nav__group">
-            <NavItemLink
-              item={dashboardItem}
-              exact
-              pathname={pathname}
-            />
+            <NavItemLink item={dashboardItem} exact pathname={pathname} />
           </div>
           {visibleGroups.map((group) => (
             <div className="pt-nav__group" key={group.label}>
@@ -215,9 +207,7 @@ export const Nav: React.FC = () => {
         <div className="nav__header-content">
           <button
             className="nav__mobile-close"
-            onClick={() => {
-              setNavOpen(false)
-            }}
+            onClick={() => setNavOpen(false)}
             tabIndex={!navOpen ? -1 : undefined}
             type="button"
           >

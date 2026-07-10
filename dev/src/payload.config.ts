@@ -2,6 +2,7 @@ import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
+import { payloadTheme } from 'payload-theme'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
@@ -17,14 +18,6 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   admin: {
     user: Users.slug,
-    components: {
-      Nav: '/components/Nav#Nav',
-      views: {
-        dashboard: {
-          Component: '/components/Dashboard#Dashboard',
-        },
-      },
-    },
     importMap: {
       baseDir: path.resolve(dirname),
     },
@@ -42,5 +35,18 @@ export default buildConfig({
     },
   }),
   sharp,
-  plugins: [],
+  plugins: [
+    payloadTheme({
+      accent: '#4f4ece',
+      nav: {
+        icons: {
+          media: 'image',
+          posts: 'newspaper',
+          settings: 'settings',
+          tags: 'tag',
+          users: 'users',
+        },
+      },
+    }),
+  ],
 })
