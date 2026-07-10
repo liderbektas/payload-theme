@@ -1151,3 +1151,300 @@
     color: var(--theme-elevation-800);
   }
 }
+
+/* ==================================================================== *
+ * DOC CHROME — popup menus, confirmation modal, status, API view
+ * (Phase 5, module 5)
+ *
+ * The document-level chrome: the "..." actions popup (and every other
+ * Popup instance — per-page, sort, column menus inherit this), the
+ * delete-confirmation dialog, the Status meta chip and the API view's
+ * JSON panel. Pure CSS.
+ * ==================================================================== */
+@layer payload {
+  /* ---- popup menus: shadcn DropdownMenu language ---- */
+  .popup__content {
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: 12px;
+    box-shadow:
+      0 8px 30px -6px rgb(0 0 0 / 0.15),
+      0 2px 8px rgb(0 0 0 / 0.06);
+    padding: 6px;
+  }
+  html[data-theme='dark'] .popup__content {
+    background: var(--theme-elevation-50);
+    border-color: var(--theme-elevation-150);
+  }
+  .popup__caret {
+    display: none; /* floating menu, no caret (shadcn) */
+  }
+  .popup-button-list__button {
+    border-radius: 8px;
+    padding: 7px 10px;
+    color: var(--theme-elevation-800);
+    text-decoration: none;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+  .popup-button-list__button:hover,
+  .popup-button-list__button:focus-visible {
+    background: color-mix(in srgb, var(--pt-accent) 10%, transparent);
+    color: var(--theme-text);
+    text-decoration: none;
+  }
+
+  /* ---- confirmation modal: shadcn Dialog box ---- */
+  .confirmation-modal__wrapper {
+    border: 1px solid var(--theme-border-color);
+    border-radius: 16px;
+    box-shadow: 0 20px 60px -12px rgb(0 0 0 / 0.3);
+  }
+  html[data-theme='dark'] .confirmation-modal__wrapper {
+    background: var(--theme-elevation-50);
+    border-color: var(--theme-elevation-150);
+  }
+  .confirmation-modal__content h1 {
+    font-size: 1.3rem;
+    letter-spacing: -0.015em;
+  }
+
+  /* ---- status meta (doc controls / versions): quiet chip ---- */
+  .status__value-wrap {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--theme-elevation-100);
+    font-size: 0.8rem;
+  }
+  .status__label {
+    color: var(--theme-elevation-500);
+  }
+  .status__value {
+    font-weight: 600;
+  }
+
+  /* ---- API view: JSON results as a card; copy button gets a hover chip */
+  .query-inspector__results {
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  html[data-theme='dark'] .query-inspector__results {
+    background: var(--theme-elevation-50);
+    border-color: var(--theme-elevation-150);
+  }
+  .copy-to-clipboard {
+    border-radius: 8px;
+    color: var(--theme-elevation-500);
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+  .copy-to-clipboard:hover,
+  .copy-to-clipboard:focus-visible {
+    background: color-mix(in srgb, var(--pt-accent) 10%, transparent);
+    color: var(--pt-accent);
+  }
+}
+
+/* ==================================================================== *
+ * UPLOAD FAMILY — dropzone, file details, upload cards, thumbnails
+ * (Phase 5, module 6)
+ *
+ * Media create (Dropzone), media edit (FileDetails header card), the
+ * upload field card (e.g. Cover Image) and thumbnails in table cells.
+ * ==================================================================== */
+@layer payload {
+  /* ---- dropzone: input-like surface with a dashed border; accent
+   * feedback while a file is dragged over it (Payload adds .dragging) */
+  .file-field {
+    background: transparent; /* the zone paints itself; no gray box behind */
+  }
+  .dropzone {
+    background: var(--theme-input-bg);
+    border: 1px dashed var(--theme-elevation-250);
+    border-radius: 14px;
+    transition:
+      border-color 0.15s ease,
+      background-color 0.15s ease;
+  }
+  .dropzone.dragging {
+    border-color: var(--pt-accent);
+    background: var(--pt-accent-subtle);
+  }
+  .file-field__orText,
+  .file-field__dragAndDropText {
+    color: var(--theme-elevation-500);
+  }
+
+  /* ---- media edit header card (thumbnail + filename + meta) ---- */
+  .file-details {
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: 12px;
+    overflow: hidden; /* clips the flush-left thumbnail to the radius */
+  }
+  html[data-theme='dark'] .file-details {
+    background: var(--theme-elevation-50);
+    border-color: var(--theme-elevation-150);
+  }
+  .file-meta__url a {
+    text-decoration: none;
+  }
+  .file-meta__url a:hover,
+  .file-meta__url a:focus-visible {
+    color: var(--pt-accent);
+    text-decoration: none;
+  }
+  .file-meta__size-type {
+    color: var(--theme-elevation-500);
+  }
+
+  /* ---- upload field card (Cover Image & co.) ---- */
+  .upload-field-card {
+    background: var(--theme-input-bg);
+    border-radius: 12px;
+  }
+  html[data-theme='dark'] .upload-field-card {
+    background: var(--theme-elevation-50);
+    border-color: var(--theme-elevation-150);
+  }
+  .upload-relationship-details__filename a {
+    text-decoration: none;
+  }
+  .upload-relationship-details__filename a:hover,
+  .upload-relationship-details__filename a:focus-visible {
+    color: var(--pt-accent);
+    text-decoration: none;
+  }
+  .upload-relationship-details__meta {
+    color: var(--theme-elevation-500);
+  }
+
+  /* ---- thumbnails: soft corners in table cells and upload cards ---- */
+  td .thumbnail img,
+  .upload-field-card .thumbnail img {
+    border-radius: 6px;
+    object-fit: cover;
+  }
+}
+
+/* ==================================================================== *
+ * FEEDBACK — toasts, tooltips, banners, error pills (Phase 5, module 7)
+ *
+ * Shape-only pass: Payload's feedback layer already uses the semantic
+ * success/error/warning tokens (kept independent of the accent, per the
+ * theme contract) — we only modernize radius, shadow and typography.
+ * ==================================================================== */
+@layer payload {
+  /* ---- toasts (sonner): softer card ---- */
+  .payload-toast-container .payload-toast-item {
+    border-radius: 12px;
+    box-shadow:
+      0 8px 30px -6px rgb(0 0 0 / 0.14),
+      0 2px 8px rgb(0 0 0 / 0.06);
+  }
+
+  /* ---- tooltips: rounded bubble ---- */
+  .tooltip {
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  /* ---- inline field errors (red tooltip bubble) ---- */
+  .field-error.tooltip {
+    border-radius: 8px;
+    font-weight: 500;
+  }
+
+  /* ---- error pills (tab/collapsible error counts) ---- */
+  .error-pill {
+    border-radius: 999px;
+    font-weight: 600;
+  }
+
+  /* ---- banners ---- */
+  .banner {
+    border-radius: 12px;
+  }
+}
+
+/* ==================================================================== *
+ * AUTH SCREENS — login / forgot-password / reset (Phase 5, module 8)
+ *
+ * Payload renders auth views in `template-minimal` on the bare page
+ * background. We turn the inner wrap into a centered card (Filament
+ * login feel): logo on top, themed inputs (already styled by the FORMS
+ * module), full-width accent submit.
+ * ==================================================================== */
+@layer payload {
+  .template-minimal .template-minimal__wrap {
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px -12px rgb(0 0 0 / 0.12);
+    padding: 40px 36px 36px;
+  }
+  html[data-theme='dark'] .template-minimal .template-minimal__wrap {
+    background: var(--theme-elevation-50);
+    border-color: var(--theme-elevation-150);
+  }
+
+  /* brand block: centered logo with air below */
+  .login__brand {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+  .template-minimal__wrap .graphic-logo {
+    height: 30px;
+    width: auto;
+  }
+
+  /* forgot-password link: quiet, accent on hover */
+  .login__form > a {
+    font-size: 0.85rem;
+    color: var(--theme-elevation-500);
+    text-decoration: none;
+  }
+  .login__form > a:hover,
+  .login__form > a:focus-visible {
+    color: var(--pt-accent);
+    text-decoration: none;
+  }
+
+  /* full-width submit inside auth cards only */
+  .template-minimal .form-submit .btn {
+    width: 100%;
+  }
+}
+
+/* ==================================================================== *
+ * VERSIONS — compare/diff polish (Phase 5, module 9)
+ *
+ * The versions list and diff view inherit almost everything (table card,
+ * pills, accent buttons, pill selects, gray well). Only the diff
+ * highlights needed softening; their colors stay semantic via Payload's
+ * own --diff-* variables.
+ * ==================================================================== */
+@layer payload {
+  /* rounded corners for the block-level diff highlight backgrounds */
+  .html-diff :is(p, h1, h2, h3, h4, h5, h6, blockquote, pre)::before {
+    border-radius: 8px;
+  }
+  /* inline added/removed marks */
+  .html-diff [data-match-type='create'],
+  .html-diff [data-match-type='delete'] {
+    border-radius: 4px;
+  }
+  /* compare-table field labels: quiet hierarchy */
+  .field-diff-label {
+    color: var(--theme-elevation-600);
+    font-size: 0.85rem;
+  }
+}
