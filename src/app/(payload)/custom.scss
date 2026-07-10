@@ -992,3 +992,162 @@
     outline-offset: 2px;
   }
 }
+
+/* ==================================================================== *
+ * CONTROLS — list toolbar, pills, doc tabs, add buttons, logout
+ * (Phase 5, module 4)
+ *
+ * The remaining default-looking chrome: the list search bar + its
+ * Columns/Filters toggles, generic pills, the Edit/API doc tabs, the
+ * relationship "+" and array/blocks add-row buttons, and the nav logout.
+ * Pure CSS — markup and behavior untouched.
+ * ==================================================================== */
+@layer payload {
+  /* ---- list search bar: same language as inputs (pill + border + ring).
+   * The ring moves to the container; the inner input must stay borderless
+   * in every state or it would double up with the FORMS focus rule. */
+  .search-bar {
+    background: var(--theme-input-bg);
+    border: 1px solid var(--theme-elevation-150);
+    border-radius: 999px;
+    transition:
+      border-color 0.12s ease,
+      box-shadow 0.12s ease;
+  }
+  .search-bar:focus-within {
+    border-color: var(--pt-accent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--pt-accent-ring) 10%, transparent);
+  }
+  .search-bar .search-filter__input,
+  .search-bar .search-filter__input:focus,
+  .search-bar .search-filter__input:focus-visible {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  /* ---- pills (Columns/Filters toggles, column-selector chips, …) ----
+   * light = quiet outline chip; dark (= selected/active) = accent chip. */
+  .pill {
+    border-radius: 999px;
+  }
+  .pill--size-small {
+    padding: 0 10px;
+  }
+  .pill--style-light {
+    background: var(--theme-input-bg);
+    border: 1px solid var(--theme-elevation-150);
+    color: var(--theme-elevation-600);
+  }
+  .pill--style-light.pill--has-action:hover {
+    background: color-mix(in srgb, var(--pt-accent) 10%, transparent);
+    border-color: color-mix(in srgb, var(--pt-accent) 30%, var(--theme-elevation-150));
+    color: var(--theme-elevation-800);
+  }
+  .pill--style-dark {
+    background: var(--pt-accent);
+    border: 1px solid transparent;
+    color: var(--pt-accent-contrast);
+  }
+  .pill--style-dark.pill--has-action:hover {
+    background: var(--pt-accent-hover);
+    color: var(--pt-accent-contrast);
+  }
+
+  /* ---- "Create New" (btn--style-pill): accent-subtle chip that fills
+   * with the accent on hover. Buttons paint from their local vars. */
+  .btn--style-pill {
+    --bg-color: var(--pt-accent-subtle);
+    --color: var(--pt-accent);
+    --hover-bg: var(--pt-accent);
+    --hover-color: var(--pt-accent-contrast);
+  }
+
+  /* ---- doc tabs (Edit / Versions / API): segmented pills — quiet when
+   * idle, accent-subtle chip when active. Retires the old underline. */
+  .doc-tab {
+    background: transparent;
+    border-radius: 999px;
+    color: var(--theme-elevation-500);
+  }
+  a.doc-tab:hover,
+  a.doc-tab:focus-visible {
+    background: color-mix(in srgb, var(--pt-accent) 10%, transparent);
+    color: var(--theme-elevation-800);
+    text-decoration: none;
+  }
+  .doc-tab--active {
+    background: var(--pt-accent-subtle);
+    color: var(--pt-accent);
+  }
+  .doc-tab--active .doc-tab__label::after {
+    display: none; /* the pill replaces the Phase 3 underline */
+  }
+
+  /* ---- relationship "+" (add new related doc): a detached circle that
+   * matches the 40px input height instead of a glued square. */
+  .relationship-add-new__add-button {
+    width: 40px;
+    height: 40px;
+    margin-left: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--theme-input-bg);
+    border: 1px solid var(--theme-elevation-150);
+    border-radius: 999px;
+    color: var(--theme-elevation-600);
+    transition:
+      border-color 0.12s ease,
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+  .relationship-add-new__add-button:hover,
+  .relationship-add-new__add-button:focus-visible {
+    background: var(--pt-accent-subtle);
+    border-color: color-mix(in srgb, var(--pt-accent) 40%, var(--theme-elevation-150));
+    color: var(--pt-accent);
+  }
+
+  /* ---- array / blocks "add row" (e.g. "Add Social Link"): accent ghost
+   * button; the plus icon sits in an accent-subtle circle. */
+  .array-field__add-row,
+  .blocks-field__drawer-toggler {
+    /* Payload paints the label/stroke of add-row buttons from its own
+     * --btn-color local var — override that, not `color`. */
+    --btn-color: var(--pt-accent);
+    border-radius: 999px;
+  }
+  .array-field__add-row:hover,
+  .array-field__add-row:focus-visible,
+  .blocks-field__drawer-toggler:hover,
+  .blocks-field__drawer-toggler:focus-visible {
+    --btn-color: var(--pt-accent-hover);
+  }
+  .array-field__add-row .btn__icon,
+  .blocks-field__drawer-toggler .btn__icon {
+    background: var(--pt-accent-subtle);
+    border: 0;
+    border-radius: 999px;
+    color: var(--pt-accent);
+  }
+
+  /* ---- nav logout: bare icon becomes a hoverable chip. */
+  .pt-nav__controls .nav__log-out {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    color: var(--theme-elevation-600);
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+  .pt-nav__controls .nav__log-out:hover,
+  .pt-nav__controls .nav__log-out:focus-visible {
+    background: color-mix(in srgb, var(--pt-accent) 12%, transparent);
+    color: var(--theme-elevation-800);
+  }
+}
