@@ -1,0 +1,11 @@
+@layer payload {
+  :root {
+    /*
+     * DOĞRULANDI: custom.scss admin CSS bundle'ına yükleniyor.
+     * Aşağıdaki geçici --theme-bg override'ı derlenmiş CSS içinde ve
+     * Payload'ın kendi tanımından sonra göründü (yani kazanıyor).
+     * SİLMİYORUM — bir sonraki adımda gerçek tema token'larıyla değiştirilecek.
+     */
+    /* --theme-bg: #f7f7f8; */ /* GEÇİCİ: custom.scss'in yüklendiğini doğrulama testi */
+  }
+}
