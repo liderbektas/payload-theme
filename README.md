@@ -4,7 +4,7 @@ A modern, Filament-inspired theme and UI plugin for the [Payload CMS 3.x](https:
 
 Install the plugin, pick a single accent color, and Payload's default admin interface becomes a refined panel: pill-shaped active navigation, an icon sidebar, soft cards with an accent top stripe, rounded inputs, checkboxes rendered as toggles, and a widget dashboard. Every interactive element — active nav state, buttons, focus rings, selected rows — is recolored automatically from that one accent.
 
-This repository is the development playground. The plugin itself is being extracted into a standalone, npm-publishable package (`@liderbektas/payload-theme`) as the work progresses.
+This repository is the development playground. The plugin itself is being extracted into a standalone, npm-publishable package (`payload-theme`) as the work progresses.
 
 ---
 
@@ -21,7 +21,7 @@ This repository is the development playground. The plugin itself is being extrac
 
 ```ts
 // payload.config.ts
-import { payloadTheme } from '@liderbektas/payload-theme'
+import { payloadTheme } from 'payload-theme'
 
 export default buildConfig({
   // ...
@@ -38,7 +38,7 @@ export default buildConfig({
 
 ```scss
 // app/(payload)/custom.scss
-@import '@liderbektas/payload-theme/styles.css';
+@import 'payload-theme/styles.css';
 ```
 
 That is the entire installation.
@@ -87,7 +87,7 @@ Presets define the surface and neutral colors, independent of the accent. Each s
 - [ ] **Phase 1** — Color engine: pure hex to OKLCH to scale, contrast selection, dark mapping (unit tested).
 - [ ] **Phase 2** — Tokens and the `soft` preset wired through `custom.scss`.
 - [ ] **Phase 3** — Restyle layer, module by module.
-- [ ] **Phase 4** — Extraction into the `@liderbektas/payload-theme` package.
+- [ ] **Phase 4** — Extraction into the `payload-theme` package.
 - [ ] **Phase 5** — Replacement layer: nav, logo/icon, dashboard.
 - [ ] **Phase 6** — `noir` and `minimal` presets, documentation, npm publish.
 
