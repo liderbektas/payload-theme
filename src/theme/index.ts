@@ -91,3 +91,4 @@ export {
 export { relativeLuminance, contrastRatio, pickContrastText, pickContrastTextForHex } from './contrast'
 export { generateScale, generateScaleOklch, SCALE_STEPS, type Scale, type ScaleStep } from './scale'
 export { isValidHex, normalizeHex } from './validate'
+export { themeToCss, type ThemeCssOptions } from './css'
