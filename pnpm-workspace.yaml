@@ -1,3 +1,7 @@
+packages:
+  - dev
+  - packages/*
+
 allowBuilds:
   esbuild: true
   sharp: true

@@ -6,7 +6,9 @@ settings:
 
 importers:
 
-  .:
+  .: {}
+
+  dev:
     dependencies:
       '@payloadcms/db-sqlite':
         specifier: 3.85.2
@@ -41,6 +43,9 @@ importers:
       payload:
         specifier: 3.85.2
         version: 3.85.2(graphql@16.14.2)(typescript@5.7.3)
+      payload-theme:
+        specifier: workspace:*
+        version: link:../packages/payload-theme
       react:
         specifier: 19.2.6
         version: 19.2.6
@@ -93,6 +98,8 @@ importers:
       vitest:
         specifier: 4.0.18
         version: 4.0.18(@types/node@22.19.9)(happy-dom@20.10.6)(jsdom@28.0.0)(sass@1.77.4)(tsx@4.22.4)
+
+  packages/payload-theme: {}
 
 packages:
 

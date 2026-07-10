@@ -24,7 +24,9 @@ const nextConfig: NextConfig = {
     return webpackConfig
   },
   turbopack: {
-    root: path.resolve(dirname),
+    // monorepo root: lets Turbopack resolve hoisted node_modules and compile
+    // the workspace `payload-theme` package alongside this app
+    root: path.resolve(dirname, '..'),
   },
 }
 
