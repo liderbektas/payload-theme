@@ -202,6 +202,8 @@ export const CommandPalette: React.FC = () => {
   // Close when navigating (e.g. browser back) and lock body scroll while open.
   React.useEffect(() => {
     if (!open) return
+    // Let the Nav close the mobile drawer before we layer the panel on top.
+    window.dispatchEvent(new CustomEvent('pt:palette-open'))
     const previous = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     inputRef.current?.focus()
