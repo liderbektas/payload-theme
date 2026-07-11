@@ -163,7 +163,10 @@ export const Nav: React.FC = () => {
 
   // A plain image URL renders as the logo; a component-path or missing value
   // falls back to Payload's own logo (adapts to light/dark automatically).
-  const logoIsImage = theme?.logo && !isComponentPath(theme.logo)
+  // When light/dark URLs differ, both render and CSS shows the right one.
+  const logo = theme?.logo
+  const logoIsImage = logo && !isComponentPath(logo.light)
+  const logoIsPair = logoIsImage && logo.dark !== logo.light
 
   const asideClasses = [
     'nav',
@@ -180,8 +183,17 @@ export const Nav: React.FC = () => {
       <div className="nav__scroll" ref={navRef}>
         <Link aria-label="Dashboard" className="pt-nav__logo" href={adminRoute} prefetch={false}>
           {logoIsImage ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img alt="" className="pt-nav__logo-img" src={theme!.logo} />
+            logoIsPair ? (
+              <React.Fragment>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img alt="" className="pt-nav__logo-img pt-nav__logo-img--light" src={logo.light} />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img alt="" className="pt-nav__logo-img pt-nav__logo-img--dark" src={logo.dark} />
+              </React.Fragment>
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img alt="" className="pt-nav__logo-img" src={logo.light} />
+            )
           ) : (
             <PayloadLogo />
           )}

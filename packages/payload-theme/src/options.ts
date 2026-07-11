@@ -13,6 +13,12 @@ export type ThemePreset = 'minimal' | 'noir' | 'soft'
 /** Global corner-rounding scale. */
 export type ThemeRadius = 'lg' | 'md' | 'sm'
 
+/**
+ * An image URL (`'/logo.svg'`), or a pair of URLs when light and dark mode
+ * need different artwork.
+ */
+export type ThemeAsset = string | { dark: string; light: string }
+
 export interface NavOptions {
   /**
    * Per-entity sidebar icons, keyed by collection/global slug. Values are
@@ -31,13 +37,18 @@ export interface PayloadThemeOptions {
   /** Global corner rounding. @default 'md' */
   radius?: ThemeRadius
   /**
-   * Sidebar logo: a URL to an image (`'/logo.svg'`) rendered as `<img>`, or a
-   * Payload import-map component path (`'/components/MyLogo#MyLogo'`). Falls
-   * back to Payload's own logo when omitted.
+   * Sidebar logo, rendered as `<img>` at the top of the nav. A URL
+   * (`'/logo.svg'`) or `{ light, dark }` URLs to swap artwork per color
+   * scheme. Falls back to Payload's own logo when omitted.
    */
-  logo?: string
+  logo?: ThemeAsset
+  /**
+   * Rendered height of the sidebar logo. A number is treated as pixels
+   * (`32` → `32px`); a string is used as-is (`'2.5rem'`). @default 26px
+   */
+  logoHeight?: number | string
   /** Small mark/favicon for collapsed nav and login. Same shape as `logo`. */
-  icon?: string
+  icon?: ThemeAsset
   /** Sidebar navigation options. */
   nav?: NavOptions
   /** Escape hatch: raw `--pt-*` token overrides applied after the computed scale. */
@@ -53,8 +64,9 @@ export interface ResolvedThemeConfig {
   css: string
   preset: ThemePreset
   radius: ThemeRadius
-  logo?: string
-  icon?: string
+  /** Normalized to a pair: a plain-string option is used for both schemes. */
+  logo?: { dark: string; light: string }
+  icon?: { dark: string; light: string }
   nav: { icons: Record<string, string> }
   /** lucide icon name used when an entity has no mapping. */
   fallbackIconName: string
@@ -72,6 +84,20 @@ const DEFAULTS = {
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(`[payload-theme] ${message}`)
+}
+
+/** Validate a logo/icon option and normalize it to a `{ light, dark }` pair. */
+function normalizeAsset(
+  value: ThemeAsset | undefined,
+  name: string,
+): { dark: string; light: string } | undefined {
+  if (value === undefined) return undefined
+  if (typeof value === 'string') return { dark: value, light: value }
+  assert(
+    value && typeof value === 'object' && typeof value.light === 'string' && typeof value.dark === 'string',
+    `${name} must be a URL string or an object like { light: '/logo.svg', dark: '/logo-dark.svg' }.`,
+  )
+  return { dark: value.dark, light: value.light }
 }
 
 /** Validate user options (clear errors) and return everything needed downstream. */
@@ -100,18 +126,30 @@ export function resolveOptions(options: PayloadThemeOptions): {
     assert(typeof name === 'string', `nav.icons['${slug}'] must be a string lucide icon name.`)
   }
 
-  if (options.logo !== undefined) assert(typeof options.logo === 'string', 'logo must be a string (URL or component path).')
-  if (options.icon !== undefined) assert(typeof options.icon === 'string', 'icon must be a string (URL or component path).')
+  const logo = normalizeAsset(options.logo, 'logo')
+  const icon = normalizeAsset(options.icon, 'icon')
+
+  let cssVariables = options.cssVariables
+  if (options.logoHeight !== undefined) {
+    const height = options.logoHeight
+    assert(
+      (typeof height === 'number' && Number.isFinite(height) && height > 0) ||
+        (typeof height === 'string' && height.trim() !== ''),
+      `logoHeight must be a positive number (px) or a CSS length string, got '${String(height)}'.`,
+    )
+    const value = typeof height === 'number' ? `${height}px` : height
+    cssVariables = { '--pt-logo-height': value, ...cssVariables }
+  }
 
   return {
     accent,
-    cssVariables: options.cssVariables,
+    cssVariables,
     resolved: {
       css: '', // filled by the plugin after computing the scale
       preset,
       radius,
-      logo: options.logo,
-      icon: options.icon,
+      logo,
+      icon,
       nav: { icons },
       fallbackIconName: DEFAULTS.fallbackIconName,
     },

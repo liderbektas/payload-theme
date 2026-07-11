@@ -320,7 +320,7 @@
   background: var(--pt-accent);
   color: var(--pt-accent-contrast);
   
-}pt-nav__logo
+}
 .react-datepicker__day--selected:hover,
 .react-datepicker__day--keyboard-selected:hover {
   background: var(--pt-accent-hover);
@@ -616,8 +616,17 @@
     text-decoration: none;
   }
   .pt-nav__logo .graphic-logo {
-    height: 26px;
+    height: var(--pt-logo-height, 26px);
     width: auto;
+  }
+  .pt-nav__logo-img {
+    height: var(--pt-logo-height, 26px);
+    width: auto;
+  }
+  /* light/dark logo pair: show only the variant matching the active scheme */
+  html[data-theme='dark'] .pt-nav__logo-img--light,
+  html:not([data-theme='dark']) .pt-nav__logo-img--dark {
+    display: none;
   }
 
   /* ---- groups ---- */

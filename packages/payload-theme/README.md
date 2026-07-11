@@ -56,8 +56,11 @@ payloadTheme({
   radius: 'lg',
 
   // Sidebar logo (shown at the top, links to the dashboard).
-  // A URL ('/logo.svg') or an import-map component path.
-  logo: '/logo.svg',
+  // A URL, or { light, dark } to swap artwork per color scheme.
+  logo: { light: '/logo.svg', dark: '/logo-dark.svg' },
+
+  // Rendered height of the logo: a number in px, or any CSS length.
+  logoHeight: 32,
 
   // Small mark used for the collapsed nav and the login screen.
   icon: '/mark.svg',
@@ -79,8 +82,9 @@ payloadTheme({
 | `accent` | `string` (hex) | `#4f4ece` | Generates a full 50–950 color scale in OKLCH and colors every interactive element with it. |
 | `preset` | `'soft' \| 'noir' \| 'minimal'` | `'soft'` | The surface/neutral look. Independent of the accent, and each has light **and** dark variants. |
 | `radius` | `'sm' \| 'md' \| 'lg'` | `'md'` | Global corner-rounding scale for cards, inputs and buttons. |
-| `logo` | `string` | Payload logo | Image URL or component path, rendered at the top of the sidebar. |
-| `icon` | `string` | — | Small logo for collapsed nav & login. |
+| `logo` | `string \| { light, dark }` | Payload logo | Image URL(s) rendered at the top of the sidebar. Pass a pair to use different artwork in light and dark mode. |
+| `logoHeight` | `number \| string` | `26` | Rendered logo height — a number is px (`32`), a string is any CSS length (`'2.5rem'`). |
+| `icon` | `string \| { light, dark }` | — | Small logo for collapsed nav & login. |
 | `nav.icons` | `Record<slug, iconName>` | folder icon | Maps your collections/globals to [lucide](https://lucide.dev) icons. Unmapped ones get a folder. |
 | `cssVariables` | `Record<string, string>` | — | Escape hatch: override any raw `--pt-*` token directly. |
 
