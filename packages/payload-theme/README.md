@@ -47,7 +47,7 @@ Restart your dev server, open the admin panel — that's it. 🎉
 
 ### A login screen people screenshot
 
-The login becomes a split card: a permanently-dark brand panel whose glow is painted from **your accent color**, and the form beside it. The heading and tagline are yours to change (`login.heading` / `login.tagline`), and the logo above the email field is **your logo** — set the `logo` option and it appears both here and in the sidebar; leave it unset and Payload's own logo is used as the placeholder.
+The login becomes a split card: a permanently-dark brand panel whose glow is painted from **your accent color**, and the form beside it. The heading and tagline are yours to change (`login.heading` / `login.tagline`). The logo above the email field — Payload's by default, as in the screenshot — is **fully customizable**: set the `logo` option and your own artwork appears both here and at the top of the sidebar, sized by `logoHeight`, with separate light/dark variants supported.
 
 ![Login](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/login.png)
 

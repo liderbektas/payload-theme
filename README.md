@@ -4,7 +4,7 @@
 
 Pick one accent color and the whole panel repaints itself: a split-screen login, a widget dashboard with live counts and 30-day sparklines, a ⌘K command palette, an icon sidebar with your logo on top, soft cards, calm shadcn-style inputs and colored status badges. No forked components, no config surgery — just a plugin and a CSS import.
 
-![Dashboard](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/dashboard.png)
+![Dashboard](docs/dashboard.png)
 
 ---
 
@@ -47,9 +47,9 @@ Restart your dev server, open the admin panel — that's it. 🎉
 
 ### A login screen people screenshot
 
-The login becomes a split card: a permanently-dark brand panel whose glow is painted from **your accent color**, and the form beside it. The heading and tagline are yours to change (`login.heading` / `login.tagline`), and the logo above the email field is **your logo** — set the `logo` option and it appears both here and in the sidebar; leave it unset and Payload's own logo is used as the placeholder.
+The login becomes a split card: a permanently-dark brand panel whose glow is painted from **your accent color**, and the form beside it. The heading and tagline are yours to change (`login.heading` / `login.tagline`). The logo above the email field — Payload's by default, as in the screenshot — is **fully customizable**: set the `logo` option and your own artwork appears both here and at the top of the sidebar, sized by `logoHeight`, with separate light/dark variants supported.
 
-![Login](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/login.png)
+![Login](docs/login.png)
 
 ### A dashboard that's actually a dashboard
 
@@ -59,25 +59,25 @@ The default dashboard is replaced with a widget grid: a time-of-day greeting, on
 
 Press `⌘K` / `Ctrl+K` (or click the search pill in the sidebar) to jump anywhere: navigate to any collection or global, **search documents across collections** as you type, switch light/dark mode, or log out. Zero extra dependencies — it ships inside the theme.
 
-![Command palette](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/command-palette.png)
+![Command palette](docs/command-palette.png)
 
 ### List views with real polish
 
 Tables become clean cards: a redesigned page header with the create button where you expect it, colored **status badges** derived from your select values (`published` → green, `pending` → amber, `archived` → red, anything else → a quiet neutral), soft row hovers, and an illustrated empty state instead of a blank page.
 
-![List view](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/list-view.png)
+![List view](docs/list-view.png)
 
 ### Calm, card-based edit views
 
 The edit form lives on one white card with top-level groups as inset panels, the sidebar becomes its own card, inputs follow the shadcn language (thin borders, accent focus ring), checkboxes render as toggles, and the document toolbar gets quiet icon chips plus a unified split publish button.
 
-![Edit view](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/edit-view.png)
+![Edit view](docs/edit-view.png)
 
 ### Dark mode, for free
 
 Every surface, badge, card and glow is token-driven, so the whole theme flips with Payload's dark mode — dashboard, palette and login included.
 
-![Dashboard dark](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/dashboard-dark.png)
+![Dashboard dark](docs/dashboard-dark.png)
 
 ---
 

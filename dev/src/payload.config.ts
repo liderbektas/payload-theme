@@ -50,8 +50,6 @@ export default buildConfig({
   plugins: [
     payloadTheme({
       accent: '#4f4ece',
-      logo: { dark: '/logo-dark.svg', light: '/logo-light.svg' },
-      logoHeight: 28,
       radius: 'full',
       nav: {
         icons: {
