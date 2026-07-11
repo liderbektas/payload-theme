@@ -2282,21 +2282,8 @@
  * LIST — empty state + generic value badges (Premium pass, module 5)
  * ==================================================================== */
 @layer payload {
-  /* ---- empty state: dashed card, icon, clear hierarchy ---- */
-  .no-results {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    padding: 56px 24px 48px;
-    background: var(--theme-elevation-0);
-    border: 1px dashed var(--theme-elevation-200);
-    border-radius: var(--pt-radius-card);
-    text-align: center;
-  }
-  html[data-theme='dark'] .no-results {
-    background: var(--theme-elevation-50);
-  }
+  /* (empty-state rules live UNLAYERED at the end of this file — Payload
+   * ships NoListResults styles unlayered, and unlayered beats @layer) */
   /* lucide 'inbox' drawn via mask so it recolors with the accent */
   .no-results::before {
     content: '';
@@ -2501,6 +2488,9 @@
 @layer payload {
   .list-header__content {
     align-items: center;
+    /* the create button and the "N selected" bulk bar live in adjacent
+     * grid columns — without this they touch edge to edge */
+    column-gap: 20px;
   }
   .list-header__title-and-actions {
     width: 100%;
@@ -2515,6 +2505,8 @@
   /* header-scoped: the create pill becomes the page's one solid action */
   .list-header__title-actions {
     margin-bottom: 0;
+    align-items: center;
+    gap: 16px; /* air between the create button and the "N selected" bar */
   }
   .list-header__title-actions .btn--style-pill {
     --bg-color: var(--pt-accent);
@@ -2541,4 +2533,29 @@
   .collection-list .list-header {
     margin-bottom: 18px; /* clear air above the search bar, description or not */
   }
+}
+
+/* UNLAYERED on purpose: Payload's NoListResults stylesheet ships without a
+ * cascade layer (align-items: flex-start), and unlayered CSS beats every
+ * @layer rule — so the centering must be unlayered too. */
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 56px 24px 48px;
+  background: var(--theme-elevation-0);
+  border: 1px dashed var(--theme-elevation-200);
+  border-radius: var(--pt-radius-card);
+  text-align: center;
+}
+html[data-theme='dark'] .no-results {
+  background: var(--theme-elevation-50);
+}
+.no-results > * {
+  margin-inline: auto; /* stays centered even if a wrapper stretches */
+}
+.no-results__actions {
+  justify-content: center;
 }
