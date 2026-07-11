@@ -2069,7 +2069,8 @@
   .pt-palette {
     position: fixed;
     inset: 0;
-    z-index: 250;
+    /* above every piece of admin chrome, incl. the mobile nav drawer */
+    z-index: 1200;
     display: flex;
     align-items: flex-start;
     justify-content: center;
@@ -2262,6 +2263,20 @@
     }
     .pt-palette__backdrop {
       animation: pt-fade-in 0.16s ease both;
+    }
+  }
+
+  /* small screens: full-width panel, dvh-based height (keyboard-safe) */
+  @media (max-width: 600px) {
+    .pt-palette {
+      padding: 12px 12px 16px;
+    }
+    .pt-palette__panel {
+      width: 100%;
+      max-height: min(78dvh, 560px);
+    }
+    .pt-palette__footer {
+      display: none; /* keyboard hints are noise on touch screens */
     }
   }
 }

@@ -82,6 +82,7 @@ const isComponentPath = (value: string): boolean => value.includes('#')
 /** Search pill under the logo — opens the ⌘K palette. The shortcut label is
  * resolved after mount so server HTML never guesses the platform. */
 const NavSearch: React.FC = () => {
+  const { setNavOpen } = useNav()
   const [shortcut, setShortcut] = React.useState('⌘K')
 
   React.useEffect(() => {
@@ -91,7 +92,12 @@ const NavSearch: React.FC = () => {
   return (
     <button
       className="pt-nav__search"
-      onClick={() => window.dispatchEvent(new CustomEvent('pt:open-palette'))}
+      onClick={() => {
+        // On mobile the pill lives inside the open nav drawer — close it so
+        // the palette isn't layered under/next to the drawer chrome.
+        setNavOpen(false)
+        window.dispatchEvent(new CustomEvent('pt:open-palette'))
+      }}
       type="button"
     >
       <DynamicIcon aria-hidden="true" className="pt-nav__search-icon" name="search" strokeWidth={2} />
