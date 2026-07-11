@@ -21,6 +21,7 @@ import React from 'react'
 
 import type { ResolvedThemeConfig } from '../../options'
 
+import { CommandPalette } from '../CommandPalette'
 import { resolveIconName } from '../navIcons'
 
 type NavItem = {
@@ -77,6 +78,30 @@ const NavItemLink: React.FC<{ exact?: boolean; item: NavItem; pathname: string }
 
 /** True for a Payload import-map component path (e.g. `/components/X#X`). */
 const isComponentPath = (value: string): boolean => value.includes('#')
+
+/** Search pill under the logo — opens the ⌘K palette. The shortcut label is
+ * resolved after mount so server HTML never guesses the platform. */
+const NavSearch: React.FC = () => {
+  const [shortcut, setShortcut] = React.useState('⌘K')
+
+  React.useEffect(() => {
+    if (/win|linux/i.test(navigator.platform)) setShortcut('Ctrl K')
+  }, [])
+
+  return (
+    <button
+      className="pt-nav__search"
+      onClick={() => window.dispatchEvent(new CustomEvent('pt:open-palette'))}
+      type="button"
+    >
+      <DynamicIcon aria-hidden="true" className="pt-nav__search-icon" name="search" strokeWidth={2} />
+      <span className="pt-nav__search-label">Search</span>
+      <kbd className="pt-nav__search-kbd" suppressHydrationWarning>
+        {shortcut}
+      </kbd>
+    </button>
+  )
+}
 
 export const Nav: React.FC = () => {
   const pathname = usePathname()
@@ -198,6 +223,7 @@ export const Nav: React.FC = () => {
             <PayloadLogo />
           )}
         </Link>
+        <NavSearch />
         <nav className="nav__wrap pt-nav__wrap">
           <div className="pt-nav__group">
             <NavItemLink item={dashboardItem} exact pathname={pathname} />
@@ -215,6 +241,10 @@ export const Nav: React.FC = () => {
           </div>
         </nav>
       </div>
+      {/* Mounted here (not in the ThemeProvider): the palette needs the
+       * entity-visibility/permissions contexts, which only exist below
+       * Payload's own providers — and the Nav renders on every authed page. */}
+      <CommandPalette />
       <div className="nav__header">
         <div className="nav__header-content">
           <button

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="132" height="32" viewBox="0 0 132 32" fill="none">
+  <rect x="0" y="0" width="32" height="32" rx="9" fill="#6c6bea"/>
+  <path d="M9 21.5 16 9l7 12.5h-4.2L16 16.4l-2.8 5.1H9Z" fill="#fff"/>
+  <text x="40" y="22.5" font-family="-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="19" font-weight="700" letter-spacing="-0.5" fill="#f4f4f6">Acme</text>
+</svg>

@@ -21,6 +21,19 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    // Exercises the live-preview toggle in the doc toolbar (a theming target).
+    livePreview: {
+      collections: ['posts'],
+      url: 'http://localhost:3000',
+    },
+  },
+  // Exercises the app-header locale switcher (a theming target).
+  localization: {
+    defaultLocale: 'en',
+    locales: [
+      { code: 'en', label: 'English' },
+      { code: 'tr', label: 'Türkçe' },
+    ],
   },
   collections: [Posts, Tags, Media, Users],
   globals: [Settings],
@@ -34,10 +47,12 @@ export default buildConfig({
       url: process.env.DATABASE_URI || '',
     },
   }),
-  sharp,
   plugins: [
     payloadTheme({
       accent: '#4f4ece',
+      logo: { dark: '/logo-dark.svg', light: '/logo-light.svg' },
+      logoHeight: 28,
+      radius: 'full',
       nav: {
         icons: {
           media: 'image',

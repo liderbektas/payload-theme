@@ -44,6 +44,11 @@ export const payloadTheme =
     const components = { ...config.admin.components }
     components.Nav = 'payload-theme/client#Nav'
     components.providers = [...(components.providers ?? []), 'payload-theme/client#ThemeProvider']
+    // Renders the split-layout brand panel on the login view; the stylesheet
+    // only switches to the two-column card when this element is present.
+    // A server component: unauthenticated pages get a stripped client config
+    // (no admin.custom), so the hero reads the theme from `payload` directly.
+    components.beforeLogin = [...(components.beforeLogin ?? []), 'payload-theme/rsc#LoginHero']
     components.views = {
       ...components.views,
       dashboard: {

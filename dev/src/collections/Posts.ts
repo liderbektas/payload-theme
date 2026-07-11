@@ -9,6 +9,8 @@ export const Posts: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'featured', 'publishedAt', 'updatedAt'],
     description: 'Blog posts — exercises every major Payload field type so each admin view can be themed.',
+    // Exercises the preview (external-link) button in the doc toolbar.
+    preview: () => 'http://localhost:3000',
   },
   access: {
     read: () => true,

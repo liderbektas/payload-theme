@@ -47,6 +47,14 @@ const placeholderPng = (background: string): Promise<Buffer> =>
     .png()
     .toBuffer()
 
+// Spread doc creation over the last 30 days so dashboard sparklines have shape.
+const daysAgo = (days: number): string => {
+  const d = new Date()
+  d.setHours(12, 0, 0, 0)
+  d.setDate(d.getDate() - days)
+  return d.toISOString()
+}
+
 const run = async (): Promise<void> => {
   const payload = await getPayload({ config })
 
@@ -180,6 +188,46 @@ const run = async (): Promise<void> => {
       excerpt: 'A second draft to give the versions/drafts views more to render.',
       withLayout: false,
     },
+    {
+      title: 'Shipping the New Editorial Workflow',
+      status: 'published',
+      featured: true,
+      publishedAt: '2026-05-18T10:00:00.000Z',
+      tags: [tagId(2), tagId(1)],
+      cover: 2,
+      excerpt: 'Review states, approvals and how the team moved twice as fast.',
+      withLayout: false,
+    },
+    {
+      title: 'Q3 Content Calendar',
+      status: 'published',
+      featured: false,
+      publishedAt: '2026-06-30T08:00:00.000Z',
+      tags: [tagId(2)],
+      cover: 3,
+      excerpt: 'Everything scheduled for the next quarter, in one place.',
+      withLayout: false,
+    },
+    {
+      title: 'Interview: Design Systems at Scale',
+      status: 'published',
+      featured: false,
+      publishedAt: '2026-07-05T14:00:00.000Z',
+      tags: [tagId(0), tagId(3)],
+      cover: 1,
+      excerpt: 'A conversation about tokens, theming and keeping UI consistent.',
+      withLayout: false,
+    },
+    {
+      title: 'Changelog — July',
+      status: 'published',
+      featured: false,
+      publishedAt: '2026-07-09T09:30:00.000Z',
+      tags: [tagId(4)],
+      cover: 0,
+      excerpt: 'Small fixes, faster uploads and a smarter media library.',
+      withLayout: false,
+    },
   ] as const
 
   const createdPosts = []
@@ -190,6 +238,8 @@ const run = async (): Promise<void> => {
       collection: 'posts',
       draft: isDraft,
       data: {
+        // Spread across the last month (newest first) for real sparkline shape.
+        createdAt: daysAgo([1, 3, 4, 7, 9, 12, 16, 21, 24, 28][i % 10]),
         title: spec.title,
         // Payload's own draft state (drives the Draft/Published pill + versions UI).
         // Keep the two drafts unpublished; publish everything else.

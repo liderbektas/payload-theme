@@ -1,8 +1,10 @@
 # payload-theme
 
-**A beautiful theme for the Payload CMS admin panel — installed in 2 lines.**
+**A premium, single-accent theme for the Payload CMS admin panel — installed in 2 lines.**
 
-Pick one accent color, and the whole panel repaints itself: pill-shaped active nav links, an icon sidebar with your logo on top, soft cards with an accent stripe, calm shadcn-style inputs, checkboxes that become toggles, and a dashboard with live collection counts. No forked components, no config surgery — just a plugin and a CSS import.
+Pick one accent color and the whole panel repaints itself: a split-screen login, a widget dashboard with live counts and 30-day sparklines, a ⌘K command palette, an icon sidebar with your logo on top, soft cards, calm shadcn-style inputs and colored status badges. No forked components, no config surgery — just a plugin and a CSS import.
+
+![Dashboard](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/dashboard.png)
 
 ---
 
@@ -39,6 +41,46 @@ npx payload generate:importmap
 
 Restart your dev server, open the admin panel — that's it. 🎉
 
+---
+
+## Tour
+
+### A login screen people screenshot
+
+The login becomes a split card: a permanently-dark brand panel whose glow is painted from **your accent color**, and the form beside it. The heading and tagline are yours to change (`login.heading` / `login.tagline`), and the logo above the email field is **your logo** — set the `logo` option and it appears both here and in the sidebar; leave it unset and Payload's own logo is used as the placeholder.
+
+![Login](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/login.png)
+
+### A dashboard that's actually a dashboard
+
+The default dashboard is replaced with a widget grid: a time-of-day greeting, one stat card per collection with an animated document count and a **30-day creation sparkline**, cards for your globals, and a **Recent activity** feed of the latest edits across all collections. Everything is server-rendered through Payload's local API — access control applies, no loading flash.
+
+### ⌘K command palette
+
+Press `⌘K` / `Ctrl+K` (or click the search pill in the sidebar) to jump anywhere: navigate to any collection or global, **search documents across collections** as you type, switch light/dark mode, or log out. Zero extra dependencies — it ships inside the theme.
+
+![Command palette](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/command-palette.png)
+
+### List views with real polish
+
+Tables become clean cards: a redesigned page header with the create button where you expect it, colored **status badges** derived from your select values (`published` → green, `pending` → amber, `archived` → red, anything else → a quiet neutral), soft row hovers, and an illustrated empty state instead of a blank page.
+
+![List view](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/list-view.png)
+
+### Calm, card-based edit views
+
+The edit form lives on one white card with top-level groups as inset panels, the sidebar becomes its own card, inputs follow the shadcn language (thin borders, accent focus ring), checkboxes render as toggles, and the document toolbar gets quiet icon chips plus a unified split publish button.
+
+![Edit view](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/edit-view.png)
+
+### Dark mode, for free
+
+Every surface, badge, card and glow is token-driven, so the whole theme flips with Payload's dark mode — dashboard, palette and login included.
+
+![Dashboard dark](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/dashboard-dark.png)
+
+---
+
 ## Options
 
 Everything is optional. This is the full surface:
@@ -46,26 +88,32 @@ Everything is optional. This is the full surface:
 ```ts
 payloadTheme({
   // The one color that drives everything: buttons, active nav pill,
-  // focus rings, selected rows, links... Any hex works.
+  // focus rings, selected rows, sparklines, the login glow... Any hex works.
   accent: '#e30613',
 
-  // Surface & neutral palette: 'soft' | 'noir' | 'minimal'
-  preset: 'soft',
+  // Corner rounding for the WHOLE panel: 'none' | 'sm' | 'md' | 'lg' | 'full'.
+  // 'full' (default) = pill buttons/inputs; 'none' squares everything off.
+  radius: 'full',
 
-  // Corner rounding: 'sm' | 'md' | 'lg'
-  radius: 'lg',
-
-  // Sidebar logo (shown at the top, links to the dashboard).
+  // Your logo — top of the sidebar AND above the login form.
   // A URL, or { light, dark } to swap artwork per color scheme.
+  // Leave it out and Payload's own logo is the placeholder.
   logo: { light: '/logo.svg', dark: '/logo-dark.svg' },
 
   // Rendered height of the logo: a number in px, or any CSS length.
-  logoHeight: 32,
+  logoHeight: 28,
 
-  // Small mark used for the collapsed nav and the login screen.
+  // Small mark, used as a fallback for the login logo.
   icon: '/mark.svg',
 
-  // Sidebar icons per collection/global slug — any lucide.dev icon name.
+  // Copy on the login brand panel.
+  login: {
+    heading: 'Welcome back',
+    tagline: 'Sign in to manage your content.',
+  },
+
+  // Sidebar + dashboard + palette icons per collection/global slug —
+  // any icon name from lucide.dev.
   nav: {
     icons: {
       posts: 'newspaper',
@@ -74,38 +122,34 @@ payloadTheme({
       settings: 'settings',
     },
   },
+
+  // Escape hatch: raw --pt-* token overrides, applied last.
+  cssVariables: {
+    '--pt-radius-card': '10px',
+  },
 })
 ```
 
 | Option | Type | Default | What it does |
 | --- | --- | --- | --- |
 | `accent` | `string` (hex) | `#4f4ece` | Generates a full 50–950 color scale in OKLCH and colors every interactive element with it. |
-| `preset` | `'soft' \| 'noir' \| 'minimal'` | `'soft'` | The surface/neutral look. Independent of the accent, and each has light **and** dark variants. |
-| `radius` | `'sm' \| 'md' \| 'lg'` | `'md'` | Global corner-rounding scale for cards, inputs and buttons. |
-| `logo` | `string \| { light, dark }` | Payload logo | Image URL(s) rendered at the top of the sidebar. Pass a pair to use different artwork in light and dark mode. |
+| `radius` | `'none' \| 'sm' \| 'md' \| 'lg' \| 'full'` | `'full'` | Global corner rounding — buttons, inputs, badges, cards, tables, popovers and menu items all follow it. |
+| `logo` | `string \| { light, dark }` | Payload logo | Image URL(s) shown at the top of the sidebar and above the login form. Pass a pair for per-scheme artwork. |
 | `logoHeight` | `number \| string` | `26` | Rendered logo height — a number is px (`32`), a string is any CSS length (`'2.5rem'`). |
-| `icon` | `string \| { light, dark }` | — | Small logo for collapsed nav & login. |
-| `nav.icons` | `Record<slug, iconName>` | folder icon | Maps your collections/globals to [lucide](https://lucide.dev) icons. Unmapped ones get a folder. |
+| `icon` | `string \| { light, dark }` | — | Small mark, used as a login-logo fallback. |
+| `login.heading` | `string` | `'Welcome back'` | Big heading on the login brand panel. |
+| `login.tagline` | `string` | `'Sign in to manage your content.'` | Supporting line under the heading. |
+| `nav.icons` | `Record<slug, iconName>` | folder icon | Maps collections/globals to [lucide](https://lucide.dev) icons, used in the sidebar, dashboard cards and palette. |
 | `cssVariables` | `Record<string, string>` | — | Escape hatch: override any raw `--pt-*` token directly. |
 
-### Presets
+## Under the hood
 
-- **`soft`** — light, airy; white cards on a soft gray canvas. *(default)*
-- **`noir`** — near-black premium dark.
-- **`minimal`** — pure white, hairline borders, barely-there shadows.
-
-All presets respect Payload's own light/dark toggle — `noir` in light mode and `soft` in dark mode both look intentional, not inverted.
-
-## What you get
-
-- **One accent, everywhere** — your hex becomes an 11-step OKLCH scale. Buttons, focus rings, active nav pill, selected table rows, pagination, tabs, links: all recolored consistently.
+- **One accent, everywhere** — your hex becomes an 11-step OKLCH scale. Buttons, focus rings, the active nav pill, selected table rows, pagination, tabs, links, sparklines: all recolored consistently.
 - **Smart dark mode** — the scale is re-mapped for dark (brighter accent step, never a naive inversion), so your color stays vivid on dark surfaces.
 - **Automatic contrast** — text on the accent picks black or white by WCAG relative luminance. Yellow accent → black text, purple accent → white text. You never think about it.
-- **Custom sidebar** — your logo up top, icon + label links below, fully-rounded pill on the active item, collection groups supported.
-- **Themed dashboard** — welcome header plus a card per collection with live, access-controlled document counts (rendered on the server, no loading flash).
 - **Toggles, not checkboxes** — checkboxes are restyled into switches with pure CSS; form behavior and accessibility are untouched.
 - **Zero runtime dependencies for color math** — the scale is computed once at startup and injected as CSS custom properties. No FOUC, SSR-safe.
-- **Non-destructive** — everything ships in `@layer payload`, overriding Payload's defaults without specificity wars. Validation, form state and keyboard focus all keep working.
+- **Non-destructive** — everything ships in `@layer payload`, overriding Payload's defaults without specificity wars. Validation, form state and keyboard focus keep working.
 
 ## Fine-tuning with CSS variables
 
@@ -120,9 +164,7 @@ payloadTheme({
 })
 ```
 
-Or target them from your own `custom.scss` — the important ones:
-
-`--pt-accent-50` … `--pt-accent-950`, `--pt-accent`, `--pt-accent-hover`, `--pt-accent-active`, `--pt-accent-subtle`, `--pt-accent-contrast`, `--pt-accent-ring`.
+The important ones: `--pt-accent-50` … `--pt-accent-950`, `--pt-accent`, `--pt-accent-hover`, `--pt-accent-active`, `--pt-accent-subtle`, `--pt-accent-contrast`, `--pt-accent-ring`, plus the radius tokens `--pt-radius-ctl`, `--pt-radius-card`, `--pt-radius-item`.
 
 ## Requirements
 
@@ -135,10 +177,12 @@ Or target them from your own `custom.scss` — the important ones:
 
 **Styles not applying** — make sure `@import 'payload-theme/styles.css';` is in `src/app/(payload)/custom.scss` (the file Payload already loads into the admin panel).
 
+**Theme changes not showing in dev** — Turbopack caches aggressively; delete your app's `.next` folder and restart.
+
 **`Invalid accent color: '…'`** — the accent must be a hex string like `#7c3aed`. Named colors aren't supported (yet!).
 
 ## License
 
 MIT © [Lider Bektaş](https://github.com/liderbektas)
 
-Found a bug or want a preset? [Issues and PRs welcome](https://github.com/liderbektas/payload-theme/issues). 
+Found a bug or want a feature? [Issues and PRs welcome](https://github.com/liderbektas/payload-theme/issues).

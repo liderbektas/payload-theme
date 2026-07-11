@@ -26,6 +26,9 @@ export async function login({
 
   await page.waitForURL(`${serverURL}/admin`)
 
-  const dashboardArtifact = page.locator('span[title="Dashboard"]')
+  // The theme replaces the default dashboard (and hides the breadcrumb the
+  // old `span[title="Dashboard"]` check relied on) — wait for the themed
+  // dashboard grid instead.
+  const dashboardArtifact = page.locator('.pt-dash__grid')
   await expect(dashboardArtifact).toBeVisible()
 }

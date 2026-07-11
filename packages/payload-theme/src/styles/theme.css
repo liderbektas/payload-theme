@@ -67,7 +67,7 @@
   .nav__link {
     padding: 8px 14px;
     padding-inline-end: 14px; /* override Payload's default 30px */
-    border-radius: 999px; /* full pill */
+    border-radius: var(--pt-radius-ctl); /* full pill */
     color: var(--theme-elevation-600); /* muted inactive text */
     font-weight: 500;
     transition:
@@ -121,12 +121,12 @@
   .btn--style-primary,
   .btn--style-secondary,
   .btn--style-subtle {
-    border-radius: 999px; 
+    border-radius: var(--pt-radius-ctl); 
   }
 
   /* Payload's "pill" style (e.g. the list "Create New") becomes a true pill. */
   .btn--style-pill {
-    border-radius: 999px;
+    border-radius: var(--pt-radius-ctl);
   }
 }
 
@@ -144,7 +144,7 @@
   .field-type input:not([type='checkbox']),
   .field-type textarea {
     border: 1px solid var(--theme-elevation-150);
-    border-radius: 999px;
+    border-radius: var(--pt-radius-ctl);
     box-shadow: none; /* flat — drop Payload's subtle input shadow */
     transition:
       border-color 0.12s ease,
@@ -163,7 +163,7 @@
 
   /* ---- search boxes are pills ---- */
   .search-filter__input {
-    border-radius: 999px;
+    border-radius: var(--pt-radius-ctl);
     transition:
       border-color 0.12s ease,
       box-shadow 0.12s ease;
@@ -179,7 +179,7 @@
   .field-type.checkbox .checkbox-input__input {
     width: 34px;
     height: 20px;
-    border-radius: 999px;
+    border-radius: 999px; /* switches stay round at every radius setting */
     border: 1px solid var(--theme-elevation-250);
     background: var(--theme-elevation-200);
     box-shadow: none;
@@ -236,7 +236,7 @@
 @layer payload {
   .rs__control {
     border: 1px solid var(--theme-elevation-150);
-    border-radius: 999px;
+    border-radius: var(--pt-radius-ctl);
     box-shadow: none; /* flat, like the inputs */
     transition:
       border-color 0.12s ease,
@@ -250,7 +250,7 @@
   /* dropdown menu = soft popover */
   .rs__menu {
     border: 1px solid var(--theme-elevation-150);
-    border-radius: 9px;
+    border-radius: var(--pt-radius-item);
     box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
     overflow: hidden;
   }
@@ -258,7 +258,7 @@
     padding: 4px;
   }
   .rs__option {
-    border-radius: 6px;
+    border-radius: var(--pt-radius-item);
     transition: background-color 0.1s ease;
   }
   .rs__option--is-focused {
@@ -276,7 +276,7 @@
 
   /* multi-value chips -> accent-tinted pills */
   .rs__multi-value {
-    border-radius: 999px;
+    border-radius: var(--pt-radius-ctl);
     background: color-mix(in srgb, var(--pt-accent) 12%, transparent);
   }
 }
@@ -290,7 +290,7 @@
  * ==================================================================== */
 .react-datepicker {
   border: 1px solid var(--theme-elevation-150);
-  border-radius: 8px;
+  border-radius: var(--pt-radius-item);
   box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
   background: var(--theme-elevation-0);
   color: var(--theme-text);
@@ -363,7 +363,7 @@
 
   /* pagination: current page = accent, others get a soft accent hover */
   .paginator__page {
-    border-radius: 6px;
+    border-radius: var(--pt-radius-item);
     transition:
       background-color 0.12s ease,
       color 0.12s ease;
@@ -468,7 +468,7 @@
 @layer payload {
   .table {
     border: 1px solid var(--theme-elevation-150);
-    border-radius: 12px;
+    border-radius: var(--pt-radius-card);
     background: var(--theme-elevation-0);
     box-shadow: 0 1px 3px rgb(0 0 0 / 0.05);
   }
@@ -493,7 +493,7 @@
     display: inline-flex;
     align-items: center;
     padding: 3px 12px;
-    border-radius: 999px;
+    border-radius: var(--pt-radius-ctl);
     font-size: 0.82em;
     font-weight: 600;
   }
@@ -514,7 +514,7 @@
   .bool-cell {
     display: inline-flex;
     padding: 3px 12px;
-    border-radius: 999px;
+    border-radius: var(--pt-radius-ctl);
     background: var(--theme-elevation-100);
     color: var(--theme-elevation-600);
     font-family: var(--font-body);
@@ -608,7 +608,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    padding: 20px 16px 36px; /* extra bottom air between logo and links */
+    padding: 22px 16px 26px; /* air below the mark; snug to the top */
     text-decoration: none;
   }
   .pt-nav__logo:hover,
@@ -656,7 +656,7 @@
     gap: 10px;
     width: 100%;
     padding: 9px 14px;
-    border-radius: 999px; /* full pill */
+    border-radius: var(--pt-radius-ctl); /* full pill */
     color: var(--theme-elevation-600); /* muted inactive; icon inherits */
     font-size: 13px;
     font-weight: 500;
@@ -760,7 +760,7 @@
     border: 0;
   }
   .template-default__wrap > .app-header + [class] {
-    border-top-left-radius: 16px;
+    border-top-left-radius: var(--pt-radius-card);
     padding-block-start: 24px; /* --gutter-h (60px) reads too airy on top */
   }
   .template-default__wrap > [class]:not(.app-header):not(.doc-header) {
@@ -846,7 +846,7 @@
     padding: 17px 18px 16px;
     background-color: var(--theme-elevation-0);
     border: 1px solid var(--theme-border-color);
-    border-radius: 14px;
+    border-radius: var(--pt-radius-card);
     box-shadow:
       0 1px 2px rgb(0 0 0 / 0.04),
       0 4px 14px -8px rgb(0 0 0 / 0.08);
@@ -878,7 +878,7 @@
     justify-content: center;
     width: 32px;
     height: 32px;
-    border-radius: 9px;
+    border-radius: var(--pt-radius-item);
     background: var(--pt-accent-subtle);
     color: var(--pt-accent);
 
@@ -932,7 +932,7 @@
     position: absolute;
     inset: 0;
     z-index: 1;
-    border-radius: 14px;
+    border-radius: var(--pt-radius-card);
   }
   .pt-dash__card-link:focus-visible {
     outline: 2px solid var(--pt-accent);
@@ -950,7 +950,7 @@
     justify-content: center;
     width: 26px;
     height: 26px;
-    border-radius: 999px;
+    border-radius: var(--pt-radius-ctl);
     color: var(--theme-elevation-500);
     transition:
       background-color 0.15s ease,
@@ -987,7 +987,7 @@
   .search-bar {
     background: var(--theme-input-bg);
     border: 1px solid var(--theme-elevation-150);
-    border-radius: 999px;
+    border-radius: var(--pt-radius-ctl);
     transition:
       border-color 0.12s ease,
       box-shadow 0.12s ease;
@@ -1007,7 +1007,7 @@
   /* ---- pills (Columns/Filters toggles, column-selector chips, …) ----
    * light = quiet outline chip; dark (= selected/active) = accent chip. */
   .pill {
-    border-radius: 999px;
+    border-radius: var(--pt-radius-ctl);
   }
   .pill--size-small {
     padding: 0 10px;
@@ -1045,7 +1045,7 @@
    * idle, accent-subtle chip when active. Retires the old underline. */
   .doc-tab {
     background: transparent;
-    border-radius: 999px;
+    border-radius: var(--pt-radius-ctl);
     color: var(--theme-elevation-500);
   }
   a.doc-tab:hover,
@@ -1073,7 +1073,7 @@
     justify-content: center;
     background: var(--theme-input-bg);
     border: 1px solid var(--theme-elevation-150);
-    border-radius: 999px;
+    border-radius: var(--pt-radius-ctl);
     color: var(--theme-elevation-600);
     transition:
       border-color 0.12s ease,
@@ -1094,7 +1094,7 @@
     /* Payload paints the label/stroke of add-row buttons from its own
      * --btn-color local var — override that, not `color`. */
     --btn-color: var(--pt-accent);
-    border-radius: 999px;
+    border-radius: var(--pt-radius-ctl);
   }
   .array-field__add-row:hover,
   .array-field__add-row:focus-visible,
@@ -1106,7 +1106,7 @@
   .blocks-field__drawer-toggler .btn__icon {
     background: var(--pt-accent-subtle);
     border: 0;
-    border-radius: 999px;
+    border-radius: var(--pt-radius-ctl);
     color: var(--pt-accent);
   }
 
@@ -1117,7 +1117,7 @@
     justify-content: center;
     width: 38px;
     height: 38px;
-    border-radius: 12px;
+    border-radius: var(--pt-radius-card);
     color: var(--theme-elevation-600);
     transition:
       background-color 0.12s ease,
@@ -1144,7 +1144,7 @@
   .popup__content {
     background: var(--theme-elevation-0);
     border: 1px solid var(--theme-border-color);
-    border-radius: 12px;
+    border-radius: var(--pt-radius-card);
     box-shadow:
       0 8px 30px -6px rgb(0 0 0 / 0.15),
       0 2px 8px rgb(0 0 0 / 0.06);
@@ -1158,7 +1158,7 @@
     display: none; /* floating menu, no caret (shadcn) */
   }
   .popup-button-list__button {
-    border-radius: 8px;
+    border-radius: var(--pt-radius-item);
     padding: 7px 10px;
     color: var(--theme-elevation-800);
     text-decoration: none;
@@ -1176,7 +1176,7 @@
   /* ---- confirmation modal: shadcn Dialog box ---- */
   .confirmation-modal__wrapper {
     border: 1px solid var(--theme-border-color);
-    border-radius: 16px;
+    border-radius: var(--pt-radius-card);
     box-shadow: 0 20px 60px -12px rgb(0 0 0 / 0.3);
   }
   html[data-theme='dark'] .confirmation-modal__wrapper {
@@ -1193,7 +1193,7 @@
     display: inline-flex;
     align-items: center;
     padding: 2px 10px;
-    border-radius: 999px;
+    border-radius: var(--pt-radius-ctl);
     background: var(--theme-elevation-100);
     font-size: 0.8rem;
   }
@@ -1208,7 +1208,7 @@
   .query-inspector__results {
     background: var(--theme-elevation-0);
     border: 1px solid var(--theme-border-color);
-    border-radius: 12px;
+    border-radius: var(--pt-radius-card);
     padding: 14px 16px;
   }
   html[data-theme='dark'] .query-inspector__results {
@@ -1216,7 +1216,7 @@
     border-color: var(--theme-elevation-150);
   }
   .copy-to-clipboard {
-    border-radius: 8px;
+    border-radius: var(--pt-radius-item);
     color: var(--theme-elevation-500);
     transition:
       background-color 0.12s ease,
@@ -1245,7 +1245,7 @@
   .dropzone {
     background: var(--theme-input-bg);
     border: 1px dashed var(--theme-elevation-250);
-    border-radius: 14px;
+    border-radius: var(--pt-radius-card);
     transition:
       border-color 0.15s ease,
       background-color 0.15s ease;
@@ -1263,7 +1263,7 @@
   .file-details {
     background: var(--theme-elevation-0);
     border: 1px solid var(--theme-border-color);
-    border-radius: 12px;
+    border-radius: var(--pt-radius-card);
     overflow: hidden; /* clips the flush-left thumbnail to the radius */
   }
   html[data-theme='dark'] .file-details {
@@ -1285,7 +1285,7 @@
   /* ---- upload field card (Cover Image & co.) ---- */
   .upload-field-card {
     background: var(--theme-input-bg);
-    border-radius: 12px;
+    border-radius: var(--pt-radius-card);
   }
   html[data-theme='dark'] .upload-field-card {
     background: var(--theme-elevation-50);
@@ -1306,7 +1306,7 @@
   /* ---- thumbnails: soft corners in table cells and upload cards ---- */
   td .thumbnail img,
   .upload-field-card .thumbnail img {
-    border-radius: 6px;
+    border-radius: var(--pt-radius-item);
     object-fit: cover;
   }
 }
@@ -1321,7 +1321,7 @@
 @layer payload {
   /* ---- toasts (sonner): softer card ---- */
   .payload-toast-container .payload-toast-item {
-    border-radius: 12px;
+    border-radius: var(--pt-radius-card);
     box-shadow:
       0 8px 30px -6px rgb(0 0 0 / 0.14),
       0 2px 8px rgb(0 0 0 / 0.06);
@@ -1329,26 +1329,26 @@
 
   /* ---- tooltips: rounded bubble ---- */
   .tooltip {
-    border-radius: 14px;
+    border-radius: var(--pt-radius-card);
     font-size: 0.8rem;
     font-weight: 500;
   }
 
   /* ---- inline field errors (red tooltip bubble) ---- */
   .field-error.tooltip {
-    border-radius: 8px;
+    border-radius: var(--pt-radius-item);
     font-weight: 500;
   }
 
   /* ---- error pills (tab/collapsible error counts) ---- */
   .error-pill {
-    border-radius: 999px;
+    border-radius: var(--pt-radius-ctl);
     font-weight: 600;
   }
 
   /* ---- banners ---- */
   .banner {
-    border-radius: 12px;
+    border-radius: var(--pt-radius-card);
   }
 }
 
@@ -1364,7 +1364,7 @@
   .template-minimal .template-minimal__wrap {
     background: var(--theme-elevation-0);
     border: 1px solid var(--theme-border-color);
-    border-radius: 16px;
+    border-radius: var(--pt-radius-card);
     box-shadow: 0 10px 40px -12px rgb(0 0 0 / 0.12);
     padding: 40px 36px 36px;
   }
@@ -1413,7 +1413,7 @@
 @layer payload {
   /* rounded corners for the block-level diff highlight backgrounds */
   .html-diff :is(p, h1, h2, h3, h4, h5, h6, blockquote, pre)::before {
-    border-radius: 8px;
+    border-radius: var(--pt-radius-item);
   }
   /* inline added/removed marks */
   .html-diff [data-match-type='create'],
@@ -1447,7 +1447,7 @@
     text-align: center;
   }
   .id-label {
-    border-radius: 999px;
+    border-radius: var(--pt-radius-ctl);
     justify-content: center;
   }
 }
@@ -1475,7 +1475,7 @@
   .app-header__mobile-nav-toggler {
     width: 40px;
     height: 40px;
-    border-radius: 12px;
+    border-radius: var(--pt-radius-card);
     align-items: center;
     justify-content: center;
     transition: background-color 0.12s ease;
@@ -1515,7 +1515,7 @@
     position: absolute;
     left: 0;
     height: 2px;
-    border-radius: 999px;
+    border-radius: var(--pt-radius-ctl);
     background: var(--theme-elevation-800);
   }
   .app-header__mobile-nav-toggler .hamburger::before {
@@ -1535,7 +1535,7 @@
   .pt-nav .nav__mobile-close {
     width: 40px;
     height: 40px;
-    border-radius: 12px;
+    border-radius: var(--pt-radius-card);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1567,7 +1567,7 @@
       align-items: center;
       row-gap: 10px;
       padding: 10px 14px;
-      border-radius: 16px;
+      border-radius: var(--pt-radius-card);
     }
     .search-bar__actions {
       width: 100%;
@@ -1623,7 +1623,7 @@
   .template-default__wrap > .collection-edit .document-fields__fields {
     background: var(--theme-elevation-0);
     border: 1px solid var(--theme-border-color);
-    border-radius: 16px;
+    border-radius: var(--pt-radius-card);
     padding: 28px 32px 32px;
   }
   html[data-theme='dark']
@@ -1644,7 +1644,7 @@
   .template-default__wrap > .collection-edit .group-field--top-level {
     background: var(--theme-bg);
     border: 1px solid var(--theme-border-color);
-    border-radius: 12px;
+    border-radius: var(--pt-radius-card);
     padding: 22px 26px 26px;
     /* Payload bleeds top-level groups with negative side margins — reset
      * so the panel stays inside the card instead of jutting out */
@@ -1670,7 +1670,7 @@
   .template-default__wrap > .collection-edit .document-fields__sidebar-fields {
     background: var(--theme-elevation-0);
     border: 1px solid var(--theme-border-color);
-    border-radius: 16px;
+    border-radius: var(--pt-radius-card);
     padding: 24px 26px;
     margin: 30px 40px 0 0; /* top-align with the main card; keep a right gutter */
   }
@@ -1691,5 +1691,854 @@
   }
   .doc-controls__meta {
     font-size: 0.88rem;
+  }
+}
+
+/* ==================================================================== *
+ * LOGIN — split-layout brand panel (Premium pass, module 1)
+ *
+ * The LoginHero component (registered via beforeLogin) injects
+ * `.pt-login-hero` into the login view only; all split-layout rules are
+ * gated on `:has(.pt-login-hero)` so forgot-password / reset keep the
+ * plain centered card. The hero is permanently dark and paints its glow
+ * from the accent scale, so it works with any accent + either scheme.
+ * ==================================================================== */
+@layer payload {
+  .template-minimal:has(.pt-login-hero) {
+    width: min(1060px, 100%);
+    max-width: none;
+  }
+
+  .template-minimal__wrap:has(.pt-login-hero) {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    /* Payload caps the minimal-template card around 600px — the split card
+     * needs the whole widened section. */
+    width: 100%;
+    max-width: none;
+    min-height: 620px;
+    overflow: hidden;
+    padding: 56px 64px;
+    padding-inline-start: calc(46% + 64px);
+  }
+
+  /* The hero carries the branding — drop the duplicate logo above the form. */
+  .template-minimal__wrap:has(.pt-login-hero) .login__brand {
+    display: none;
+  }
+
+  /* the form column fills the space right of the hero */
+  .template-minimal__wrap:has(.pt-login-hero) .login__form {
+    width: 100%;
+  }
+  .template-minimal__wrap:has(.pt-login-hero) .login__form .field-type input:not([type='checkbox']) {
+    width: 100%;
+  }
+
+  .pt-login-hero {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 46%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 44px 44px 40px;
+    overflow: hidden;
+    background: #0b0c12;
+    color: #fff;
+    /* Payload's wordmark paints inline with var(--theme-elevation-1000)
+     * (black in light scheme) — remap it inside the always-dark panel. */
+    --theme-elevation-1000: #fff;
+  }
+
+  .pt-login-hero__glow {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        120% 90% at 15% -5%,
+        color-mix(in srgb, var(--pt-accent) 78%, transparent),
+        transparent 64%
+      ),
+      radial-gradient(
+        110% 85% at 95% 105%,
+        color-mix(in srgb, var(--pt-accent-active) 55%, transparent),
+        transparent 60%
+      );
+  }
+
+  .pt-login-hero__grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.055) 1px, transparent 1px);
+    background-size: 36px 36px;
+    -webkit-mask-image: radial-gradient(120% 110% at 25% 15%, #000, transparent 78%);
+    mask-image: radial-gradient(120% 110% at 25% 15%, #000, transparent 78%);
+  }
+
+  /* The user's own logo, centered above the login form (rendered only when
+   * a logo/icon option is configured — no Payload-logo fallback). Sized by
+   * the same --pt-logo-height knob as the nav logo. */
+  .pt-login__logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+  .pt-login__logo-img {
+    height: var(--pt-logo-height, 32px);
+    width: auto;
+  }
+  /* Payload's fallback mark sizes the same way (its fill follows the scheme). */
+  .pt-login__logo .graphic-logo {
+    height: var(--pt-logo-height, 32px);
+    width: auto;
+  }
+  html[data-theme='dark'] .pt-login__logo-img--light,
+  html:not([data-theme='dark']) .pt-login__logo-img--dark {
+    display: none;
+  }
+
+  .pt-login-hero__copy {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    /* No logo in the panel anymore — the copy is the panel's only content
+     * and sits at the bottom; keep it there even in a flex column. */
+    margin-top: auto;
+  }
+  .pt-login-hero__heading {
+    margin: 0;
+    font-size: clamp(1.7rem, 2.4vw, 2.1rem);
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: #fff;
+  }
+  .pt-login-hero__tagline {
+    margin: 0;
+    max-width: 34ch;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: rgb(255 255 255 / 0.66);
+  }
+
+  /* Narrow screens: the panel folds away, the card returns to a single
+   * column. The default .login__brand stays hidden — the pt-login__logo
+   * above the form is the branding at every width. */
+  @media (max-width: 900px) {
+    .pt-login-hero {
+      display: none;
+    }
+    .template-minimal__wrap:has(.pt-login-hero) {
+      min-height: 0;
+      padding: 40px 36px 36px;
+    }
+  }
+}
+
+/* ==================================================================== *
+ * NAV — search trigger (Premium pass, module 2)
+ *
+ * A quiet input-look pill under the logo that opens the ⌘K palette.
+ * ==================================================================== */
+@layer payload {
+  /* air between the logo and the search pill */
+  .pt-nav__logo {
+    padding-block-end: 30px;
+  }
+
+  .pt-nav__search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: calc(100% - 4px);
+    margin: 0 2px 20px;
+    padding: 8px 12px;
+    background: var(--theme-input-bg);
+    border: 1px solid var(--theme-elevation-150);
+    border-radius: var(--pt-radius-item);
+    color: var(--theme-elevation-500);
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      border-color 0.12s ease,
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+  .pt-nav__search:hover,
+  .pt-nav__search:focus-visible {
+    border-color: color-mix(in srgb, var(--pt-accent) 35%, var(--theme-elevation-150));
+    color: var(--theme-elevation-700);
+  }
+  .pt-nav__search-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+  .pt-nav__search-label {
+    flex: 1;
+    text-align: start;
+  }
+  .pt-nav__search-kbd {
+    padding: 2px 6px;
+    border: 1px solid var(--theme-elevation-150);
+    border-radius: 5px;
+    background: var(--theme-elevation-50);
+    color: var(--theme-elevation-500);
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+}
+
+/* ==================================================================== *
+ * DASHBOARD V2 — greeting row, sparklines, recent activity
+ * (Premium pass, module 3)
+ * ==================================================================== */
+@layer payload {
+  /* ---- welcome: greeting + date on one line ---- */
+  .pt-dash__welcome-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .pt-dash__welcome-date {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--theme-elevation-500);
+    font-variant-numeric: tabular-nums;
+  }
+  .pt-dash__welcome-user {
+    color: var(--theme-elevation-500);
+  }
+
+  /* ---- sparkline strip at the bottom of stat cards ---- */
+  .pt-dash__spark {
+    display: block;
+    width: 100%;
+    height: 34px;
+    margin-top: -2px;
+    color: var(--pt-accent);
+  }
+
+  /* ---- recent activity feed ---- */
+  .pt-dash__recent {
+    display: flex;
+    flex-direction: column;
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    padding: 20px 22px;
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.04),
+      0 4px 14px -8px rgb(0 0 0 / 0.08);
+  }
+  html[data-theme='dark'] .pt-dash__recent {
+    background: var(--theme-elevation-50);
+    border-color: var(--theme-elevation-150);
+  }
+
+  .pt-dash__recent-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .pt-dash__recent-title {
+    margin: 0;
+    font-size: 1.02rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    color: var(--theme-text);
+  }
+  .pt-dash__recent-caption {
+    font-size: 0.78rem;
+    color: var(--theme-elevation-500);
+  }
+  .pt-dash__recent-empty {
+    margin: 4px 0 0;
+    font-size: 0.88rem;
+    color: var(--theme-elevation-500);
+  }
+
+  .pt-dash__recent-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .pt-dash__recent-item + .pt-dash__recent-item {
+    border-top: 1px solid var(--theme-elevation-100);
+  }
+  .pt-dash__recent-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 8px;
+    border-radius: var(--pt-radius-item);
+    color: inherit;
+    text-decoration: none;
+    transition: background-color 0.12s ease;
+  }
+  .pt-dash__recent-link:hover,
+  .pt-dash__recent-link:focus-visible {
+    background: color-mix(in srgb, var(--pt-accent) 7%, transparent);
+    text-decoration: none;
+  }
+  .pt-dash__recent-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--pt-radius-item);
+    background: var(--pt-accent-subtle);
+    color: var(--pt-accent);
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+  .pt-dash__recent-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .pt-dash__recent-doc {
+    font-size: 0.88rem;
+    font-weight: 550;
+    color: var(--theme-elevation-800);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pt-dash__recent-meta {
+    font-size: 0.74rem;
+    color: var(--theme-elevation-500);
+  }
+  .pt-dash__recent-time {
+    flex-shrink: 0;
+    font-size: 0.76rem;
+    color: var(--theme-elevation-500);
+    font-variant-numeric: tabular-nums;
+  }
+  .pt-dash__recent-chevron {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    color: var(--theme-elevation-400);
+    opacity: 0;
+    transform: translateX(-3px);
+    transition:
+      opacity 0.12s ease,
+      transform 0.12s ease;
+  }
+  .pt-dash__recent-link:hover .pt-dash__recent-chevron,
+  .pt-dash__recent-link:focus-visible .pt-dash__recent-chevron {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ==================================================================== *
+ * COMMAND PALETTE — ⌘K (Premium pass, module 4)
+ *
+ * Rendered by the CommandPalette component into a body portal, so these
+ * rules are UNLAYERED-safe inside @layer (nothing else targets them).
+ * ==================================================================== */
+@layer payload {
+  .pt-palette {
+    position: fixed;
+    inset: 0;
+    z-index: 250;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 14vh 16px 16px;
+  }
+  .pt-palette__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgb(5 6 10 / 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .pt-palette__panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: min(620px, 100%);
+    max-height: min(460px, 68vh);
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-elevation-150);
+    border-radius: var(--pt-radius-card);
+    box-shadow:
+      0 24px 80px -16px rgb(0 0 0 / 0.45),
+      0 4px 16px rgb(0 0 0 / 0.12);
+    overflow: hidden;
+  }
+  html[data-theme='dark'] .pt-palette__panel {
+    background: var(--theme-elevation-50);
+  }
+
+  .pt-palette__search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--theme-elevation-100);
+  }
+  .pt-palette__search-icon {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    color: var(--theme-elevation-500);
+  }
+  .pt-palette__input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: 0;
+    outline: none;
+    box-shadow: none;
+    color: var(--theme-text);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+  }
+  .pt-palette__input::placeholder {
+    color: var(--theme-elevation-400);
+  }
+  .pt-palette__esc {
+    flex-shrink: 0;
+    padding: 3px 7px;
+    background: var(--theme-elevation-50);
+    border: 1px solid var(--theme-elevation-150);
+    border-radius: var(--pt-radius-item);
+    color: var(--theme-elevation-500);
+    font-family: var(--font-body);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+  }
+  html[data-theme='dark'] .pt-palette__esc {
+    background: var(--theme-elevation-100);
+  }
+
+  .pt-palette__list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px 8px 10px;
+    overscroll-behavior: contain;
+  }
+  .pt-palette__group-label {
+    padding: 10px 10px 4px;
+    color: var(--theme-elevation-500);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .pt-palette__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 10px;
+    background: transparent;
+    border: 0;
+    border-radius: var(--pt-radius-item);
+    color: var(--theme-elevation-800);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: start;
+    cursor: pointer;
+  }
+  .pt-palette__item--active {
+    background: color-mix(in srgb, var(--pt-accent) 10%, transparent);
+    color: var(--theme-text);
+  }
+  .pt-palette__item-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: var(--pt-radius-item);
+    background: var(--theme-elevation-100);
+    color: var(--theme-elevation-600);
+    transition:
+      background-color 0.1s ease,
+      color 0.1s ease;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+  .pt-palette__item--active .pt-palette__item-icon {
+    background: var(--pt-accent-subtle);
+    color: var(--pt-accent);
+  }
+  .pt-palette__item-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pt-palette__item-hint {
+    flex-shrink: 0;
+    color: var(--theme-elevation-500);
+    font-size: 0.72rem;
+    font-weight: 500;
+  }
+  .pt-palette__status {
+    padding: 20px 12px;
+    color: var(--theme-elevation-500);
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  .pt-palette__footer {
+    display: flex;
+    gap: 16px;
+    padding: 9px 16px;
+    border-top: 1px solid var(--theme-elevation-100);
+    background: var(--theme-elevation-50);
+    color: var(--theme-elevation-500);
+    font-size: 0.72rem;
+  }
+  html[data-theme='dark'] .pt-palette__footer {
+    background: var(--theme-elevation-100);
+  }
+  .pt-palette__footer span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .pt-palette__footer kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 16px;
+    padding: 1px 4px;
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-elevation-150);
+    border-radius: 4px;
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 600;
+  }
+  html[data-theme='dark'] .pt-palette__footer kbd {
+    background: var(--theme-elevation-50);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .pt-palette__panel {
+      animation: pt-palette-in 0.16s ease both;
+    }
+    .pt-palette__backdrop {
+      animation: pt-fade-in 0.16s ease both;
+    }
+  }
+}
+
+@keyframes pt-palette-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+}
+@keyframes pt-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ==================================================================== *
+ * LIST — empty state + generic value badges (Premium pass, module 5)
+ * ==================================================================== */
+@layer payload {
+  /* ---- empty state: dashed card, icon, clear hierarchy ---- */
+  .no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 56px 24px 48px;
+    background: var(--theme-elevation-0);
+    border: 1px dashed var(--theme-elevation-200);
+    border-radius: var(--pt-radius-card);
+    text-align: center;
+  }
+  html[data-theme='dark'] .no-results {
+    background: var(--theme-elevation-50);
+  }
+  /* lucide 'inbox' drawn via mask so it recolors with the accent */
+  .no-results::before {
+    content: '';
+    width: 42px;
+    height: 42px;
+    margin-bottom: 8px;
+    background: var(--pt-accent);
+    opacity: 0.85;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='22 12 16 12 14 15 10 15 8 12 2 12'/%3E%3Cpath d='M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z'/%3E%3C/svg%3E") no-repeat center / contain;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='22 12 16 12 14 15 10 15 8 12 2 12'/%3E%3Cpath d='M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z'/%3E%3C/svg%3E") no-repeat center / contain;
+  }
+  .no-results h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+  .no-results p {
+    margin: 0;
+    max-width: 40ch;
+    color: var(--theme-elevation-500);
+    font-size: 0.9rem;
+  }
+  .no-results__actions {
+    margin-top: 14px;
+  }
+
+  /* ---- generic select-value badges ----
+   * Payload tags every select cell value with `selected--<value>`; the base
+   * pill is neutral, and common workflow words pick up semantic colors.
+   * (The earlier .cell-status rules remain and agree with these.) */
+  .table td [class*='selected--'] {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 12px;
+    border-radius: var(--pt-radius-ctl);
+    background: var(--theme-elevation-100);
+    color: var(--theme-elevation-600);
+    font-size: 0.82em;
+    font-weight: 600;
+  }
+  .table td :is(.selected--published, .selected--active, .selected--approved, .selected--completed, .selected--success, .selected--paid) {
+    background: color-mix(in srgb, var(--theme-success-500) 16%, transparent);
+    color: var(--theme-success-600);
+  }
+  .table td :is(.selected--pending, .selected--in-progress, .selected--review, .selected--in-review, .selected--processing, .selected--scheduled) {
+    background: color-mix(in srgb, var(--theme-warning-500) 18%, transparent);
+    color: var(--theme-warning-600);
+  }
+  .table td :is(.selected--archived, .selected--rejected, .selected--failed, .selected--inactive, .selected--cancelled, .selected--blocked) {
+    background: color-mix(in srgb, var(--theme-error-500) 16%, transparent);
+    color: var(--theme-error-600);
+  }
+}
+
+/* ==================================================================== *
+ * MOTION + FORM POLISH (Premium pass, module 6)
+ *
+ * A soft fade-rise as each view's content mounts, a light stagger on the
+ * dashboard cards, and quieter field typography. Every animation sits
+ * behind prefers-reduced-motion.
+ * ==================================================================== */
+@layer payload {
+  @media (prefers-reduced-motion: no-preference) {
+    /* the first content block under the app header rises in on navigation */
+    .template-default__wrap > .app-header + [class] {
+      animation: pt-view-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    /* dashboard cells cascade in */
+    .pt-dash__cell {
+      animation: pt-view-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .pt-dash__cell:nth-child(2) { animation-delay: 0.03s; }
+    .pt-dash__cell:nth-child(3) { animation-delay: 0.06s; }
+    .pt-dash__cell:nth-child(4) { animation-delay: 0.09s; }
+    .pt-dash__cell:nth-child(5) { animation-delay: 0.12s; }
+    .pt-dash__cell:nth-child(6) { animation-delay: 0.15s; }
+    .pt-dash__cell:nth-child(7) { animation-delay: 0.18s; }
+    .pt-dash__cell:nth-child(8) { animation-delay: 0.21s; }
+    .pt-dash__cell:nth-child(n + 9) { animation-delay: 0.24s; }
+  }
+
+  /* ---- field typography: calm labels, quiet descriptions ---- */
+  .field-label {
+    font-size: 0.86rem;
+    font-weight: 500;
+    color: var(--theme-elevation-800);
+  }
+  .field-description {
+    color: var(--theme-elevation-500);
+    font-size: 0.8rem;
+  }
+
+  /* ---- collapsibles / array & block rows: rounded, calm borders ---- */
+  .collapsible {
+    border-radius: var(--pt-radius-card);
+    overflow: hidden;
+  }
+  .collapsible__toggle-wrap {
+    transition: background-color 0.12s ease;
+  }
+
+  /* ---- toasts: hairline border on the soft card ---- */
+  .payload-toast-container .payload-toast-item {
+    border: 1px solid var(--theme-elevation-150);
+  }
+}
+
+@keyframes pt-view-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* ==================================================================== *
+ * BUTTONS V2 — size & presence (Premium pass, revisions)
+ *
+ * Payload buttons expose --btn-padding-* / --btn-font-weight locals; we
+ * retune those instead of fighting the box model. Text buttons get a
+ * roomier hit area and a confident label; the primary picks up a soft
+ * accent shadow so it reads as THE action.
+ * ==================================================================== */
+@layer payload {
+  /* split buttons (e.g. Publish changes ▾): one continuous capsule — the
+   * main half keeps the start radius, the chevron half the end radius. */
+  .btn--withPopup {
+    border-radius: var(--pt-radius-ctl);
+  }
+  .btn--withPopup .btn {
+    border-start-start-radius: var(--pt-radius-ctl);
+    border-end-start-radius: var(--pt-radius-ctl);
+  }
+  .btn--withPopup .popup-button {
+    border-start-end-radius: var(--pt-radius-ctl);
+    border-end-end-radius: var(--pt-radius-ctl);
+  }
+}
+
+/* ==================================================================== *
+ * DOC CONTROLS + LOCALIZER — header chrome (Premium pass, revisions)
+ *
+ * The document toolbar's icon buttons (preview, live-preview, copy-locale)
+ * and the app-header locale switcher — both previously untouched.
+ * ==================================================================== */
+@layer payload {
+  /* ---- icon buttons in the doc toolbar: quiet input-look chips ---- */
+  .doc-controls__controls .btn--icon-only {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--theme-input-bg);
+    border: 1px solid var(--theme-elevation-150);
+    border-radius: var(--pt-radius-ctl);
+    color: var(--theme-elevation-600);
+    transition:
+      border-color 0.12s ease,
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+  .doc-controls__controls .btn--icon-only:hover,
+  .doc-controls__controls .btn--icon-only:focus-visible {
+    background: var(--pt-accent-subtle);
+    border-color: color-mix(in srgb, var(--pt-accent) 40%, var(--theme-elevation-150));
+    color: var(--pt-accent);
+  }
+
+  /* ---- locale switcher in the app header: restyle Payload's own
+   * .localizer-button box (styling the popup trigger too created a broken
+   * double chip) ---- */
+  .localizer-button {
+    padding: 7px 14px;
+    background: var(--theme-input-bg);
+    border: 1px solid var(--theme-elevation-150);
+    border-radius: var(--pt-radius-ctl);
+    color: var(--theme-elevation-600);
+    font-size: 0.85rem;
+    transition:
+      border-color 0.12s ease,
+      color 0.12s ease;
+  }
+  .localizer-button:hover {
+    border-color: color-mix(in srgb, var(--pt-accent) 35%, var(--theme-elevation-150));
+    color: var(--theme-elevation-800);
+  }
+  /* keep breathing room between the locale chip and the account avatar */
+  .app-header__localizer {
+    margin-inline-end: 12px;
+  }
+}
+
+/* ==================================================================== *
+ * LIST HEADER — page top redesign (Premium pass, revisions 2)
+ *
+ * Title on the left, "Create New" as a real accent button on the right
+ * (styling scoped to the header only — global button sizes stay stock),
+ * a calmer description line, and clear air before the search bar.
+ * ==================================================================== */
+@layer payload {
+  .list-header__content {
+    align-items: center;
+  }
+  .list-header__title-and-actions {
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .list-header__title {
+    letter-spacing: -0.02em;
+  }
+
+  /* header-scoped: the create pill becomes the page's one solid action */
+  .list-header__title-actions {
+    margin-bottom: 0;
+  }
+  .list-header__title-actions .btn--style-pill {
+    --bg-color: var(--pt-accent);
+    --color: var(--pt-accent-contrast);
+    --hover-bg: var(--pt-accent-hover);
+    --hover-color: var(--pt-accent-contrast);
+    --btn-padding-block-start: 5px;
+    --btn-padding-block-end: 5px;
+    --btn-padding-inline-start: 14px;
+    --btn-padding-inline-end: 14px;
+    --btn-font-weight: 600;
+  }
+
+  /* muted description tucked right under the title (Payload pads the
+   * sub-header wrapper by 15px — remove it, keep a small gap of our own) */
+  .collection-list .collection-list__sub-header {
+    padding-top: 0;
+  }
+  .collection-list .custom-view-description {
+    margin-top: 4px;
+    color: var(--theme-elevation-500);
+    font-size: 0.92rem;
+  }
+  .collection-list .list-header {
+    margin-bottom: 18px; /* clear air above the search bar, description or not */
   }
 }

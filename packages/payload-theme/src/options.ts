@@ -10,8 +10,12 @@ import { normalizeHex } from './theme'
 /** Surface/neutral palette, independent of the accent. */
 export type ThemePreset = 'minimal' | 'noir' | 'soft'
 
-/** Global corner-rounding scale. */
-export type ThemeRadius = 'lg' | 'md' | 'sm'
+/**
+ * Global corner-rounding scale. Applied to every surface: `full` gives pill
+ * buttons/inputs and soft cards (the default look), `none` squares everything
+ * off, the rest sit in between.
+ */
+export type ThemeRadius = 'full' | 'lg' | 'md' | 'none' | 'sm'
 
 /**
  * An image URL (`'/logo.svg'`), or a pair of URLs when light and dark mode
@@ -29,12 +33,19 @@ export interface NavOptions {
   icons?: Record<string, string>
 }
 
+export interface LoginOptions {
+  /** Big heading on the login brand panel. @default 'Welcome back' */
+  heading?: string
+  /** Supporting line under the heading. @default 'Sign in to manage your content.' */
+  tagline?: string
+}
+
 export interface PayloadThemeOptions {
   /** The single accent color as a hex string. Drives the whole 50–950 scale. */
   accent?: string
   /** Surface/neutral palette. @default 'soft' */
   preset?: ThemePreset
-  /** Global corner rounding. @default 'md' */
+  /** Global corner rounding. @default 'full' */
   radius?: ThemeRadius
   /**
    * Sidebar logo, rendered as `<img>` at the top of the nav. A URL
@@ -51,6 +62,8 @@ export interface PayloadThemeOptions {
   icon?: ThemeAsset
   /** Sidebar navigation options. */
   nav?: NavOptions
+  /** Copy shown on the login screen's brand panel. */
+  login?: LoginOptions
   /** Escape hatch: raw `--pt-*` token overrides applied after the computed scale. */
   cssVariables?: Record<string, string>
 }
@@ -68,17 +81,33 @@ export interface ResolvedThemeConfig {
   logo?: { dark: string; light: string }
   icon?: { dark: string; light: string }
   nav: { icons: Record<string, string> }
+  /** Unset fields fall back to the defaults at render time. */
+  login: { heading?: string; tagline?: string }
   /** lucide icon name used when an entity has no mapping. */
   fallbackIconName: string
 }
 
 const PRESETS: ThemePreset[] = ['soft', 'noir', 'minimal']
-const RADII: ThemeRadius[] = ['sm', 'md', 'lg']
+const RADII: ThemeRadius[] = ['none', 'sm', 'md', 'lg', 'full']
+
+/**
+ * Radius option → the three `--pt-radius-*` tokens the stylesheet reads.
+ * `ctl` = controls (buttons, inputs, pills, nav links), `card` = surfaces
+ * (cards, tables, popovers, modals), `item` = small inner items (menu rows,
+ * chips, paginator pages). `full`'s values match the theme's original look.
+ */
+const RADIUS_TOKENS: Record<ThemeRadius, { card: string; ctl: string; item: string }> = {
+  full: { card: '14px', ctl: '999px', item: '9px' },
+  lg: { card: '16px', ctl: '14px', item: '10px' },
+  md: { card: '12px', ctl: '10px', item: '8px' },
+  sm: { card: '8px', ctl: '6px', item: '5px' },
+  none: { card: '0px', ctl: '0px', item: '0px' },
+}
 
 const DEFAULTS = {
   accent: '#4f4ece',
   preset: 'soft' as ThemePreset,
-  radius: 'md' as ThemeRadius,
+  radius: 'full' as ThemeRadius,
   fallbackIconName: 'folder',
 }
 
@@ -129,7 +158,20 @@ export function resolveOptions(options: PayloadThemeOptions): {
   const logo = normalizeAsset(options.logo, 'logo')
   const icon = normalizeAsset(options.icon, 'icon')
 
-  let cssVariables = options.cssVariables
+  const loginHeading = options.login?.heading
+  const loginTagline = options.login?.tagline
+  assert(loginHeading === undefined || typeof loginHeading === 'string', 'login.heading must be a string.')
+  assert(loginTagline === undefined || typeof loginTagline === 'string', 'login.tagline must be a string.')
+
+  // Radius tokens first, then logoHeight, then the user's raw overrides —
+  // later keys win, so cssVariables stays the ultimate escape hatch.
+  const radiusTokens = RADIUS_TOKENS[radius]
+  let cssVariables: Record<string, string> = {
+    '--pt-radius-card': radiusTokens.card,
+    '--pt-radius-ctl': radiusTokens.ctl,
+    '--pt-radius-item': radiusTokens.item,
+    ...options.cssVariables,
+  }
   if (options.logoHeight !== undefined) {
     const height = options.logoHeight
     assert(
@@ -151,6 +193,7 @@ export function resolveOptions(options: PayloadThemeOptions): {
       logo,
       icon,
       nav: { icons },
+      login: { heading: loginHeading, tagline: loginTagline },
       fallbackIconName: DEFAULTS.fallbackIconName,
     },
   }
