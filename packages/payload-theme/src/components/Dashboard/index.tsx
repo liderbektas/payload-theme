@@ -3,31 +3,32 @@ import type { CollectionSlug, GlobalSlug, StaticLabel } from 'payload'
 
 import { getTranslation } from '@payloadcms/translations'
 import { Gutter } from '@payloadcms/ui'
+import { RenderServerComponent } from '@payloadcms/ui/elements/RenderServerComponent'
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic'
 import Link from 'next/link'
 import { formatAdminURL } from 'payload/shared'
 import React from 'react'
 
-import type { ResolvedThemeConfig } from '../../options'
+import type { ResolvedDashboardWidget, ResolvedThemeConfig } from '../../options'
 
 import { resolveIconName } from '../navIcons'
-import { CountUp, Greeting, TimeAgo, TodayDate } from './client'
+import { CountUp } from './client'
 
 /**
  * Themed dashboard — replaces Payload's default dashboard view.
  *
  * A SERVER component: Payload passes custom dashboard views the full server
- * props (a live `payload` instance and the current `user`), so doc counts,
- * 30-day sparkline buckets and the recent-activity feed all come straight from
- * the local API — access-controlled, no client fetch, no loading flash. Only
- * the viewer-clock leaves (greeting, count-up, relative times) are client
- * components. Icons come from the plugin's `nav.icons` map via `admin.custom`.
+ * props (a live `payload` instance and the current `user`), so doc counts and
+ * 30-day sparkline buckets come straight from the local API —
+ * access-controlled, no client fetch, no loading flash. Only the animated
+ * count-up is a client component. Icons come from the plugin's `nav.icons`
+ * map via `admin.custom`. Custom widgets from the `dashboard.widgets` option
+ * render below all built-in content.
  */
 
 const SPARK_DAYS = 30
 /** Cap per-collection createdAt scans; sparklines sample the most recent docs. */
 const SPARK_DOC_LIMIT = 400
-const RECENT_LIMIT = 8
 
 type CollectionCardData = {
   count: null | number
@@ -47,40 +48,14 @@ type GlobalCardData = {
   slug: string
 }
 
-type RecentDocData = {
-  collectionLabel: string
-  href: string
-  iconName: string
-  id: number | string
-  title: string
-  updatedAt: string
-}
-
-/** One cell of the responsive widget grid. `span: 'full'` takes the whole row. */
-type DashboardWidget = {
+/** One cell of the responsive card grid. `span: 'full'` takes the whole row. */
+type DashboardCell = {
   Component: React.ComponentType
   key: string
   span?: 'full'
 }
 
-// ---- widgets ---------------------------------------------------------------
-
-const WelcomeWidget: React.FC<{ email?: string; name?: string }> = ({ email, name }) => (
-  <section className="pt-dash__welcome">
-    <div className="pt-dash__welcome-row">
-      <h1 className="pt-dash__welcome-title">
-        <Greeting name={name} />
-      </h1>
-      <span className="pt-dash__welcome-date">
-        <TodayDate />
-      </span>
-    </div>
-    <p className="pt-dash__welcome-hint">
-      Here is an overview of your content.
-      {email ? <span className="pt-dash__welcome-user"> Signed in as {email}.</span> : null}
-    </p>
-  </section>
-)
+// ---- built-in cells ---------------------------------------------------------
 
 /** Tiny area sparkline. Pure server-rendered SVG — no client JS, recolors via
  * currentColor so it follows the accent token. */
@@ -161,38 +136,6 @@ const GlobalCard: React.FC<{ card: GlobalCardData }> = ({ card }) => {
   )
 }
 
-const RecentActivityWidget: React.FC<{ docs: RecentDocData[] }> = ({ docs }) => (
-  <section className="pt-dash__recent">
-    <div className="pt-dash__recent-head">
-      <h2 className="pt-dash__recent-title">Recent activity</h2>
-      <span className="pt-dash__recent-caption">Latest edits across your collections</span>
-    </div>
-    {docs.length === 0 ? (
-      <p className="pt-dash__recent-empty">Nothing here yet — your latest edits will show up in this feed.</p>
-    ) : (
-      <ul className="pt-dash__recent-list">
-        {docs.map((doc) => (
-          <li className="pt-dash__recent-item" key={`${doc.collectionLabel}-${doc.id}`}>
-            <Link className="pt-dash__recent-link" href={doc.href} prefetch={false}>
-              <span aria-hidden="true" className="pt-dash__recent-icon">
-                <DynamicIcon aria-hidden="true" name={doc.iconName as IconName} strokeWidth={1.9} />
-              </span>
-              <span className="pt-dash__recent-text">
-                <span className="pt-dash__recent-doc">{doc.title}</span>
-                <span className="pt-dash__recent-meta">{doc.collectionLabel}</span>
-              </span>
-              <span className="pt-dash__recent-time">
-                <TimeAgo iso={doc.updatedAt} />
-              </span>
-              <DynamicIcon aria-hidden="true" className="pt-dash__recent-chevron" name="chevron-right" strokeWidth={2} />
-            </Link>
-          </li>
-        ))}
-      </ul>
-    )}
-  </section>
-)
-
 // ---- data helpers ----------------------------------------------------------
 
 /** Midnight (server time) SPARK_DAYS-1 days ago — the left edge of the sparkline. */
@@ -221,6 +164,7 @@ function bucketByDay(timestamps: string[], since: Date): number[] {
 export async function Dashboard(props: DashboardViewServerProps) {
   const {
     initPageResult: {
+      locale,
       permissions,
       req: { i18n, payload, user },
       visibleEntities,
@@ -241,7 +185,6 @@ export async function Dashboard(props: DashboardViewServerProps) {
 
   // ---- collection cards (same visibility + read filtering as the Nav) ------
   const collectionCards: CollectionCardData[] = []
-  const recentDocs: RecentDocData[] = []
 
   for (const collection of collections) {
     const slug = collection.slug as CollectionSlug
@@ -259,7 +202,7 @@ export async function Dashboard(props: DashboardViewServerProps) {
       // keep the em-dash placeholder — a failed count must never break the page
     }
 
-    // ---- sparkline + recent feed (only for timestamped collections) --------
+    // ---- sparkline (only for timestamped collections) -----------------------
     let spark: null | number[] = null
     if (collection.timestamps !== false) {
       try {
@@ -281,36 +224,6 @@ export async function Dashboard(props: DashboardViewServerProps) {
       } catch {
         // no sparkline is fine — the card still renders
       }
-
-      try {
-        const titleField =
-          typeof collection.admin?.useAsTitle === 'string' && collection.admin.useAsTitle !== 'id'
-            ? collection.admin.useAsTitle
-            : null
-        const recent = await payload.find({
-          collection: slug,
-          depth: 0,
-          limit: 4,
-          overrideAccess: false,
-          select: { updatedAt: true, ...(titleField ? { [titleField]: true } : {}) },
-          sort: '-updatedAt',
-          user,
-        })
-        for (const doc of recent.docs) {
-          const raw = titleField ? (doc as Record<string, unknown>)[titleField] : null
-          const title = typeof raw === 'string' && raw.trim() ? raw : `${label} #${doc.id}`
-          recentDocs.push({
-            collectionLabel: label,
-            href: formatAdminURL({ adminRoute, path: `/collections/${slug}/${doc.id}` }),
-            iconName,
-            id: doc.id as number | string,
-            title,
-            updatedAt: String((doc as { updatedAt?: unknown }).updatedAt ?? ''),
-          })
-        }
-      } catch {
-        // a collection that fails to list simply stays out of the feed
-      }
     }
 
     collectionCards.push({
@@ -325,9 +238,6 @@ export async function Dashboard(props: DashboardViewServerProps) {
       spark,
     })
   }
-
-  recentDocs.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
-  const recent = recentDocs.slice(0, RECENT_LIMIT)
 
   // ---- global cards ---------------------------------------------------------
   const globalCards: GlobalCardData[] = []
@@ -344,27 +254,23 @@ export async function Dashboard(props: DashboardViewServerProps) {
     })
   }
 
-  // ---- widget slots ---------------------------------------------------------
-  const rawName = (user as { name?: unknown } | null)?.name
-  const firstName = typeof rawName === 'string' && rawName.trim() ? rawName.trim().split(/\s+/)[0] : undefined
-
-  const widgets: DashboardWidget[] = [
-    {
-      Component: () => <WelcomeWidget email={user?.email ?? undefined} name={firstName} />,
-      key: 'welcome',
-      span: 'full',
-    },
+  // ---- built-in cells ---------------------------------------------------------
+  const cells: DashboardCell[] = [
     ...collectionCards.map((card) => ({ Component: () => <CollectionCard card={card} />, key: `collection-${card.slug}` })),
     ...globalCards.map((card) => ({ Component: () => <GlobalCard card={card} />, key: `global-${card.slug}` })),
-    { Component: () => <RecentActivityWidget docs={recent} />, key: 'recent', span: 'full' },
   ]
+
+  // ---- custom widgets (plugin option `dashboard.widgets`) -------------------
+  // Rendered below everything built-in, resolved through the import map like
+  // any Payload custom component. No widgets configured → nothing renders.
+  const customWidgets: ResolvedDashboardWidget[] = theme?.dashboard?.widgets ?? []
 
   // Keep Payload's `gutter dashboard` classes so the layout rules in the
   // stylesheet target this view exactly like the default dashboard.
   return (
     <Gutter className="dashboard pt-dash">
       <div className="pt-dash__grid">
-        {widgets.map(({ Component, key, span }) => (
+        {cells.map(({ Component, key, span }) => (
           <div
             className={['pt-dash__cell', span === 'full' && 'pt-dash__cell--full'].filter(Boolean).join(' ')}
             key={key}
@@ -373,6 +279,19 @@ export async function Dashboard(props: DashboardViewServerProps) {
           </div>
         ))}
       </div>
+      {customWidgets.length > 0 ? (
+        <div className="pt-dash__widgets">
+          {customWidgets.map((widget, index) => (
+            <div className={`pt-dash__widget pt-dash__widget--${widget.width}`} key={`pt-widget-${index}`}>
+              {RenderServerComponent({
+                Component: widget.component,
+                importMap: payload.importMap,
+                serverProps: { i18n, locale, payload, user },
+              })}
+            </div>
+          ))}
+        </div>
+      ) : null}
     </Gutter>
   )
 }

@@ -26,7 +26,9 @@ import { buildTheme, themeToCss } from './theme'
  * The plugin factory. Returns a Payload config transform that:
  * 1. validates options and computes the accent scale (once, at init),
  * 2. stashes the serializable theme config on `admin.custom.payloadTheme`,
- * 3. registers the custom Nav, Dashboard and the accent-injecting provider.
+ * 3. registers dashboard widgets in `admin.dependencies` so the import-map
+ *    generator picks them up,
+ * 4. registers the custom Nav, Dashboard and the accent-injecting provider.
  */
 export const payloadTheme =
   (options: PayloadThemeOptions = {}) =>
@@ -40,6 +42,25 @@ export const payloadTheme =
     const config: Config = { ...incoming }
     config.admin = config.admin ?? {}
     config.admin.custom = { ...config.admin.custom, payloadTheme: resolved }
+
+    // Widgets are referenced by import-map path (like every Payload component).
+    // `admin.custom` isn't crawled by `generate:importmap`, so declare each one
+    // in `admin.dependencies` — the generator's explicit escape hatch.
+    if (resolved.dashboard.widgets.length > 0) {
+      config.admin.dependencies = { ...config.admin.dependencies }
+      resolved.dashboard.widgets.forEach((widget, index) => {
+        // resolveOptions guarantees a string or `{ path }` object (never `false`).
+        const component = widget.component as string | { exportName?: string; path: string }
+        const path =
+          typeof component === 'string'
+            ? component
+            : `${component.path}${component.exportName ? `#${component.exportName}` : ''}`
+        config.admin!.dependencies![`payload-theme-widget-${index}`] = {
+          type: 'component',
+          path,
+        }
+      })
+    }
 
     const components = { ...config.admin.components }
     components.Nav = 'payload-theme/client#Nav'
@@ -62,4 +83,13 @@ export const payloadTheme =
   }
 
 export default payloadTheme
-export type { NavOptions, PayloadThemeOptions, ThemePreset, ThemeRadius } from './options'
+export type {
+  DashboardOptions,
+  DashboardWidget,
+  DashboardWidgetServerProps,
+  DashboardWidgetWidth,
+  NavOptions,
+  PayloadThemeOptions,
+  ThemePreset,
+  ThemeRadius,
+} from './options'

@@ -5,6 +5,9 @@
  * via `admin.custom`.
  */
 
+import type { I18n } from '@payloadcms/translations'
+import type { Locale, Payload, PayloadComponent, TypedUser } from 'payload'
+
 import { normalizeHex } from './theme'
 
 /** Surface/neutral palette, independent of the accent. */
@@ -31,6 +34,45 @@ export interface NavOptions {
    * folder icon.
    */
   icons?: Record<string, string>
+}
+
+/** Grid width of one dashboard widget. @default 'half' */
+export type DashboardWidgetWidth = 'full' | 'half' | 'third'
+
+/**
+ * One dashboard widget: any React component of your own, referenced by its
+ * import-map path — the same convention Payload uses for every custom
+ * component (`'/components/MyWidget#MyWidget'` or
+ * `{ path: '/components/MyWidget', exportName: 'MyWidget' }`). Server and
+ * client components both work; server components receive `{ payload, user,
+ * i18n, locale }` as props. Wrap in an object with `width` to control how
+ * much of the row the widget spans.
+ */
+export type DashboardWidget =
+  | PayloadComponent
+  | {
+      component: PayloadComponent
+      width?: DashboardWidgetWidth
+    }
+
+/**
+ * Props the Dashboard passes to every *server* widget component (client
+ * widgets receive no props — they can use Payload's hooks instead).
+ */
+export interface DashboardWidgetServerProps {
+  i18n: I18n
+  locale?: Locale
+  payload: Payload
+  user: null | TypedUser
+}
+
+export interface DashboardOptions {
+  /**
+   * Widgets rendered below the built-in dashboard content (collections,
+   * globals, recent activity). Empty or omitted → nothing extra renders and
+   * the dashboard looks exactly as before.
+   */
+  widgets?: DashboardWidget[]
 }
 
 export interface LoginOptions {
@@ -62,6 +104,8 @@ export interface PayloadThemeOptions {
   icon?: ThemeAsset
   /** Sidebar navigation options. */
   nav?: NavOptions
+  /** Dashboard widget area (rendered below the built-in dashboard content). */
+  dashboard?: DashboardOptions
   /** Copy shown on the login screen's brand panel. */
   login?: LoginOptions
   /** Escape hatch: raw `--pt-*` token overrides applied after the computed scale. */
@@ -72,11 +116,19 @@ export interface PayloadThemeOptions {
  * The serializable slice stored on `config.admin.custom.payloadTheme` and read
  * by the client Nav / ThemeProvider and the server Dashboard.
  */
+/** A widget normalized to object form, with the width default applied. */
+export interface ResolvedDashboardWidget {
+  component: PayloadComponent
+  width: DashboardWidgetWidth
+}
+
 export interface ResolvedThemeConfig {
   /** Precomputed `--pt-*` CSS custom properties (light + dark), injected at runtime. */
   css: string
   preset: ThemePreset
   radius: ThemeRadius
+  /** Normalized widget list; empty when the option is omitted. */
+  dashboard: { widgets: ResolvedDashboardWidget[] }
   /** Normalized to a pair: a plain-string option is used for both schemes. */
   logo?: { dark: string; light: string }
   icon?: { dark: string; light: string }
@@ -113,6 +165,49 @@ const DEFAULTS = {
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(`[payload-theme] ${message}`)
+}
+
+const WIDGET_WIDTHS: DashboardWidgetWidth[] = ['full', 'half', 'third']
+const DEFAULT_WIDGET_WIDTH: DashboardWidgetWidth = 'half'
+
+/** True for a valid `PayloadComponent`: an import-map path string or a `{ path }` object. */
+function isPayloadComponent(value: unknown): value is PayloadComponent {
+  if (typeof value === 'string') return value.trim() !== ''
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as { path?: unknown }).path === 'string' &&
+    (value as { path: string }).path.trim() !== ''
+  )
+}
+
+/** Validate `dashboard.widgets` and normalize each entry to `{ component, width }`. */
+function normalizeWidgets(widgets: DashboardWidget[] | undefined): ResolvedDashboardWidget[] {
+  if (widgets === undefined) return []
+  assert(Array.isArray(widgets), 'dashboard.widgets must be an array of widget definitions.')
+
+  return widgets.map((widget, index) => {
+    const describe = `dashboard.widgets[${index}]`
+
+    if (isPayloadComponent(widget)) {
+      return { component: widget, width: DEFAULT_WIDGET_WIDTH }
+    }
+
+    assert(
+      widget && typeof widget === 'object' && 'component' in widget,
+      `${describe} must be a component path string (e.g. '/components/MyWidget#MyWidget'), a { path, exportName } object, or a { component, width } object.`,
+    )
+    assert(
+      isPayloadComponent(widget.component),
+      `${describe}.component must be a component path string or a { path, exportName } object.`,
+    )
+    const width = widget.width ?? DEFAULT_WIDGET_WIDTH
+    assert(
+      WIDGET_WIDTHS.includes(width),
+      `${describe}.width must be one of ${WIDGET_WIDTHS.join(', ')}, got '${String(widget.width)}'.`,
+    )
+    return { component: widget.component, width }
+  })
 }
 
 /** Validate a logo/icon option and normalize it to a `{ light, dark }` pair. */
@@ -157,6 +252,7 @@ export function resolveOptions(options: PayloadThemeOptions): {
 
   const logo = normalizeAsset(options.logo, 'logo')
   const icon = normalizeAsset(options.icon, 'icon')
+  const widgets = normalizeWidgets(options.dashboard?.widgets)
 
   const loginHeading = options.login?.heading
   const loginTagline = options.login?.tagline
@@ -190,6 +286,7 @@ export function resolveOptions(options: PayloadThemeOptions): {
       css: '', // filled by the plugin after computing the scale
       preset,
       radius,
+      dashboard: { widgets },
       logo,
       icon,
       nav: { icons },

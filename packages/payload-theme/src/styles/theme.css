@@ -486,7 +486,8 @@
     border-radius: 5px;
   }
 
-  /* status pills, coloured by value */
+  /* status pills — one neutral chip for every value; no semantic coloring,
+   * consistent with the rest of the theme's badges */
   .cell-status .selected--draft,
   .cell-status .selected--published,
   .cell-status .selected--archived {
@@ -494,20 +495,10 @@
     align-items: center;
     padding: 3px 12px;
     border-radius: var(--pt-radius-ctl);
-    font-size: 0.82em;
-    font-weight: 600;
-  }
-  .cell-status .selected--draft {
     background: var(--theme-elevation-100);
     color: var(--theme-elevation-600);
-  }
-  .cell-status .selected--published {
-    background: color-mix(in srgb, var(--theme-success-500) 16%, transparent);
-    color: var(--theme-success-600);
-  }
-  .cell-status .selected--archived {
-    background: color-mix(in srgb, var(--theme-error-500) 16%, transparent);
-    color: var(--theme-error-600);
+    font-size: 0.82em;
+    font-weight: 600;
   }
 
   /* boolean cell as a neutral pill */
@@ -603,12 +594,21 @@
     border-right: 0;
   }
 
+  /* A roomier sidebar than Payload's 275px default. Scoped to >768px so the
+   * mobile drawer keeps Payload's full-width (100vw) override. The layout
+   * grid reads the same variable, so the content well adjusts by itself. */
+  @media (min-width: 769px) {
+    :root {
+      --nav-width: 304px;
+    }
+  }
+
   /* ---- logo (Payload's own wordmark until a custom logo is provided) ---- */
   .pt-nav__logo {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    padding: 22px 16px 26px; /* air below the mark; snug to the top */
+    padding: 22px 16px 26px; /* snug to the top; the real logo→search gap is set in the search-trigger section below */
     text-decoration: none;
   }
   .pt-nav__logo:hover,
@@ -655,7 +655,7 @@
     align-items: center;
     gap: 10px;
     width: 100%;
-    padding: 9px 14px;
+    padding: 11px 14px;
     border-radius: var(--pt-radius-ctl); /* full pill */
     color: var(--theme-elevation-600); /* muted inactive; icon inherits */
     font-size: 13px;
@@ -692,9 +692,215 @@
     white-space: nowrap;
   }
 
-  /* ---- bottom controls (logout) ---- */
+  /* ---- bottom user block (shadcn sidebar footer, faithfully) --------------
+   * One full-width GHOST trigger (no border, no card chrome — it's a sidebar
+   * item, not a form control): gradient initials avatar + name/email +
+   * up/down chevron. Hover/open = quiet neutral tint, exactly like shadcn's
+   * sidebar-accent. The popup above it follows shadcn's dropdown-menu
+   * anatomy: soft border, shadow-md, 4px padding, 14px rows, full-bleed
+   * separators. */
+  /* Flush with the nav links: the wrap already provides the column inset,
+   * and Payload's .nav__wrap is align-items:flex-start, so the controls row
+   * must claim the full column width itself. */
   .pt-nav__controls {
-    padding-inline: 14px;
+    width: 100%;
+    padding-inline: 0;
+    padding-bottom: 4px;
+  }
+  .pt-nav__user {
+    position: relative;
+    width: 100%;
+  }
+  .pt-nav__user-trigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    background: transparent;
+    border: 0;
+    border-radius: var(--pt-radius-item);
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.12s ease;
+  }
+  .pt-nav__user-trigger:hover,
+  .pt-nav__user-trigger:focus-visible,
+  .pt-nav__user-trigger[aria-expanded='true'] {
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+  }
+  .pt-nav__user-trigger:focus-visible {
+    outline: 2px solid var(--pt-accent);
+    outline-offset: -2px;
+  }
+  /* Circle avatar in the accent — the same color as the active nav pill.
+   * Shared by the trigger and the menu header. */
+  .pt-nav__user-avatar {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--pt-accent);
+    color: var(--pt-accent-contrast);
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .pt-nav__user-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    line-height: 1.2;
+  }
+  .pt-nav__user-name {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--theme-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pt-nav__user-email {
+    font-size: 0.9rem;
+    color: var(--theme-elevation-500);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pt-nav__user-chevron {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    color: var(--theme-elevation-500);
+  }
+
+  /* ---- the popup menu (shadcn dropdown-menu), opening upward ---- */
+  .pt-nav__user-menu {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 30;
+    padding: 4px;
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-elevation-100);
+    border-radius: 12px;
+    box-shadow:
+      0 4px 6px -1px rgb(0 0 0 / 0.08),
+      0 2px 4px -2px rgb(0 0 0 / 0.08);
+  }
+  html[data-theme='dark'] .pt-nav__user-menu {
+    background: var(--theme-elevation-50);
+    border-color: var(--theme-elevation-150);
+    box-shadow:
+      0 4px 6px -1px rgb(0 0 0 / 0.4),
+      0 2px 4px -2px rgb(0 0 0 / 0.4);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .pt-nav__user-menu {
+      animation: pt-user-menu-in 0.13s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+  }
+  @keyframes pt-user-menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(3px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .pt-nav__user-menu-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+  }
+  /* full-bleed hairline between menu groups (mirrors the shadcn menu) */
+  .pt-nav__user-menu-sep {
+    height: 1px;
+    margin: 4px -4px;
+    background: var(--theme-elevation-100);
+  }
+  .pt-nav__user-menu-label {
+    padding: 6px 8px 2px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--theme-elevation-500);
+  }
+  .pt-nav__user-menu-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border: 0;
+    background: none;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-weight: 450;
+    color: var(--theme-text);
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color 0.1s ease,
+      color 0.1s ease;
+
+    svg {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      color: var(--theme-elevation-500);
+    }
+  }
+  .pt-nav__user-menu-item:hover,
+  .pt-nav__user-menu-item:focus-visible {
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+    color: var(--theme-text);
+    text-decoration: none;
+  }
+  .pt-nav__user-menu-item:focus-visible {
+    outline: none;
+  }
+  /* active locale: checked, not clickable */
+  .pt-nav__user-menu-item:disabled {
+    cursor: default;
+    color: var(--theme-text);
+  }
+  .pt-nav__user-menu-item:disabled:hover {
+    background: none;
+  }
+  .pt-nav__user-menu-check {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+
+    svg {
+      width: 14px;
+      height: 14px;
+      color: var(--pt-accent);
+    }
+  }
+  .pt-nav__user-menu-item--logout:hover,
+  .pt-nav__user-menu-item--logout:focus-visible {
+    background: color-mix(in srgb, var(--theme-error-500) 12%, transparent);
+    color: var(--theme-error-600);
+
+    svg {
+      color: var(--theme-error-600);
+    }
   }
 }
 
@@ -740,9 +946,16 @@
     box-shadow: none;
   }
 
-  /* 4) Account menu pinned to the far right of the header (with the
-   *    breadcrumb gone, it would otherwise sit on the left). */
-  .app-header__account {
+  /* 4) The header carries no content of its own: the account button and the
+   *    content-locale switcher both live in the sidebar's user menu
+   *    (.pt-nav__user). Only the mobile hamburger (and any project-specific
+   *    custom actions) remain. */
+  .app-header__account,
+  .app-header__localizer,
+  .app-header__localizer-spacing {
+    display: none;
+  }
+  .app-header__actions-wrapper {
     margin-left: auto;
   }
 
@@ -803,33 +1016,6 @@
   }
   .pt-dash__cell--full {
     grid-column: 1 / -1;
-  }
-
-  /* -- welcome (flat, no card: reads as the page heading) ------------------ */
-  .pt-dash__welcome {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding-block: 4px 10px;
-  }
-  .pt-dash__welcome-title {
-    margin: 0;
-    font-size: 2.5rem;
-    font-weight: 600;
-    letter-spacing: -0.015em;
-    line-height: 1.2;
-    color: var(--theme-text);
-  }
-  .pt-dash__welcome-user {
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: var(--theme-elevation-600);
-  }
-  .pt-dash__welcome-hint {
-    margin: 0;
-    font-size: 1rem;
-    color: var(--theme-elevation-500);
   }
 
   /* -- entity cards (shadcn stat-card anatomy) ------------------------------
@@ -968,6 +1154,44 @@
   .pt-dash__card-create:focus-visible {
     outline: 2px solid var(--pt-accent);
     outline-offset: 2px;
+  }
+
+  /* -- custom widget area (plugin option `dashboard.widgets`) ---------------
+   * A 12-column grid below the built-in dashboard content. Each widget cell
+   * is a plain container (no card chrome forced on it) so a widget can be a
+   * card, a table, a chart — whatever the developer renders. Width comes
+   * from the config: full = 12, half = 6, third = 4 columns; everything
+   * stacks on narrow viewports. Empty list → the block isn't rendered at
+   * all, so a widget-less dashboard is byte-identical to before. */
+  .pt-dash__widgets {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .pt-dash__widget {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    grid-column: span 6;
+  }
+  .pt-dash__widget--full {
+    grid-column: 1 / -1;
+  }
+  .pt-dash__widget--third {
+    grid-column: span 4;
+  }
+  @media (max-width: 1024px) {
+    .pt-dash__widget,
+    .pt-dash__widget--third {
+      grid-column: span 6;
+    }
+  }
+  @media (max-width: 768px) {
+    .pt-dash__widget,
+    .pt-dash__widget--third {
+      grid-column: 1 / -1;
+    }
   }
 }
 
@@ -1110,24 +1334,6 @@
     color: var(--pt-accent);
   }
 
-  /* ---- nav logout: bare icon becomes a hoverable chip. */
-  .pt-nav__controls .nav__log-out {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: var(--pt-radius-card);
-    color: var(--theme-elevation-600);
-    transition:
-      background-color 0.12s ease,
-      color 0.12s ease;
-  }
-  .pt-nav__controls .nav__log-out:hover,
-  .pt-nav__controls .nav__log-out:focus-visible {
-    background: color-mix(in srgb, var(--pt-accent) 12%, transparent);
-    color: var(--theme-elevation-800);
-  }
 }
 
 /* ==================================================================== *
@@ -1850,9 +2056,10 @@
  * A quiet input-look pill under the logo that opens the ⌘K palette.
  * ==================================================================== */
 @layer payload {
-  /* air between the logo and the search pill */
+  /* air between the logo and the search pill — THE knob for this gap
+   * (overrides the shorthand in the NAV section above) */
   .pt-nav__logo {
-    padding-block-end: 30px;
+    padding-block-end: 40px;
   }
 
   .pt-nav__search {
@@ -1902,28 +2109,10 @@
 }
 
 /* ==================================================================== *
- * DASHBOARD V2 — greeting row, sparklines, recent activity
+ * DASHBOARD V2 — sparklines
  * (Premium pass, module 3)
  * ==================================================================== */
 @layer payload {
-  /* ---- welcome: greeting + date on one line ---- */
-  .pt-dash__welcome-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .pt-dash__welcome-date {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--theme-elevation-500);
-    font-variant-numeric: tabular-nums;
-  }
-  .pt-dash__welcome-user {
-    color: var(--theme-elevation-500);
-  }
-
   /* ---- sparkline strip at the bottom of stat cards ---- */
   .pt-dash__spark {
     display: block;
@@ -1931,131 +2120,6 @@
     height: 34px;
     margin-top: -2px;
     color: var(--pt-accent);
-  }
-
-  /* ---- recent activity feed ---- */
-  .pt-dash__recent {
-    display: flex;
-    flex-direction: column;
-    background: var(--theme-elevation-0);
-    border: 1px solid var(--theme-border-color);
-    border-radius: var(--pt-radius-card);
-    padding: 20px 22px;
-    box-shadow:
-      0 1px 2px rgb(0 0 0 / 0.04),
-      0 4px 14px -8px rgb(0 0 0 / 0.08);
-  }
-  html[data-theme='dark'] .pt-dash__recent {
-    background: var(--theme-elevation-50);
-    border-color: var(--theme-elevation-150);
-  }
-
-  .pt-dash__recent-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-  }
-  .pt-dash__recent-title {
-    margin: 0;
-    font-size: 1.02rem;
-    font-weight: 650;
-    letter-spacing: -0.01em;
-    color: var(--theme-text);
-  }
-  .pt-dash__recent-caption {
-    font-size: 0.78rem;
-    color: var(--theme-elevation-500);
-  }
-  .pt-dash__recent-empty {
-    margin: 4px 0 0;
-    font-size: 0.88rem;
-    color: var(--theme-elevation-500);
-  }
-
-  .pt-dash__recent-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-  }
-  .pt-dash__recent-item + .pt-dash__recent-item {
-    border-top: 1px solid var(--theme-elevation-100);
-  }
-  .pt-dash__recent-link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 8px;
-    border-radius: var(--pt-radius-item);
-    color: inherit;
-    text-decoration: none;
-    transition: background-color 0.12s ease;
-  }
-  .pt-dash__recent-link:hover,
-  .pt-dash__recent-link:focus-visible {
-    background: color-mix(in srgb, var(--pt-accent) 7%, transparent);
-    text-decoration: none;
-  }
-  .pt-dash__recent-icon {
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: var(--pt-radius-item);
-    background: var(--pt-accent-subtle);
-    color: var(--pt-accent);
-
-    svg {
-      width: 14px;
-      height: 14px;
-    }
-  }
-  .pt-dash__recent-text {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-  }
-  .pt-dash__recent-doc {
-    font-size: 0.88rem;
-    font-weight: 550;
-    color: var(--theme-elevation-800);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .pt-dash__recent-meta {
-    font-size: 0.74rem;
-    color: var(--theme-elevation-500);
-  }
-  .pt-dash__recent-time {
-    flex-shrink: 0;
-    font-size: 0.76rem;
-    color: var(--theme-elevation-500);
-    font-variant-numeric: tabular-nums;
-  }
-  .pt-dash__recent-chevron {
-    flex-shrink: 0;
-    width: 14px;
-    height: 14px;
-    color: var(--theme-elevation-400);
-    opacity: 0;
-    transform: translateX(-3px);
-    transition:
-      opacity 0.12s ease,
-      transform 0.12s ease;
-  }
-  .pt-dash__recent-link:hover .pt-dash__recent-chevron,
-  .pt-dash__recent-link:focus-visible .pt-dash__recent-chevron {
-    opacity: 1;
-    transform: translateX(0);
   }
 }
 
@@ -2310,26 +2374,13 @@
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='22 12 16 12 14 15 10 15 8 12 2 12'/%3E%3Cpath d='M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z'/%3E%3C/svg%3E") no-repeat center / contain;
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='22 12 16 12 14 15 10 15 8 12 2 12'/%3E%3Cpath d='M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z'/%3E%3C/svg%3E") no-repeat center / contain;
   }
-  .no-results h3 {
-    margin: 0;
-    font-size: 1.15rem;
-    font-weight: 650;
-    letter-spacing: -0.01em;
-  }
-  .no-results p {
-    margin: 0;
-    max-width: 40ch;
-    color: var(--theme-elevation-500);
-    font-size: 0.9rem;
-  }
-  .no-results__actions {
-    margin-top: 14px;
-  }
+  /* (h3/p/actions rules live in the unlayered block at the end of the file —
+   * they fight Payload's own unlayered NoListResults rules) */
 
   /* ---- generic select-value badges ----
-   * Payload tags every select cell value with `selected--<value>`; the base
-   * pill is neutral, and common workflow words pick up semantic colors.
-   * (The earlier .cell-status rules remain and agree with these.) */
+   * Payload tags every select cell value with `selected--<value>`; every
+   * value renders as the same neutral pill — no per-value semantic colors,
+   * so custom select fields and the status column all look alike. */
   .table td [class*='selected--'] {
     display: inline-flex;
     align-items: center;
@@ -2339,18 +2390,6 @@
     color: var(--theme-elevation-600);
     font-size: 0.82em;
     font-weight: 600;
-  }
-  .table td :is(.selected--published, .selected--active, .selected--approved, .selected--completed, .selected--success, .selected--paid) {
-    background: color-mix(in srgb, var(--theme-success-500) 16%, transparent);
-    color: var(--theme-success-600);
-  }
-  .table td :is(.selected--pending, .selected--in-progress, .selected--review, .selected--in-review, .selected--processing, .selected--scheduled) {
-    background: color-mix(in srgb, var(--theme-warning-500) 18%, transparent);
-    color: var(--theme-warning-600);
-  }
-  .table td :is(.selected--archived, .selected--rejected, .selected--failed, .selected--inactive, .selected--cancelled, .selected--blocked) {
-    background: color-mix(in srgb, var(--theme-error-500) 16%, transparent);
-    color: var(--theme-error-600);
   }
 }
 
@@ -2380,6 +2419,12 @@
     .pt-dash__cell:nth-child(7) { animation-delay: 0.18s; }
     .pt-dash__cell:nth-child(8) { animation-delay: 0.21s; }
     .pt-dash__cell:nth-child(n + 9) { animation-delay: 0.24s; }
+
+    /* custom widgets rise in after the built-in cells */
+    .pt-dash__widget {
+      animation: pt-view-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation-delay: 0.27s;
+    }
   }
 
   /* ---- field typography: calm labels, quiet descriptions ---- */
@@ -2552,8 +2597,12 @@
 
 /* UNLAYERED on purpose: Payload's NoListResults stylesheet ships without a
  * cascade layer (align-items: flex-start), and unlayered CSS beats every
- * @layer rule — so the centering must be unlayered too. */
-.no-results {
+ * @layer rule — so the centering must be unlayered too. The class is DOUBLED
+ * (.no-results.no-results) to out-rank Payload at equal cascade level: on
+ * client-side navigation Next injects Payload's list chunk CSS *after* this
+ * stylesheet, and with equal specificity the later rules would win — which is
+ * exactly the "empty state slides left after navigating back" bug. */
+.no-results.no-results {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2565,12 +2614,25 @@
   border-radius: var(--pt-radius-card);
   text-align: center;
 }
-html[data-theme='dark'] .no-results {
+html[data-theme='dark'] .no-results.no-results {
   background: var(--theme-elevation-50);
 }
-.no-results > * {
+.no-results.no-results > * {
   margin-inline: auto; /* stays centered even if a wrapper stretches */
 }
-.no-results__actions {
+.no-results.no-results h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+.no-results.no-results p {
+  margin: 6px auto 0;
+  max-width: 40ch;
+  color: var(--theme-elevation-500);
+  font-size: 0.9rem;
+}
+.no-results.no-results .no-results__actions {
   justify-content: center;
+  margin-top: 14px;
 }

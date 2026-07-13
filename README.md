@@ -53,7 +53,11 @@ The login becomes a split card: a permanently-dark brand panel whose glow is pai
 
 ### A dashboard that's actually a dashboard
 
-The default dashboard is replaced with a widget grid: a time-of-day greeting, one stat card per collection with an animated document count and a **30-day creation sparkline**, cards for your globals, and a **Recent activity** feed of the latest edits across all collections. Everything is server-rendered through Payload's local API — access control applies, no loading flash.
+The default dashboard is replaced with a widget grid: one stat card per collection with an animated document count and a **30-day creation sparkline**, plus cards for your globals. Everything is server-rendered through Payload's local API — access control applies, no loading flash. Want more? Add your own widgets below it — see [Dashboard widgets](#dashboard-widgets).
+
+### A sidebar user menu
+
+The app header is left completely clean: the account button and the content-locale switcher move into a shadcn-style user block at the bottom of the sidebar — avatar, name and email, opening a popup with **Account**, the **locale switcher** (only when `localization` is configured) and **Log out**.
 
 ### ⌘K command palette
 
@@ -123,6 +127,15 @@ payloadTheme({
     },
   },
 
+  // Your own React components below the built-in dashboard content.
+  // See "Dashboard widgets" below.
+  dashboard: {
+    widgets: [
+      '/components/widgets/StatisticsWidget#StatisticsWidget',
+      { component: '/components/widgets/LastLoginWidget#LastLoginWidget', width: 'third' },
+    ],
+  },
+
   // Escape hatch: raw --pt-* token overrides, applied last.
   cssVariables: {
     '--pt-radius-card': '10px',
@@ -140,7 +153,48 @@ payloadTheme({
 | `login.heading` | `string` | `'Welcome back'` | Big heading on the login brand panel. |
 | `login.tagline` | `string` | `'Sign in to manage your content.'` | Supporting line under the heading. |
 | `nav.icons` | `Record<slug, iconName>` | folder icon | Maps collections/globals to [lucide](https://lucide.dev) icons, used in the sidebar, dashboard cards and palette. |
+| `dashboard.widgets` | `DashboardWidget[]` | `[]` | Custom components rendered below the built-in dashboard content. Empty → the dashboard is unchanged. |
 | `cssVariables` | `Record<string, string>` | — | Escape hatch: override any raw `--pt-*` token directly. |
+
+## Dashboard widgets
+
+The built-in dashboard (collection cards, globals) always renders as-is — widgets are an *additional* area below it. Point each entry at a React component using Payload's standard import-map path convention, the same way you'd register any custom component:
+
+```ts
+payloadTheme({
+  dashboard: {
+    widgets: [
+      // string form — 'half' width by default
+      '/components/widgets/StatisticsWidget#StatisticsWidget',
+
+      // object form — control the grid width: 'full' | 'half' | 'third'
+      { component: '/components/widgets/LastLoginWidget#LastLoginWidget', width: 'third' },
+    ],
+  },
+})
+```
+
+Widgets land in a 12-column grid under the dashboard (`full` = whole row, `half` = ½, `third` = ⅓; everything stacks on mobile). A widget is *your* component — the theme adds layout only, no forced card chrome. Reuse the theme's card classes (`pt-dash__card`, `pt-dash__card-head`, `pt-dash__card-label`, `pt-dash__card-body`, `pt-dash__card-count`, `pt-dash__card-caption`) if you want it to look like the built-in stat cards.
+
+**Server components** receive the live Payload context as props — query anything through the local API:
+
+```tsx
+import type { DashboardWidgetServerProps } from 'payload-theme'
+
+export const StatisticsWidget: React.FC<DashboardWidgetServerProps> = async ({ payload, user }) => {
+  const drafts = await payload.count({
+    collection: 'posts',
+    overrideAccess: false,
+    user,
+    where: { _status: { equals: 'draft' } },
+  })
+  return <article className="pt-dash__card">…{drafts.totalDocs}…</article>
+}
+```
+
+**Client components** (`'use client'`) receive no props — use Payload's hooks (`useAuth`, `useConfig`, `useTranslation`, …) or fetch from the REST API.
+
+The plugin registers every widget in `admin.dependencies`, so `payload generate:importmap` picks them up automatically.
 
 ## Under the hood
 

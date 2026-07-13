@@ -90,14 +90,14 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'tr') | ('en' | 'tr')[];
+  fallbackLocale: null;
   globals: {
     settings: Setting;
   };
   globalsSelect: {
     settings: SettingsSelect<false> | SettingsSelect<true>;
   };
-  locale: 'en' | 'tr';
+  locale: null;
   widgets: {
     collections: CollectionsWidget;
   };

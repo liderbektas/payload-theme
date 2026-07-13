@@ -28,13 +28,13 @@ export default buildConfig({
     },
   },
   // Exercises the app-header locale switcher (a theming target).
-  localization: {
-    defaultLocale: 'en',
-    locales: [
-      { code: 'en', label: 'English' },
-      { code: 'tr', label: 'Türkçe' },
-    ],
-  },
+  // localization: {
+  //   defaultLocale: 'en',
+  //   locales: [
+  //     { code: 'en', label: 'English' },
+  //     { code: 'tr', label: 'Türkçe' },
+  //   ],
+  // },
   collections: [Posts, Tags, Media, Users],
   globals: [Settings],
   editor: lexicalEditor(),
@@ -60,6 +60,12 @@ export default buildConfig({
           users: 'users',
         },
       },
+      // dashboard: {
+      //   widgets: [
+      //     '/components/widgets/ContentSummaryWidget#ContentSummaryWidget',
+      //     { component: '/components/widgets/LocalTimeWidget#LocalTimeWidget', width: 'half' },
+      //   ],
+      // },
     }),
   ],
 })
