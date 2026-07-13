@@ -2,7 +2,7 @@
 
 **A premium, single-accent theme for the Payload CMS admin panel — installed in 2 lines.**
 
-Pick one accent color and the whole panel repaints itself: a split-screen login, a widget dashboard with live counts and 30-day sparklines, a ⌘K command palette, an icon sidebar with your logo on top, soft cards, calm shadcn-style inputs and colored status badges. No forked components, no config surgery — just a plugin and a CSS import.
+Pick one accent color and the whole panel repaints itself: a split-screen login, a dashboard with live counts, 30-day sparklines and **your own custom widgets**, a ⌘K command palette, an icon sidebar with your logo on top and a shadcn-style **user menu** at the bottom, soft cards and calm shadcn-style inputs. No forked components, no config surgery — just a plugin and a CSS import.
 
 ![Dashboard](docs/dashboard.png)
 
@@ -67,13 +67,13 @@ Press `⌘K` / `Ctrl+K` (or click the search pill in the sidebar) to jump anywhe
 
 ### List views with real polish
 
-Tables become clean cards: a redesigned page header with the create button where you expect it, colored **status badges** derived from your select values (`published` → green, `pending` → amber, `archived` → red, anything else → a quiet neutral), soft row hovers, and an illustrated empty state instead of a blank page.
+Tables become clean cards: a redesigned page header — title, muted description and the create button on one line, closed by a hairline — quiet **neutral value badges** for statuses and selects (no color-coding, so every collection reads calm and consistent), soft row hovers, and an illustrated empty state instead of a blank page.
 
 ![List view](docs/list-view.png)
 
 ### Calm, card-based edit views
 
-The edit form lives on one white card with top-level groups as inset panels, the sidebar becomes its own card, inputs follow the shadcn language (thin borders, accent focus ring), checkboxes render as toggles, and the document toolbar gets quiet icon chips plus a unified split publish button.
+The edit form lives on one white card with top-level groups as inset panels, the sidebar becomes its own card, inputs follow the shadcn language (thin borders, accent focus ring), and checkboxes render as toggles. Up top, **Edit / Versions / API** becomes a bordered segmented control, the status chip and timestamps read as one quiet meta line, and the sticky action bar (Save Draft / Publish) blurs the content scrolling underneath it.
 
 ![Edit view](docs/edit-view.png)
 

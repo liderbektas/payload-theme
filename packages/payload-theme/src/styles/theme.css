@@ -520,23 +520,11 @@
  * stay independent of the accent.
  * ==================================================================== */
 @layer payload {
-  /* ---- document tabs: accent underline + label on the active tab ---- */
-  .doc-tab--active .doc-tab__label {
-    color: var(--pt-accent);
-  }
-  .doc-tab--active .doc-tab__label::after {
-    content: '';
-    position: absolute;
-    inset-inline: 0;
-    bottom: -1px;
-    height: 2px;
-    border-radius: 2px;
-    background: var(--pt-accent);
-  }
-  /* version-count badge on the active tab */
-  .doc-tab--active .pill-version-count {
-    background-color: color-mix(in srgb, var(--pt-accent) 16%, transparent);
-    color: var(--pt-accent);
+  /* ---- document tabs: styled as a segmented control in the CONTROLS
+   * section; here only the neutral version-count badge remains ---- */
+  .pill-version-count {
+    background-color: var(--theme-elevation-100);
+    color: var(--theme-elevation-600);
   }
 
   /* ---- radio: accent when checked ---- */
@@ -1265,25 +1253,50 @@
     --hover-color: var(--pt-accent-contrast);
   }
 
-  /* ---- doc tabs (Edit / Versions / API): segmented pills — quiet when
-   * idle, accent-subtle chip when active. Retires the old underline. */
+  /* ---- doc tabs (Edit / Versions / API): ONE bordered segmented control;
+   * the active segment lifts on a raised chip. Reads as a single, defined
+   * switch instead of floating links. */
+  .doc-tabs__tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    margin: 0;
+    padding: 3px;
+    list-style: none;
+    background: var(--theme-bg);
+    border: 1px solid var(--theme-elevation-150);
+    border-radius: var(--pt-radius-ctl);
+  }
+  html[data-theme='dark'] .doc-tabs__tabs {
+    background: var(--theme-elevation-50);
+  }
   .doc-tab {
     background: transparent;
     border-radius: var(--pt-radius-ctl);
     color: var(--theme-elevation-500);
+    --btn-padding-block-start: 4px;
+    --btn-padding-block-end: 4px;
+    --btn-padding-inline-start: 14px;
+    --btn-padding-inline-end: 14px;
+    font-size: 0.85rem;
+    font-weight: 500;
   }
   a.doc-tab:hover,
   a.doc-tab:focus-visible {
-    background: color-mix(in srgb, var(--pt-accent) 10%, transparent);
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
     color: var(--theme-elevation-800);
     text-decoration: none;
   }
   .doc-tab--active {
-    background: var(--pt-accent-subtle);
-    color: var(--pt-accent);
+    background: var(--theme-elevation-0);
+    color: var(--theme-text);
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.07),
+      0 0 0 1px var(--theme-elevation-150);
   }
-  .doc-tab--active .doc-tab__label::after {
-    display: none; /* the pill replaces the Phase 3 underline */
+  html[data-theme='dark'] .doc-tab--active {
+    background: var(--theme-elevation-150);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
   }
 
   /* ---- relationship "+" (add new related doc): a detached circle that
@@ -1880,6 +1893,13 @@
     padding: 24px 26px;
     margin: 30px 40px 0 0; /* top-align with the main card; keep a right gutter */
   }
+  /* ≤1024px Payload stacks the sidebar under the main card — the desktop
+   * right gutter would make it narrower than the card above it */
+  @media (max-width: 1024px) {
+    .template-default__wrap > .collection-edit .document-fields__sidebar-fields {
+      margin: 16px 0 0;
+    }
+  }
   html[data-theme='dark']
     .template-default__wrap
     > .collection-edit
@@ -1888,15 +1908,67 @@
     border-color: var(--theme-elevation-150);
   }
 
-  /* ---- 3) doc-controls: slim toolbar on the well surface ---- */
+  /* ---- 3) doc-controls: floating command bar ----
+   * Payload already makes this bar sticky; a translucent well surface with
+   * backdrop blur and a bottom hairline turns it into a floating command
+   * bar once the page scrolls. The hairline doubles as the header/content
+   * separator of the edit views. */
   .template-default__wrap > .collection-edit .doc-controls {
-    background: var(--theme-bg);
+    background: color-mix(in srgb, var(--theme-bg) 82%, transparent);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--theme-elevation-100);
   }
   .template-default__wrap > .collection-edit .doc-controls__content {
-    padding: 12px 0;
+    padding: 10px 0;
   }
+
+  /* meta line: status chip + "·"-separated muted timestamps */
   .doc-controls__meta {
-    font-size: 0.88rem;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.85rem;
+  }
+  .doc-controls__list-item {
+    display: flex;
+    align-items: center;
+  }
+  .doc-controls__list-item + .doc-controls__list-item::before {
+    content: '·';
+    margin-right: 12px;
+    color: var(--theme-elevation-300);
+  }
+  .doc-controls__label {
+    color: var(--theme-elevation-500);
+    font-size: 0.82rem;
+  }
+  .doc-controls__value {
+    color: var(--theme-elevation-700);
+    font-size: 0.82rem;
+    font-weight: 500;
+  }
+  /* status: drop the "Status:" prefix — the chip form says it already */
+  .doc-controls .status__label {
+    display: none;
+  }
+  .doc-controls .status__value-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 3px 11px;
+    border-radius: var(--pt-radius-ctl);
+    background: var(--theme-elevation-100);
+    color: var(--theme-elevation-600);
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+  .doc-controls .status__value-wrap::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.55;
   }
 }
 
@@ -2581,17 +2653,45 @@
   }
 
   /* muted description tucked right under the title (Payload pads the
-   * sub-header wrapper by 15px — remove it, keep a small gap of our own) */
+   * sub-header wrapper by 15px — remove it, keep a small gap of our own).
+   * Shared with the edit views' doc-header description. */
   .collection-list .collection-list__sub-header {
     padding-top: 0;
   }
-  .collection-list .custom-view-description {
-    margin-top: 4px;
+  .custom-view-description {
+    margin-top: 5px;
     color: var(--theme-elevation-500);
-    font-size: 0.92rem;
+    font-size: 0.9rem;
+    max-width: 72ch;
   }
+  /* hairline closes the header block; the search bar starts a new zone */
   .collection-list .list-header {
-    margin-bottom: 18px; /* clear air above the search bar, description or not */
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--theme-elevation-100);
+    margin-bottom: 18px;
+  }
+
+  /* ---- edit views (collections, globals, account): same grammar ----
+   * Title left (Payload's own scale), tabs as the right-side control,
+   * description below. The header/content separator is the doc-controls
+   * bar's hairline. */
+  .doc-header__title {
+    letter-spacing: -0.02em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .doc-header__header {
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .doc-header__after-header {
+    /* Payload pads this wrapper by up to .8×base — the description's own
+     * margin is enough */
+    padding-top: 0;
+  }
+  /* trim the oversized gap between title block and the controls bar */
+  .template-default__wrap > .doc-header {
+    padding-bottom: 14px;
   }
 }
 
