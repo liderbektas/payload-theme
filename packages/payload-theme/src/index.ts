@@ -65,6 +65,9 @@ export const payloadTheme =
     const components = { ...config.admin.components }
     components.Nav = 'payload-theme/client#Nav'
     components.providers = [...(components.providers ?? []), 'payload-theme/client#ThemeProvider']
+    // Header right side: theme customizer (accent/radius/layout), light-dark
+    // toggle and the compact user menu.
+    components.actions = [...(components.actions ?? []), 'payload-theme/client#HeaderActions']
     // Renders the split-layout brand panel on the login view; the stylesheet
     // only switches to the two-column card when this element is present.
     // A server component: unauthenticated pages get a stripped client config

@@ -1,3 +1,5 @@
 export { CommandPalette } from '../components/CommandPalette'
+export { HeaderActions } from '../components/HeaderActions'
 export { Nav } from '../components/Nav'
 export { ThemeProvider } from '../components/ThemeProvider'
+export { UserMenu } from '../components/UserMenu'

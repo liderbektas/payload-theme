@@ -50,7 +50,6 @@ export default buildConfig({
   plugins: [
     payloadTheme({
       accent: '#4f4ece',
-      radius: 'full',
       nav: {
         icons: {
           media: 'image',

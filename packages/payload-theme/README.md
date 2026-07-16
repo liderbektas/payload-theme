@@ -2,7 +2,7 @@
 
 **A premium, single-accent theme for the Payload CMS admin panel — installed in 2 lines.**
 
-Pick one accent color and the whole panel repaints itself: a split-screen login, a dashboard with live counts, 30-day sparklines and **your own custom widgets**, a ⌘K command palette, an icon sidebar with your logo on top and a shadcn-style **user menu** at the bottom, soft cards and calm shadcn-style inputs. No forked components, no config surgery — just a plugin and a CSS import.
+Pick one accent color and the whole panel repaints itself: a split-screen login, a dashboard with live counts, 30-day sparklines and **your own custom widgets**, a ⌘K command palette, an icon sidebar with your logo on top and a shadcn-style **user menu** at the bottom — all wrapped in a shadcn-style **inset layout**: a quiet zinc canvas with the sidebar sitting directly on it, and every view floating in one rounded white content card. The sticky header carries a **theme customizer** (accent, radius, color mode, content layout — live, persisted), a light/dark toggle and a compact user menu. No forked components, no config surgery — just a plugin and a CSS import.
 
 ![Dashboard](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/dashboard.png)
 
@@ -55,9 +55,13 @@ The login becomes a split card: a permanently-dark brand panel whose glow is pai
 
 The default dashboard is replaced with a widget grid: one stat card per collection with an animated document count and a **30-day creation sparkline**, plus cards for your globals. Everything is server-rendered through Payload's local API — access control applies, no loading flash. Want more? Add your own widgets below it — see [Dashboard widgets](#dashboard-widgets).
 
-### A sidebar user menu
+### A sidebar user menu — pinned, always
 
-The app header is left completely clean: the account button and the content-locale switcher move into a shadcn-style user block at the bottom of the sidebar — avatar, name and email, opening a popup with **Account**, the **locale switcher** (only when `localization` is configured) and **Log out**.
+Payload's account button and content-locale switcher move into a shadcn-style user block **pinned to the bottom of the sidebar** — avatar, name and email, opening a popup with **Account**, the **locale switcher** (only when `localization` is configured) and **Log out**. When collections overflow, only the menu list scrolls; logo, search and the user block stay put. The same menu also sits in the header, next to the light/dark toggle.
+
+### A live theme customizer in the header
+
+The palette button opens a small panel where anyone can restyle the panel at runtime: **10 preset accents plus any custom hex** (overrides the plugin's `accent`), the **radius scale**, **light/dark**, and **centered vs full-width content**. Choices persist in the browser and "Reset to Default" returns to your `payloadTheme({ ... })` config.
 
 ### ⌘K command palette
 
@@ -96,8 +100,9 @@ payloadTheme({
   accent: '#e30613',
 
   // Corner rounding for the WHOLE panel: 'none' | 'sm' | 'md' | 'lg' | 'full'.
-  // 'full' (default) = pill buttons/inputs; 'none' squares everything off.
-  radius: 'full',
+  // 'md' (default) = the shadcn geometry (8px controls, 12px cards);
+  // 'full' = pill buttons/inputs; 'none' squares everything off.
+  radius: 'md',
 
   // Your logo — top of the sidebar AND above the login form.
   // A URL, or { light, dark } to swap artwork per color scheme.
@@ -146,7 +151,7 @@ payloadTheme({
 | Option | Type | Default | What it does |
 | --- | --- | --- | --- |
 | `accent` | `string` (hex) | `#4f4ece` | Generates a full 50–950 color scale in OKLCH and colors every interactive element with it. |
-| `radius` | `'none' \| 'sm' \| 'md' \| 'lg' \| 'full'` | `'full'` | Global corner rounding — buttons, inputs, badges, cards, tables, popovers and menu items all follow it. |
+| `radius` | `'none' \| 'sm' \| 'md' \| 'lg' \| 'full'` | `'md'` | Global corner rounding — buttons, inputs, badges, cards, tables, popovers and menu items all follow it. |
 | `logo` | `string \| { light, dark }` | Payload logo | Image URL(s) shown at the top of the sidebar and above the login form. Pass a pair for per-scheme artwork. |
 | `logoHeight` | `number \| string` | `26` | Rendered logo height — a number is px (`32`), a string is any CSS length (`'2.5rem'`). |
 | `icon` | `string \| { light, dark }` | — | Small mark, used as a login-logo fallback. |

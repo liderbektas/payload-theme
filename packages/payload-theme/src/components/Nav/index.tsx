@@ -9,19 +9,19 @@ import {
   useAuth,
   useConfig,
   useEntityVisibility,
-  useLocale,
   useNav,
   useTranslation,
 } from '@payloadcms/ui'
 import { PayloadLogo } from '@payloadcms/ui/graphics/Logo'
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { formatAdminURL } from 'payload/shared'
 import React from 'react'
 
 import type { ResolvedThemeConfig } from '../../options'
 
 import { CommandPalette } from '../CommandPalette'
+import { UserMenu } from '../UserMenu'
 import { resolveIconName } from '../navIcons'
 
 type NavItem = {
@@ -100,158 +100,6 @@ const NavSearch: React.FC = () => {
         {shortcut}
       </kbd>
     </button>
-  )
-}
-
-/** Bottom-of-sidebar user block (shadcn-style footer): a full-width trigger
- * (initials avatar + name/email + up/down chevron) that opens a popup menu
- * with Account, the content-locale switcher (when localization is enabled;
- * moved here from the app header, which the stylesheet empties out) and Log
- * out. Replaces both the bare logout icon that used to sit here and the
- * header's top-right account button. */
-const NavUser: React.FC = () => {
-  const { user } = useAuth()
-  const { config } = useConfig()
-  const { i18n } = useTranslation()
-  const locale = useLocale()
-  const router = useRouter()
-  const pathname = usePathname()
-
-  const [open, setOpen] = React.useState(false)
-  const rootRef = React.useRef<HTMLDivElement>(null)
-
-  // Close on outside click / ESC while open.
-  React.useEffect(() => {
-    if (!open) return
-    const onPointerDown = (event: PointerEvent) => {
-      if (rootRef.current && !rootRef.current.contains(event.target as Node)) setOpen(false)
-    }
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(false)
-    }
-    document.addEventListener('pointerdown', onPointerDown)
-    document.addEventListener('keydown', onKeyDown)
-    return () => {
-      document.removeEventListener('pointerdown', onPointerDown)
-      document.removeEventListener('keydown', onKeyDown)
-    }
-  }, [open])
-
-  // Close when navigating away (e.g. after following a menu link).
-  React.useEffect(() => {
-    setOpen(false)
-  }, [pathname])
-
-  if (!user) return null
-
-  const {
-    localization,
-    routes: { admin: adminRoute },
-  } = config
-
-  const email = typeof user.email === 'string' ? user.email : ''
-  const rawName = (user as { name?: unknown }).name
-  const name =
-    typeof rawName === 'string' && rawName.trim() ? rawName.trim() : email.split('@')[0] || 'User'
-  const initials =
-    name
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((word) => word.charAt(0))
-      .join('')
-      .toUpperCase() || '?'
-
-  const accountHref = formatAdminURL({ adminRoute, path: config.admin?.routes?.account ?? '/account' })
-  const logoutHref = formatAdminURL({ adminRoute, path: config.admin?.routes?.logout ?? '/logout' })
-
-  // Same mechanism as Payload's own header Localizer: set the `locale` query
-  // param and navigate — Payload handles the rest (incl. remembering it).
-  const switchLocale = (code: string) => {
-    setOpen(false)
-    const params = new URLSearchParams(window.location.search)
-    params.set('locale', code)
-    router.push(`${pathname}?${params.toString()}`)
-  }
-
-  return (
-    <div className="pt-nav__user" ref={rootRef}>
-      {open ? (
-        <div className="pt-nav__user-menu" role="menu">
-          <div className="pt-nav__user-menu-header">
-            <span aria-hidden="true" className="pt-nav__user-avatar">
-              {initials}
-            </span>
-            <span className="pt-nav__user-info">
-              <span className="pt-nav__user-name">{name}</span>
-              {email ? <span className="pt-nav__user-email">{email}</span> : null}
-            </span>
-          </div>
-          <div aria-hidden="true" className="pt-nav__user-menu-sep" />
-          <Link
-            className="pt-nav__user-menu-item"
-            href={accountHref}
-            onClick={() => setOpen(false)}
-            prefetch={false}
-            role="menuitem"
-          >
-            <DynamicIcon aria-hidden="true" name="circle-user" strokeWidth={1.9} />
-            Account
-          </Link>
-          {localization ? (
-            <React.Fragment>
-              <div aria-hidden="true" className="pt-nav__user-menu-sep" />
-              <div className="pt-nav__user-menu-label">Locale</div>
-              {localization.locales.map((localeOption) => {
-                const isActive = locale?.code === localeOption.code
-                return (
-                  <button
-                    aria-checked={isActive}
-                    className="pt-nav__user-menu-item"
-                    disabled={isActive}
-                    key={localeOption.code}
-                    onClick={() => switchLocale(localeOption.code)}
-                    role="menuitemradio"
-                    type="button"
-                  >
-                    <span aria-hidden="true" className="pt-nav__user-menu-check">
-                      {isActive ? <DynamicIcon aria-hidden="true" name="check" strokeWidth={2.2} /> : null}
-                    </span>
-                    {getTranslation(localeOption.label, i18n)}
-                  </button>
-                )
-              })}
-            </React.Fragment>
-          ) : null}
-          <div aria-hidden="true" className="pt-nav__user-menu-sep" />
-          <Link
-            className="pt-nav__user-menu-item pt-nav__user-menu-item--logout"
-            href={logoutHref}
-            onClick={() => setOpen(false)}
-            prefetch={false}
-            role="menuitem"
-          >
-            <DynamicIcon aria-hidden="true" name="log-out" strokeWidth={1.9} />
-            Log out
-          </Link>
-        </div>
-      ) : null}
-      <button
-        aria-expanded={open}
-        aria-haspopup="menu"
-        className="pt-nav__user-trigger"
-        onClick={() => setOpen((current) => !current)}
-        type="button"
-      >
-        <span aria-hidden="true" className="pt-nav__user-avatar">
-          {initials}
-        </span>
-        <span className="pt-nav__user-info">
-          <span className="pt-nav__user-name">{name}</span>
-          {email ? <span className="pt-nav__user-email">{email}</span> : null}
-        </span>
-        <DynamicIcon aria-hidden="true" className="pt-nav__user-chevron" name="chevrons-up-down" strokeWidth={2} />
-      </button>
-    </div>
   )
 }
 
@@ -387,6 +235,8 @@ export const Nav: React.FC = () => {
           )}
         </Link>
         <NavSearch />
+        {/* Only this middle block scrolls — the logo/search above and the
+         * user block below stay pinned at any content height. */}
         <nav className="nav__wrap pt-nav__wrap">
           <div className="pt-nav__group">
             <NavItemLink item={dashboardItem} exact pathname={pathname} />
@@ -399,10 +249,10 @@ export const Nav: React.FC = () => {
               ))}
             </div>
           ))}
-          <div className="nav__controls pt-nav__controls">
-            <NavUser />
-          </div>
         </nav>
+        <div className="nav__controls pt-nav__controls">
+          <UserMenu variant="sidebar" />
+        </div>
       </div>
       {/* Mounted here (not in the ThemeProvider): the palette needs the
        * entity-visibility/permissions contexts, which only exist below

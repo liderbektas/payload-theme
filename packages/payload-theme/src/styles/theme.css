@@ -8,34 +8,98 @@
  * The accent scale (--pt-accent-*) is NOT here — the plugin computes it from
  * your `accent` option and injects it at runtime (ThemeProvider), so a single
  * hex recolours every rule below.
+ *
+ * DESIGN LANGUAGE — shadcn "inset" admin:
+ *   · the page background is a quiet zinc gray; the sidebar sits directly on
+ *     it (no chrome of its own)
+ *   · ALL content lives in one white, rounded, bordered card floating on that
+ *     gray, with a sticky translucent header at its top
+ *   · neutrals are the zinc scale; borders are thin and calm; shadows follow
+ *     the shadcn xs/sm/md/lg steps; hovers are neutral washes — the accent is
+ *     reserved for primary actions, active nav and focus.
  */
 
 @layer payload {
   /* ------------------------------------------------------------------ *
-   * soft preset — surfaces & neutrals (independent of the accent)
-   * A faint gray field with white cards floating on
-   * top. We only retarget Payload's surface variables; elevation stays
-   * intact so cards/inputs (elevation-0) keep their own contrast.
+   * FOUNDATION — zinc neutrals + surfaces
+   *
+   * Payload derives every --theme-elevation-* rung from --color-base-*, so
+   * retargeting the base scale to zinc (the reference palette) re-tints the
+   * entire panel — light and dark — in one block. Interpolated mid-steps
+   * (150/250/350/…) keep Payload's 21-step ladder monotonic.
    * ------------------------------------------------------------------ */
   :root {
-    --theme-bg: #f4f4f6; /* faint gray page behind white cards */
-    --theme-border-color: var(--theme-elevation-100); /* softer than the default 150 */
+    --color-base-0: #ffffff;
+    --color-base-50: #fafafa;
+    --color-base-100: #f4f4f5;
+    --color-base-150: #ececee;
+    --color-base-200: #e4e4e7;
+    --color-base-250: #dcdce0;
+    --color-base-300: #d4d4d8;
+    --color-base-350: #bbbbc1;
+    --color-base-400: #a1a1aa;
+    --color-base-450: #898992;
+    --color-base-500: #71717a;
+    --color-base-550: #62626a;
+    --color-base-600: #52525b;
+    --color-base-650: #494950;
+    --color-base-700: #3f3f46;
+    --color-base-750: #333338;
+    --color-base-800: #27272a;
+    --color-base-850: #1f1f22;
+    --color-base-900: #18181b;
+    --color-base-950: #09090b;
+    --color-base-1000: #030303;
+
+    /* zinc-100: the gray field the sidebar and the content card sit on */
+    --theme-bg: #f4f4f6;
+    /* zinc-200 — the shadcn card/table border */
+    --theme-border-color: var(--theme-elevation-200);
+    /* inputs get the slightly darker border shadcn gives form controls */
+    --pt-input-border: var(--theme-elevation-250);
+
+    /* shadcn shadow steps */
+    --pt-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --pt-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.08);
+    --pt-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.09), 0 2px 4px -2px rgb(0 0 0 / 0.09);
+    --pt-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
     /* App-wide accent focus ring. Payload's outline is already 2px solid with
      * a 2px offset (the shadcn geometry); we only swap the colour to accent. */
     --accessibility-outline: 2px solid var(--pt-accent-ring);
   }
 
   html[data-theme='dark'] {
-    --theme-bg: #17181c; /* comfortable dark, not the pure-black of `noir` */
-    --theme-border-color: var(--theme-elevation-100);
+    /* zinc-900: the dark gray field (reference dark sidebar) */
+    --theme-bg: #18181b;
+
+    /* Shift the bottom of the dark elevation ladder one rung darker so the
+     * content card lands on zinc-950 (the reference dark background) and the
+     * card border on zinc-800 — text rungs (300+) keep Payload's mapping. */
+    --theme-elevation-0: var(--color-base-950);
+    --theme-elevation-50: var(--color-base-900);
+    --theme-elevation-100: var(--color-base-850);
+    --theme-elevation-150: var(--color-base-800);
+    --theme-elevation-200: var(--color-base-750);
+    --theme-elevation-250: var(--color-base-700);
+
+    /* zinc-800 borders, zinc-700 input borders (the reference dark tokens) */
+    --theme-border-color: var(--theme-elevation-150);
+    --pt-input-border: var(--theme-elevation-250);
+
+    /* dark shadows need more weight to register on near-black */
+    --pt-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+    --pt-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.45), 0 1px 2px -1px rgb(0 0 0 / 0.45);
+    --pt-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.45), 0 2px 4px -2px rgb(0 0 0 / 0.45);
+    --pt-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+
     --accessibility-outline: 2px solid var(--pt-accent-ring);
   }
 
   /* ------------------------------------------------------------------ *
-   * accent binding — colour only. Shape/structure (pills, toggles,
-   * radii, nav) is Phase 3. We recolour by overriding the local custom
-   * properties Payload already exposes on each button, so no BEM
-   * internals are touched.
+   * accent binding — colour only. The accent paints primary actions;
+   * secondary/outline buttons are NEUTRAL (the shadcn outline variant),
+   * so the panel reads calm and the accent reads intentional.
    * ------------------------------------------------------------------ */
   .btn--style-primary {
     --bg-color: var(--pt-accent);
@@ -44,108 +108,71 @@
     --hover-color: var(--pt-accent-contrast);
   }
 
+  /* shadcn outline button: neutral border, plain text, muted wash on hover */
   .btn--style-secondary {
-    --color: var(--pt-accent);
-    --btn-border: 1px solid var(--pt-accent);
-    --hover-color: var(--pt-accent-hover);
-    --hover-btn-border: 1px solid var(--pt-accent-hover);
-    /* shadcn secondary/outline: a faint accent wash appears on hover. */
-    --hover-bg: color-mix(in srgb, var(--pt-accent) 10%, transparent);
+    --color: var(--theme-text);
+    --btn-border: 1px solid var(--theme-border-color);
+    --hover-color: var(--theme-text);
+    --hover-btn-border: 1px solid var(--theme-elevation-300);
+    --hover-bg: color-mix(in srgb, var(--theme-elevation-500) 8%, transparent);
   }
 }
 
 /* ==================================================================== *
- * NAV — active pill (Phase 3, module 1)
+ * BUTTONS — shape & state
  *
- * Payload marks the active item by rendering it as `div.nav__link`
- * (inactive items are `a.nav__link`); only the active one contains a
- * `.nav__link-indicator`, so `:has()` targets it without relying on the
- * element type. Full pill for the active item; inactive
- * items get muted text (shadcn hierarchy) and a soft pill fill on hover.
- * ==================================================================== */
-@layer payload {
-  .nav__link {
-    padding: 8px 14px;
-    padding-inline-end: 14px; /* override Payload's default 30px */
-    border-radius: var(--pt-radius-ctl); /* full pill */
-    color: var(--theme-elevation-600); /* muted inactive text */
-    font-weight: 500;
-    transition:
-      background-color 0.12s ease,
-      color 0.12s ease;
-  }
-
-  /* Replace underline-on-hover with a soft accent pill fill. */
-  .nav a.nav__link:hover,
-  .nav a.nav__link:focus-visible {
-    text-decoration: none;
-    color: var(--theme-elevation-800);
-    background: color-mix(in srgb, var(--pt-accent) 12%, transparent);
-  }
-
-  /* Active item = filled accent pill with auto-contrast label. */
-  .nav__link:has(.nav__link-indicator) {
-    background: var(--pt-accent);
-    color: var(--pt-accent-contrast);
-    font-weight: 600;
-  }
-
-  .nav__link:has(.nav__link-indicator):hover {
-    background: var(--pt-accent-hover);
-    color: var(--pt-accent-contrast);
-  }
-
-  /* The pill replaces the little vertical indicator bar. */
-  .nav__link-indicator {
-    display: none;
-  }
-}
-
-/* ==================================================================== *
- * BUTTONS — shape & state (Phase 3, module 2)
- *
- * Colour binding (primary/secondary accent) lives in the accent-binding
- * section above; here we give buttons the shadcn silhouette. The visual
- * box is `.btn` itself (it paints --bg-color / --btn-border); .btn__content
- * is inner layout only. Radius is scoped to the text-button styles so we
- * don't square off Payload's round icon buttons.
+ * Colour binding (primary/outline) lives in the accent-binding section
+ * above; here buttons get the shadcn silhouette: 8px corners (via the
+ * radius token), font-medium labels, an xs shadow on solid/outline
+ * variants, quiet transitions. The visual box is `.btn` itself; radius is
+ * scoped to the text-button styles so Payload's round icon buttons stay
+ * round.
  * ==================================================================== */
 @layer payload {
   .btn {
     transition:
       background-color 0.12s ease,
       border-color 0.12s ease,
+      box-shadow 0.12s ease,
       color 0.12s ease;
   }
 
   .btn--style-primary,
   .btn--style-secondary,
-  .btn--style-subtle {
-    border-radius: var(--pt-radius-ctl); 
+  .btn--style-subtle,
+  .btn--style-pill {
+    --btn-font-weight: 500;
+    border-radius: var(--pt-radius-ctl);
   }
 
-  /* Payload's "pill" style (e.g. the list "Create New") becomes a true pill. */
-  .btn--style-pill {
-    border-radius: var(--pt-radius-ctl);
+  .btn--style-primary,
+  .btn--style-secondary {
+    box-shadow: var(--pt-shadow-xs);
+  }
+
+  /* subtle buttons hover with a neutral wash, not an accent tint */
+  .btn--style-subtle {
+    --hover-bg: color-mix(in srgb, var(--theme-elevation-500) 8%, transparent);
   }
 }
 
 /* ==================================================================== *
- * FORMS — inputs + checkbox-as-toggle (Phase 3, module 3)
+ * FORMS — inputs + checkbox-as-toggle
  *
- * shadcn Input anatomy for text-like fields (thin border, flat, calm bg,
- * accent border + soft ring on focus) and a track/thumb switch for boolean
- * fields. The toggle is scoped to `.field-type.checkbox` so the table's
- * bulk-select checkboxes stay checkboxes. Form behaviour is untouched — we
- * only restyle the box; the real <input> keeps its checked logic.
+ * shadcn Input anatomy for text-like fields (thin zinc border, xs shadow,
+ * calm bg, accent border + soft 3px ring on focus) and a track/thumb
+ * switch for boolean fields. The toggle is scoped to `.field-type.checkbox`
+ * so the table's bulk-select checkboxes stay checkboxes. Form behaviour is
+ * untouched — we only restyle the box; the real <input> keeps its checked
+ * logic.
  * ==================================================================== */
 @layer payload {
   /* ---- text-like inputs + textarea ---- */
   .field-type input:not([type='checkbox']),
   .field-type textarea {
-    border: 1px solid var(--theme-elevation-150);
+    border: 1px solid var(--pt-input-border);
     border-radius: var(--pt-radius-ctl);
-    box-shadow: none; /* flat — drop Payload's subtle input shadow */
+    box-shadow: var(--pt-shadow-xs);
     transition:
       border-color 0.12s ease,
       box-shadow 0.12s ease;
@@ -158,10 +185,10 @@
     outline: none;
     background: var(--theme-input-bg);
     border: 1px solid var(--pt-accent);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--pt-accent-ring) 10%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--pt-accent-ring) 18%, transparent);
   }
 
-  /* ---- search boxes are pills ---- */
+  /* ---- search inputs share the same language ---- */
   .search-filter__input {
     border-radius: var(--pt-radius-ctl);
     transition:
@@ -172,7 +199,7 @@
   .search-filter__input:focus-visible {
     outline: none;
     border: 1px solid var(--pt-accent);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--pt-accent-ring) 10%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--pt-accent-ring) 18%, transparent);
   }
 
   /* ---- checkbox -> toggle (form fields only) ---- */
@@ -229,29 +256,29 @@
 }
 
 /* ==================================================================== *
- * SELECT — react-select trigger + popover (Phase 3, module 3 cont.)
+ * SELECT — react-select trigger + popover
  *
  * Payload styles .rs__* in its own layer, so our layer wins cleanly.
  * ==================================================================== */
 @layer payload {
   .rs__control {
-    border: 1px solid var(--theme-elevation-150);
+    border: 1px solid var(--pt-input-border);
     border-radius: var(--pt-radius-ctl);
-    box-shadow: none; /* flat, like the inputs */
+    box-shadow: var(--pt-shadow-xs);
     transition:
       border-color 0.12s ease,
       box-shadow 0.12s ease;
   }
   .rs__control--is-focused {
     border-color: var(--pt-accent);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--pt-accent-ring) 10%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--pt-accent-ring) 18%, transparent);
   }
 
-  /* dropdown menu = soft popover */
+  /* dropdown menu = shadcn popover */
   .rs__menu {
-    border: 1px solid var(--theme-elevation-150);
-    border-radius: var(--pt-radius-item);
-    box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-md);
     overflow: hidden;
   }
   .rs__menu-list {
@@ -262,7 +289,7 @@
     transition: background-color 0.1s ease;
   }
   .rs__option--is-focused {
-    background-color: color-mix(in srgb, var(--pt-accent) 14%, transparent);
+    background-color: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
     color: var(--theme-text);
   }
   .rs__option--is-selected {
@@ -271,27 +298,27 @@
     font-weight: 600;
   }
   .rs__option--is-selected.rs__option--is-focused {
-    background-color: color-mix(in srgb, var(--pt-accent) 18%, transparent);
+    background-color: color-mix(in srgb, var(--pt-accent) 16%, transparent);
   }
 
-  /* multi-value chips -> accent-tinted pills */
+  /* multi-value chips -> quiet neutral badges */
   .rs__multi-value {
-    border-radius: var(--pt-radius-ctl);
-    background: color-mix(in srgb, var(--pt-accent) 12%, transparent);
+    border-radius: 999px;
+    background: var(--theme-elevation-100);
   }
 }
 
 /* ==================================================================== *
- * DATE PICKER — shadcn Calendar (Phase 3, module 3 cont.)
+ * DATE PICKER — shadcn Calendar
  *
  * react-datepicker ships its own default stylesheet with hard-coded colours
  * (#216ba5 selected, #f0f0f0 hover) that Payload does not theme. These rules
  * are UNLAYERED on purpose so they reliably win over that third-party sheet.
  * ==================================================================== */
 .react-datepicker {
-  border: 1px solid var(--theme-elevation-150);
-  border-radius: var(--pt-radius-item);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+  border: 1px solid var(--theme-border-color);
+  border-radius: var(--pt-radius-card);
+  box-shadow: var(--pt-shadow-md);
   background: var(--theme-elevation-0);
   color: var(--theme-text);
   font-family: var(--font-body);
@@ -311,15 +338,13 @@
   color: var(--theme-elevation-400);
 }
 .react-datepicker__day:hover {
-  background: color-mix(in srgb, var(--pt-accent) 14%, transparent);
-  
+  background: color-mix(in srgb, var(--theme-elevation-500) 12%, transparent);
 }
 .react-datepicker__day--selected,
 .react-datepicker__day--keyboard-selected,
 .react-datepicker__day--in-range {
   background: var(--pt-accent);
   color: var(--pt-accent-contrast);
-  
 }
 .react-datepicker__day--selected:hover,
 .react-datepicker__day--keyboard-selected:hover {
@@ -331,7 +356,7 @@
 }
 
 /* ==================================================================== *
- * TABLE / LIST — selection, sort, pagination (Phase 3, module 4)
+ * TABLE / LIST — selection, sort, pagination
  *
  * No dedicated "selected row" class exists, so we key off the row-select
  * checkbox's own --checked state via :has(). Table select checkboxes stay
@@ -339,9 +364,9 @@
  * accent when checked.
  * ==================================================================== */
 @layer payload {
-  /* selected row = faint accent wash */
+  /* selected row = faint accent wash (selection is a deliberate state) */
   .table tbody tr:has(.checkbox-input--checked) {
-    background: color-mix(in srgb, var(--pt-accent) 8%, transparent);
+    background: color-mix(in srgb, var(--pt-accent) 7%, transparent);
   }
 
   /* row + header select checkboxes: accent box + contrast check when checked */
@@ -361,7 +386,7 @@
     color: var(--pt-accent);
   }
 
-  /* pagination: current page = accent, others get a soft accent hover */
+  /* pagination: current page = accent, others get a neutral hover */
   .paginator__page {
     border-radius: var(--pt-radius-item);
     transition:
@@ -373,8 +398,8 @@
     color: var(--pt-accent-contrast);
   }
   .paginator__page:not(.paginator__page--is-current):not(:disabled):hover {
-    background: color-mix(in srgb, var(--pt-accent) 12%, transparent);
-    color: var(--theme-elevation-800);
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+    color: var(--theme-text);
   }
 
   /* "X selected" bulk bar action links = accent */
@@ -400,32 +425,24 @@
 }
 
 /* ==================================================================== *
- * TABLE — resting-state polish (row hover)
- * The accents above only show on interaction (select / sort / paginate);
- * a soft row hover makes the theme visible without any interaction.
+ * TABLE — resting-state shadcn look
+ *
+ * shadcn Table: no zebra stripes, thin row separators, a muted header band
+ * with a clean bottom rule, and a NEUTRAL row hover (bg-muted/50 in the
+ * reference) — the accent only appears for selection/sort/pagination.
  * ==================================================================== */
 @layer payload {
   .table tbody tr {
     transition: background-color 0.1s ease;
   }
   .table tbody tr:hover {
-    background: color-mix(in srgb, var(--pt-accent) 6%, transparent);
+    background: color-mix(in srgb, var(--theme-elevation-500) 6%, transparent);
   }
   /* keep selected rows clearly stronger than hover */
   .table tbody tr:has(.checkbox-input--checked):hover {
-    background: color-mix(in srgb, var(--pt-accent) 12%, transparent);
+    background: color-mix(in srgb, var(--pt-accent) 11%, transparent);
   }
-}
 
-/* ==================================================================== *
- * TABLE — resting-state shadcn look (Phase 3, module 4 cont.)
- *
- * Payload zebra-stripes odd rows (elevation-50, rounded). shadcn Table is
- * clean instead: no stripes, thin row separators, a muted header with a
- * bottom rule. Combined with the row hover above, the table now reads as
- * themed even before any interaction.
- * ==================================================================== */
-@layer payload {
   /* drop the zebra striping */
   .table tbody tr:nth-child(odd) {
     background: transparent;
@@ -438,7 +455,7 @@
   }
   .table thead th {
     font-weight: 500;
-    border-bottom: 1px solid var(--theme-elevation-150);
+    border-bottom: 1px solid var(--theme-border-color);
   }
 
   /* thin separators between rows */
@@ -458,19 +475,19 @@
 }
 
 /* ==================================================================== *
- * TABLE — card frame + colored status badges (Phase 3, module 4 cont.)
+ * TABLE — card frame + value badges
  *
  * Wrap the table in a rounded, bordered card (overflow:auto from Payload
  * clips to the radius, so horizontal scroll still works). Payload tags each
- * select value with a `.selected--<value>` class, so status cells become
- * colored pills by value using semantic colours (independent of the accent).
+ * select value with a `.selected--<value>` class, so select cells render as
+ * quiet neutral badges.
  * ==================================================================== */
 @layer payload {
   .table {
-    border: 1px solid var(--theme-elevation-150);
+    border: 1px solid var(--theme-border-color);
     border-radius: var(--pt-radius-card);
     background: var(--theme-elevation-0);
-    box-shadow: 0 1px 3px rgb(0 0 0 / 0.05);
+    box-shadow: var(--pt-shadow-xs);
   }
 
   /* subtle header band; the card's radius clips its top corners */
@@ -493,19 +510,19 @@
   .cell-status .selected--archived {
     display: inline-flex;
     align-items: center;
-    padding: 3px 12px;
-    border-radius: var(--pt-radius-ctl);
+    padding: 3px 10px;
+    border-radius: 999px; /* badges are ALWAYS fully round, radius-agnostic */
     background: var(--theme-elevation-100);
     color: var(--theme-elevation-600);
     font-size: 0.82em;
-    font-weight: 600;
+    font-weight: 500;
   }
 
   /* boolean cell as a neutral pill */
   .bool-cell {
     display: inline-flex;
-    padding: 3px 12px;
-    border-radius: var(--pt-radius-ctl);
+    padding: 3px 10px;
+    border-radius: 999px;
     background: var(--theme-elevation-100);
     color: var(--theme-elevation-600);
     font-family: var(--font-body);
@@ -514,7 +531,7 @@
 }
 
 /* ==================================================================== *
- * MISC — tabs, drawer/dialog, radio, links, loading (Phase 3, module 5)
+ * MISC — tabs, drawer/dialog, radio, links, loading
  *
  * The remaining accent touches. Semantic pills (success/warning/error)
  * stay independent of the accent.
@@ -525,6 +542,7 @@
   .pill-version-count {
     background-color: var(--theme-elevation-100);
     color: var(--theme-elevation-600);
+    border-radius: 999px;
   }
 
   /* ---- radio: accent when checked ---- */
@@ -548,10 +566,10 @@
     color: var(--pt-accent);
   }
 
-  /* ---- drawer / dialog: shadcn feel (radius, shadow, soft overlay) ---- */
+  /* ---- drawer / dialog: shadcn sheet (radius, shadow, soft overlay) ---- */
   .drawer__content {
-    border-start-start-radius: 16px;
-    border-end-start-radius: 16px;
+    border-start-start-radius: calc(var(--pt-radius-card) + 4px);
+    border-end-start-radius: calc(var(--pt-radius-card) + 4px);
     box-shadow: -8px 0 40px rgb(0 0 0 / 0.18);
   }
   .drawer__blur-bg {
@@ -560,35 +578,60 @@
 }
 
 /* ==================================================================== *
- * CUSTOM NAV — replacement sidebar (Phase 5, module 1)
+ * CUSTOM NAV — replacement sidebar
  *
  * Styles for the custom Nav component at src/components/Nav, which
  * REPLACES Payload's default nav via admin.components.Nav. The component
  * keeps Payload's structural classes (.nav, .nav__scroll, .nav__wrap,
  * .nav__controls) so geometry/open-close behavior is inherited, and
- * renders its own pt-nav__* classes for the redesign. The older
- * .nav__link rules earlier in this file targeted the default nav and are
- * now inert (nothing renders .nav__link anymore) — left in place on
- * purpose.
+ * renders its own pt-nav__* classes for the redesign.
+ *
+ * The sidebar is the shadcn "inset" sidebar: it sits DIRECTLY on the gray
+ * page background (no white panel, no divider), with compact rounded menu
+ * items, neutral hovers and an accent fill only for the active item. The
+ * solid --theme-bg background also serves the ≤1440px drawer, which needs
+ * an opaque panel.
  * ==================================================================== */
 @layer payload {
   .pt-nav {
     /* The default nav reserves an app-header-sized dead zone at the top;
      * our logo owns that space instead. */
     --nav-padding-block-start: 0px;
-    /* White sidebar (was inheriting the gray page bg). The right divider is
-     * dropped so the sidebar joins the white header seamlessly at the top. */
-    background: var(--theme-elevation-0);
+    background: var(--theme-bg);
     border-right: 0;
   }
 
-  /* A roomier sidebar than Payload's 275px default. Scoped to >768px so the
-   * mobile drawer keeps Payload's full-width (100vw) override. The layout
-   * grid reads the same variable, so the content well adjusts by itself. */
+  /* Sidebar column width + inner inset (reference: 16rem + p-2 gutters).
+   * Scoped to >768px so the mobile drawer keeps Payload's full-width
+   * (100vw) override. The layout grid reads the same variable, so the
+   * content well adjusts by itself. */
   @media (min-width: 769px) {
     :root {
-      --nav-width: 304px;
+      --nav-width: 276px;
     }
+  }
+  .pt-nav .nav__scroll {
+    --nav-padding-inline-start: 16px;
+    --nav-padding-inline-end: 16px;
+    /* The column itself never scrolls: logo + search stay pinned on top,
+     * the user block stays pinned at the bottom, and ONLY the menu block
+     * (.pt-nav__wrap) scrolls when the entities overflow. */
+    overflow: hidden;
+  }
+  .pt-nav__wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--theme-elevation-250) transparent;
+    /* breathing room so the last item never kisses the user block */
+    padding-bottom: 10px;
+  }
+  .pt-nav__controls {
+    flex: 0 0 auto;
+    margin-top: auto; /* pinned even when the menu is short */
+    padding-top: 8px;
   }
 
   /* ---- logo (Payload's own wordmark until a custom logo is provided) ---- */
@@ -596,7 +639,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    padding: 22px 16px 26px; /* snug to the top; the real logo→search gap is set in the search-trigger section below */
+    padding: 20px 10px 0; /* the logo→search gap is set in the search-trigger section below */
     text-decoration: none;
   }
   .pt-nav__logo:hover,
@@ -604,11 +647,11 @@
     text-decoration: none;
   }
   .pt-nav__logo .graphic-logo {
-    height: var(--pt-logo-height, 26px);
+    height: var(--pt-logo-height, 24px);
     width: auto;
   }
   .pt-nav__logo-img {
-    height: var(--pt-logo-height, 26px);
+    height: var(--pt-logo-height, 24px);
     width: auto;
   }
   /* light/dark logo pair: show only the variant matching the active scheme */
@@ -619,50 +662,54 @@
 
   /* ---- groups ---- */
   .pt-nav__wrap {
-    gap: 4px; /* space between stacked groups */
+    gap: 2px; /* space between stacked groups */
   }
   .pt-nav__group {
     display: flex;
     flex-direction: column;
-    gap: 4px; /* generous space between items */
+    gap: 2px;
     width: 100%;
   }
+  /* shadcn group label: small, muted, sentence case — no shouting */
   .pt-nav__group-label {
-    margin: 18px 0 6px;
-    padding: 0 14px;
+    margin: 16px 0 4px;
+    padding: 0 10px;
     color: var(--theme-elevation-500);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
   }
 
-  /* ---- links ---- */
+  /* ---- links (shadcn sidebar-menu-button) ---- */
   .pt-nav__link {
     display: flex;
     align-items: center;
     gap: 10px;
     width: 100%;
-    padding: 11px 14px;
-    border-radius: var(--pt-radius-ctl); /* full pill */
+    padding: 8px 10px;
+    border-radius: var(--pt-radius-ctl);
     color: var(--theme-elevation-600); /* muted inactive; icon inherits */
-    font-size: 13px;
+    font-size: 13.5px;
     font-weight: 500;
     text-decoration: none;
     transition:
       background-color 0.12s ease,
       color 0.12s ease;
   }
+  /* hover = the neutral sidebar-accent wash, not an accent tint */
   a.pt-nav__link:hover,
   a.pt-nav__link:focus-visible {
     text-decoration: none;
-    color: var(--theme-elevation-800);
-    background: color-mix(in srgb, var(--pt-accent) 12%, transparent);
+    color: var(--theme-text);
+    background: color-mix(in srgb, var(--theme-elevation-500) 12%, transparent);
   }
+  /* active = accent fill (the sidebar-primary treatment) */
   .pt-nav__link--active {
     background: var(--pt-accent);
     color: var(--pt-accent-contrast);
-    font-weight: 600;
+    font-weight: 500;
+    box-shadow: var(--pt-shadow-xs);
   }
   a.pt-nav__link--active:hover,
   a.pt-nav__link--active:focus-visible {
@@ -671,8 +718,8 @@
   }
   .pt-nav__icon {
     flex-shrink: 0;
-    width: 17px;
-    height: 17px;
+    width: 16px;
+    height: 16px;
   }
   .pt-nav__label {
     overflow: hidden;
@@ -682,14 +729,11 @@
 
   /* ---- bottom user block (shadcn sidebar footer, faithfully) --------------
    * One full-width GHOST trigger (no border, no card chrome — it's a sidebar
-   * item, not a form control): gradient initials avatar + name/email +
-   * up/down chevron. Hover/open = quiet neutral tint, exactly like shadcn's
+   * item, not a form control): accent initials avatar + name/email + up/down
+   * chevron. Hover/open = quiet neutral tint, exactly like shadcn's
    * sidebar-accent. The popup above it follows shadcn's dropdown-menu
-   * anatomy: soft border, shadow-md, 4px padding, 14px rows, full-bleed
+   * anatomy: soft border, shadow-md, 4px padding, compact rows, full-bleed
    * separators. */
-  /* Flush with the nav links: the wrap already provides the column inset,
-   * and Payload's .nav__wrap is align-items:flex-start, so the controls row
-   * must claim the full column width itself. */
   .pt-nav__controls {
     width: 100%;
     padding-inline: 0;
@@ -703,11 +747,11 @@
     width: 100%;
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 8px;
+    gap: 10px;
+    padding: 7px 8px;
     background: transparent;
     border: 0;
-    border-radius: var(--pt-radius-item);
+    border-radius: var(--pt-radius-ctl);
     cursor: pointer;
     text-align: left;
     transition: background-color 0.12s ease;
@@ -715,25 +759,25 @@
   .pt-nav__user-trigger:hover,
   .pt-nav__user-trigger:focus-visible,
   .pt-nav__user-trigger[aria-expanded='true'] {
-    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+    background: color-mix(in srgb, var(--theme-elevation-500) 12%, transparent);
   }
   .pt-nav__user-trigger:focus-visible {
     outline: 2px solid var(--pt-accent);
     outline-offset: -2px;
   }
-  /* Circle avatar in the accent — the same color as the active nav pill.
-   * Shared by the trigger and the menu header. */
+  /* Circle avatar in the accent — ALWAYS fully round, independent of the
+   * radius setting. Shared by the trigger and the menu header. */
   .pt-nav__user-avatar {
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
     background: var(--pt-accent);
     color: var(--pt-accent-contrast);
-    font-size: 0.9rem;
+    font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.02em;
   }
@@ -742,20 +786,20 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    line-height: 1.2;
+    gap: 1px;
+    line-height: 1.25;
   }
   .pt-nav__user-name {
-    font-size: 1rem;
+    font-size: 13px;
     font-weight: 600;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.005em;
     color: var(--theme-text);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
   .pt-nav__user-email {
-    font-size: 0.9rem;
+    font-size: 11.5px;
     color: var(--theme-elevation-500);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -763,8 +807,8 @@
   }
   .pt-nav__user-chevron {
     flex-shrink: 0;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     color: var(--theme-elevation-500);
   }
 
@@ -777,18 +821,12 @@
     z-index: 30;
     padding: 4px;
     background: var(--theme-elevation-0);
-    border: 1px solid var(--theme-elevation-100);
-    border-radius: 12px;
-    box-shadow:
-      0 4px 6px -1px rgb(0 0 0 / 0.08),
-      0 2px 4px -2px rgb(0 0 0 / 0.08);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-md);
   }
   html[data-theme='dark'] .pt-nav__user-menu {
     background: var(--theme-elevation-50);
-    border-color: var(--theme-elevation-150);
-    box-shadow:
-      0 4px 6px -1px rgb(0 0 0 / 0.4),
-      0 2px 4px -2px rgb(0 0 0 / 0.4);
   }
   @media (prefers-reduced-motion: no-preference) {
     .pt-nav__user-menu {
@@ -809,7 +847,7 @@
   .pt-nav__user-menu-header {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     padding: 8px;
   }
   /* full-bleed hairline between menu groups (mirrors the shadcn menu) */
@@ -829,11 +867,11 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 9px 10px;
+    padding: 8px 10px;
     border: 0;
     background: none;
-    border-radius: 8px;
-    font-size: 0.92rem;
+    border-radius: var(--pt-radius-item);
+    font-size: 13px;
     font-weight: 450;
     color: var(--theme-text);
     text-align: left;
@@ -893,14 +931,15 @@
 }
 
 /* ==================================================================== *
- * LAYOUT FRAME — two-tone chrome + content well (Phase 5, module 2)
+ * LAYOUT FRAME — the inset content card (the reference's signature)
  *
- * White "chrome" (sidebar + header) wraps a GRAY content well. The wrap
- * paints the white that shows through the header strip and behind the
- * well's single rounded corner (top-left) — the point where the well
- * meets the white sidebar/header. The well is flush to the right and
- * bottom edges (no gap). We also strip two bits of default chrome: the
- * desktop nav collapse toggle and the breadcrumb (step-nav).
+ * The whole page is the gray field (--theme-bg on .template-default, which
+ * Payload paints by default). The sidebar sits directly on it. EVERYTHING
+ * else — header + views — lives in ONE white card: rounded, bordered,
+ * shadow-sm, floating with an 8px gutter (flush only toward the sidebar,
+ * whose own padding provides that gap — exactly the reference's
+ * `m-2 ml-0` inset). The app header is sticky and translucent inside the
+ * card, with the breadcrumb restored as its content.
  * ==================================================================== */
 @layer payload {
   /* 1) Remove the desktop nav collapse toggle (the "<" chevron, top-left).
@@ -909,17 +948,12 @@
     display: none;
   }
 
-  /* 2) Remove the breadcrumb / step-nav in the app header. */
-  .app-header__step-nav-wrapper {
-    display: none;
-  }
-
-  /* 3) The right column's background is the WHITE chrome. The header bg is
-   *    cleared so this white shows through the top strip, and it also backs
-   *    the well's rounded-corner notch — no border cuts the sidebar→header
-   *    join. Flex column so the well can stretch to the bottom edge no
-   *    matter how the view splits its content. */
+  /* 2) The content card. Inside it, --theme-bg is remapped to the card
+   *    surface so every Payload gradient/shim that fades "to the page
+   *    background" (doc-controls overflow fades, step-nav fade, …) resolves
+   *    to WHITE here, while the page outside stays gray. */
   .template-default__wrap {
+    --theme-bg: var(--theme-elevation-0);
     display: flex;
     flex-direction: column;
     min-height: 100dvh;
@@ -928,16 +962,53 @@
   .template-default__wrap > * {
     flex: 0 0 auto;
   }
+
+  @media (min-width: 769px) {
+    .template-default__wrap {
+      margin-block: 8px;
+      margin-inline: 0 8px;
+      min-height: calc(100dvh - 16px);
+      border: 1px solid var(--theme-border-color);
+      border-radius: var(--pt-radius-card);
+      box-shadow: var(--pt-shadow-sm);
+    }
+    /* drawer mode / closed nav: no sidebar gutter on the left — add our own */
+    .template-default:not(.template-default--nav-open) .template-default__wrap {
+      margin-inline-start: 8px;
+    }
+  }
+
+  /* 3) Sticky translucent header (h-14, border-b, backdrop blur), top
+   *    corners rounded to match the card it caps. */
+  .app-header {
+    position: sticky;
+    top: 0;
+    background: color-mix(in srgb, var(--theme-elevation-0) 72%, transparent);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--theme-elevation-100);
+  }
+  @media (min-width: 769px) {
+    .app-header {
+      border-start-start-radius: calc(var(--pt-radius-card) - 1px);
+      border-start-end-radius: calc(var(--pt-radius-card) - 1px);
+    }
+  }
   .app-header__bg {
     background: transparent;
     border: 0;
     box-shadow: none;
   }
 
-  /* 4) The header carries no content of its own: the account button and the
-   *    content-locale switcher both live in the sidebar's user menu
-   *    (.pt-nav__user). Only the mobile hamburger (and any project-specific
-   *    custom actions) remain. */
+  /* 4) No breadcrumbs, no Payload mark — the header carries only the right
+   *    side actions (theme customizer, light/dark toggle, user menu) plus
+   *    the mobile hamburger. */
+  .app-header__step-nav-wrapper {
+    display: none;
+  }
+
+  /* 5) Payload's own account button and content-locale switcher stay hidden:
+   *    both features live in the theme's user menus (sidebar + header). */
   .app-header__account,
   .app-header__localizer,
   .app-header__localizer-spacing {
@@ -945,34 +1016,39 @@
   }
   .app-header__actions-wrapper {
     margin-left: auto;
+    margin-right: 0;
+  }
+  .app-header__actions {
+    max-width: none;
+    overflow: visible;
+  }
+  /* flush to the right edge: the content strip keeps its wide reading
+   * gutter only on the start side; actions hug the card's right corner */
+  .app-header__content {
+    padding-inline-end: 20px;
+  }
+  .app-header__last-action {
+    margin-right: 0;
+  }
+  /* the fade shim next to the actions reads as a smudge on the clean header */
+  .app-header__gradient-placeholder {
+    display: none;
   }
 
-  /* 5) The GRAY content well spans EVERYTHING below the app header. Some
-   *    views render one content child (.gutter.dashboard, .collection-list),
-   *    others split into a title strip + fields (.doc-header +
-   *    .collection-edit on edit/account/global views) — so every classed
-   *    sibling joins the well ([class] also skips Payload's classless
-   *    utility divs, incl. a position:fixed one). The rounded join +
-   *    top inset go on the child right under the header; the main content
-   *    root stretches to the bottom edge (flush, no gap). */
-  .template-default__wrap > [class]:not(.app-header) {
-    margin: 0;
-    background: var(--theme-bg);
-    border: 0;
-  }
+  /* 6) Views stretch the card to the bottom edge; a little air above and
+   *    below the content. (No gray well anymore — the card IS the surface.) */
   .template-default__wrap > .app-header + [class] {
-    border-top-left-radius: var(--pt-radius-card);
-    padding-block-start: 24px; /* --gutter-h (60px) reads too airy on top */
+    padding-block-start: 24px;
   }
   .template-default__wrap > [class]:not(.app-header):not(.doc-header) {
     flex: 1 0 auto;
     padding-block-end: 24px;
   }
 
-  /* 6) Payload wraps the account/auth fields (email, password buttons) in an
-   *    elevation-50 card with 40px padding. On our gray well that card is
-   *    invisible — all that remains is a 40px mis-indent vs. sibling fields.
-   *    Flatten it so auth fields align with everything else. */
+  /* 7) Payload wraps the account/auth fields (email, password buttons) in an
+   *    elevation-50 card with 40px padding — on the white card that reads as
+   *    a random gray slab. Flatten it so auth fields align with everything
+   *    else. */
   .auth-fields {
     padding: 0;
     background: transparent;
@@ -980,21 +1056,26 @@
   }
 
   /* ==========================================================================
-   * DASHBOARD — widget grid (Phase 5, module 3)
+   * DASHBOARD — widget grid
    *
    * The custom Dashboard view renders an ordered list of widgets into one
-   * responsive grid: a full-row welcome block, then one card per visible
-   * collection (icon chip + plural label + large doc count + '+' quick
-   * action) and per global. Cards sit on the gray content well as white
-   * elevation-0 surfaces with the theme's signature 3px accent top stripe;
-   * hover feedback is a subtle accent border + ring — no transforms, nothing
-   * jumpy. All colours come from tokens so light/dark both just work.
+   * responsive grid: one card per visible collection (icon chip + plural
+   * label + large doc count + '+' quick action) and per global. Cards are
+   * white shadcn cards (border + xs shadow) on the content surface; hover
+   * is a neutral border/shadow lift — no transforms, nothing jumpy. All
+   * colours come from tokens so light/dark both just work.
    * ======================================================================== */
 
   .pt-dash__grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    /* every card ends up the exact same size — rows share the tallest
+     * card's height, and a minimum keeps spark-less cards from squatting */
+    grid-auto-rows: 1fr;
     gap: 16px;
+  }
+  .pt-dash__cell {
+    min-height: 150px;
   }
 
   .pt-dash__cell {
@@ -1008,35 +1089,30 @@
 
   /* -- entity cards (shadcn stat-card anatomy) ------------------------------
    * Head row: accent icon chip + label side by side. Body: big count + muted
-   * caption. Clean card — no accent stripe; the icon chip carries the accent.
-   * In dark mode the card lifts to elevation-50 (the well and elevation-0
-   * are nearly the same black, which made cards read muddy). */
+   * caption. In dark mode the card lifts to elevation-50 (the content
+   * surface and elevation-0 are the same near-black, which made cards read
+   * muddy). */
   .pt-dash__card {
     position: relative;
     display: flex;
     flex-direction: column;
     gap: 14px;
     flex: 1 1 auto;
-    padding: 17px 18px 16px;
+    padding: 18px 18px 16px;
     background-color: var(--theme-elevation-0);
     border: 1px solid var(--theme-border-color);
     border-radius: var(--pt-radius-card);
-    box-shadow:
-      0 1px 2px rgb(0 0 0 / 0.04),
-      0 4px 14px -8px rgb(0 0 0 / 0.08);
+    box-shadow: var(--pt-shadow-xs);
     transition:
       border-color 0.15s ease,
       box-shadow 0.15s ease;
   }
   html[data-theme='dark'] .pt-dash__card {
     background-color: var(--theme-elevation-50);
-    border-color: var(--theme-elevation-150);
   }
   .pt-dash__card:hover {
-    border-color: color-mix(in srgb, var(--pt-accent) 45%, var(--theme-border-color));
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--pt-accent) 25%, transparent),
-      0 4px 14px -6px rgb(0 0 0 / 0.1);
+    border-color: var(--theme-elevation-300);
+    box-shadow: var(--pt-shadow-sm);
   }
 
   .pt-dash__card-head {
@@ -1057,14 +1133,14 @@
     color: var(--pt-accent);
 
     svg {
-      width: 17px;
-      height: 17px;
+      width: 16px;
+      height: 16px;
     }
   }
   .pt-dash__card-label {
     font-size: 0.86rem;
-    font-weight: 600;
-    color: var(--theme-elevation-800);
+    font-weight: 500;
+    color: var(--theme-elevation-600);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1124,7 +1200,7 @@
     justify-content: center;
     width: 26px;
     height: 26px;
-    border-radius: var(--pt-radius-ctl);
+    border-radius: var(--pt-radius-item);
     color: var(--theme-elevation-500);
     transition:
       background-color 0.15s ease,
@@ -1184,29 +1260,582 @@
 }
 
 /* ==================================================================== *
- * CONTROLS — list toolbar, pills, doc tabs, add buttons, logout
- * (Phase 5, module 4)
+ * HEADER ACTIONS — theme customizer, light/dark toggle, user menu
  *
- * The remaining default-looking chrome: the list search bar + its
- * Columns/Filters toggles, generic pills, the Edit/API doc tabs, the
- * relationship "+" and array/blocks add-row buttons, and the nav logout.
- * Pure CSS — markup and behavior untouched.
+ * Rendered by the HeaderActions component through `admin.components.actions`
+ * into the app header's right side. The customizer panel and the user menu
+ * are absolutely-positioned popovers dropping below the header.
  * ==================================================================== */
 @layer payload {
-  /* ---- list search bar: same language as inputs (pill + border + ring).
+  .pt-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* ---- quiet 34px ghost icon buttons (palette, sun/moon) ---- */
+  .pt-header-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: var(--pt-radius-ctl);
+    color: var(--theme-elevation-600);
+    cursor: pointer;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+
+    svg {
+      width: 17px;
+      height: 17px;
+    }
+  }
+  .pt-header-btn:hover,
+  .pt-header-btn:focus-visible,
+  .pt-header-btn[aria-expanded='true'] {
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+    color: var(--theme-text);
+  }
+  .pt-header-btn:focus-visible {
+    outline: none;
+  }
+
+  /* ---- customizer popover ---- */
+  .pt-custom {
+    position: relative;
+  }
+  .pt-custom__panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    inset-inline-end: 0;
+    z-index: 80;
+    width: min(308px, calc(100vw - 32px));
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 14px;
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-lg);
+    white-space: normal;
+  }
+  html[data-theme='dark'] .pt-custom__panel {
+    background: var(--theme-elevation-50);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .pt-custom__panel {
+      animation: pt-user-menu-in 0.13s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+  }
+
+  .pt-custom__section {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .pt-custom__label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--theme-elevation-500);
+  }
+
+  /* accent swatches: a tidy 5-per-row grid of rounded color tiles; the
+   * active tile carries a white check and a ring in its own color (picking
+   * it makes that color THE accent, so the ring self-updates) */
+  .pt-custom__swatches {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .pt-custom__swatch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.1);
+    transition:
+      transform 0.12s ease,
+      box-shadow 0.12s ease;
+  }
+  html[data-theme='dark'] .pt-custom__swatch {
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16);
+  }
+  .pt-custom__swatch:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 0 0 1px rgb(0 0 0 / 0.1),
+      0 2px 6px rgb(0 0 0 / 0.18);
+  }
+  .pt-custom__swatch--active,
+  .pt-custom__swatch--active:hover {
+    transform: none;
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.2),
+      0 0 0 2px var(--theme-elevation-0),
+      0 0 0 4px var(--pt-accent);
+  }
+  html[data-theme='dark'] .pt-custom__swatch--active,
+  html[data-theme='dark'] .pt-custom__swatch--active:hover {
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.2),
+      0 0 0 2px var(--theme-elevation-50),
+      0 0 0 4px var(--pt-accent);
+  }
+  /* white check on the active tile */
+  .pt-custom__swatch--active::after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.35));
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+
+  /* custom hex: ONE field — a live color dot inside the input box */
+  .pt-custom__hex {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    height: 34px;
+    padding: 0 11px;
+    background: var(--theme-input-bg);
+    border: 1px solid var(--pt-input-border);
+    border-radius: 8px;
+    transition:
+      border-color 0.12s ease,
+      box-shadow 0.12s ease;
+  }
+  .pt-custom__hex:focus-within {
+    border-color: var(--pt-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--pt-accent-ring) 18%, transparent);
+  }
+  .pt-custom__hex-preview {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.12);
+  }
+  html[data-theme='dark'] .pt-custom__hex-preview {
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18);
+  }
+  .pt-custom__hex-input {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    outline: none;
+    box-shadow: none;
+    color: var(--theme-text);
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+  }
+  .pt-custom__hex-input::placeholder {
+    color: var(--theme-elevation-400);
+  }
+  .pt-custom__hex-input:focus,
+  .pt-custom__hex-input:focus-visible {
+    outline: none;
+    border: 0;
+    box-shadow: none;
+  }
+
+  /* segmented rows (radius / color mode / layout) — the shadcn Tabs track */
+  .pt-custom__segments {
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    padding: 3px;
+    background: var(--theme-elevation-100);
+    border-radius: var(--pt-radius-ctl);
+  }
+  html[data-theme='dark'] .pt-custom__segments {
+    background: var(--theme-elevation-100);
+  }
+  .pt-custom__segment {
+    flex: 1 1 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 4px;
+    border: 0;
+    background: transparent;
+    border-radius: calc(var(--pt-radius-ctl) - 2px);
+    color: var(--theme-elevation-500);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+
+    svg {
+      width: 13px;
+      height: 13px;
+    }
+  }
+  .pt-custom__segment:hover {
+    color: var(--theme-text);
+  }
+  .pt-custom__segment--active {
+    background: var(--theme-elevation-0);
+    color: var(--theme-text);
+    box-shadow: var(--pt-shadow-xs);
+  }
+  html[data-theme='dark'] .pt-custom__segment--active {
+    background: var(--theme-elevation-200);
+  }
+
+  /* reset: the one solid (auto-inverting) action in the panel */
+  .pt-custom__reset {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: var(--pt-radius-ctl);
+    background: var(--theme-elevation-1000);
+    color: var(--theme-elevation-0);
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.12s ease;
+
+    svg {
+      width: 13px;
+      height: 13px;
+    }
+  }
+  .pt-custom__reset:hover {
+    opacity: 0.85;
+  }
+
+  /* ---- header user chip + downward menu (mirrors the sidebar block) ---- */
+  .pt-header-user {
+    position: relative;
+    margin-inline-start: 2px;
+  }
+  .pt-header-user-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 6px 4px 4px;
+    background: transparent;
+    border: 0;
+    border-radius: var(--pt-radius-ctl);
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.12s ease;
+  }
+  .pt-header-user-trigger:hover,
+  .pt-header-user-trigger:focus-visible,
+  .pt-header-user-trigger[aria-expanded='true'] {
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+  }
+  .pt-header-user-trigger:focus-visible {
+    outline: none;
+  }
+  .pt-header-user-avatar {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px; /* always a circle, radius-agnostic */
+    background: var(--pt-accent);
+    color: var(--pt-accent-contrast);
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .pt-header-user-info {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+  .pt-header-user-name {
+    font-size: 13px;
+    font-weight: 550;
+    color: var(--theme-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+  }
+  /* email only in the dropdown, not in the compact chip */
+  .pt-header-user-trigger .pt-header-user-email {
+    display: none;
+  }
+  .pt-header-user-chevron {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    color: var(--theme-elevation-500);
+  }
+  /* tight screens: avatar-only chip */
+  @media (max-width: 900px) {
+    .pt-header-user-trigger .pt-header-user-info,
+    .pt-header-user-trigger .pt-header-user-chevron {
+      display: none;
+    }
+  }
+
+  .pt-header-user-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    inset-inline-end: 0;
+    z-index: 80;
+    width: 236px;
+    padding: 4px;
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-md);
+    white-space: normal;
+  }
+  html[data-theme='dark'] .pt-header-user-menu {
+    background: var(--theme-elevation-50);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .pt-header-user-menu {
+      animation: pt-user-menu-in 0.13s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+  }
+  .pt-header-user-menu-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+  }
+  .pt-header-user-menu .pt-header-user-name {
+    max-width: none;
+  }
+  .pt-header-user-email {
+    font-size: 11.5px;
+    color: var(--theme-elevation-500);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pt-header-user-menu-sep {
+    height: 1px;
+    margin: 4px -4px;
+    background: var(--theme-elevation-100);
+  }
+  .pt-header-user-menu-label {
+    padding: 6px 8px 2px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--theme-elevation-500);
+  }
+  .pt-header-user-menu-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 0;
+    background: none;
+    border-radius: var(--pt-radius-item);
+    font-size: 13px;
+    font-weight: 450;
+    color: var(--theme-text);
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color 0.1s ease,
+      color 0.1s ease;
+
+    svg {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      color: var(--theme-elevation-500);
+    }
+  }
+  .pt-header-user-menu-item:hover,
+  .pt-header-user-menu-item:focus-visible {
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+    color: var(--theme-text);
+    text-decoration: none;
+  }
+  .pt-header-user-menu-item:focus-visible {
+    outline: none;
+  }
+  .pt-header-user-menu-item:disabled {
+    cursor: default;
+    color: var(--theme-text);
+  }
+  .pt-header-user-menu-item:disabled:hover {
+    background: none;
+  }
+  .pt-header-user-menu-check {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+
+    svg {
+      width: 14px;
+      height: 14px;
+      color: var(--pt-accent);
+    }
+  }
+  .pt-header-user-menu-item--logout:hover,
+  .pt-header-user-menu-item--logout:focus-visible {
+    background: color-mix(in srgb, var(--theme-error-500) 12%, transparent);
+    color: var(--theme-error-600);
+
+    svg {
+      color: var(--theme-error-600);
+    }
+  }
+}
+
+/* ==================================================================== *
+ * ACTION ICONS — every primary action button gets its glyph
+ *
+ * Payload's action buttons render text-only. Each known action gets a
+ * lucide glyph drawn as a currentColor mask, so it recolors with the
+ * button in every state and theme. Pure CSS — markup untouched.
+ * ==================================================================== */
+@layer payload {
+  /* the icon chip itself */
+  .list-create-new-doc__create-new-button .btn__content::before,
+  .list-header__title-actions .btn[aria-label='Bulk Upload'] .btn__content::before,
+  #action-save .btn__content::before,
+  #action-save-draft .btn__content::before,
+  #action-create::before,
+  #action-duplicate::before,
+  #action-delete::before,
+  #action-unpublish::before,
+  #toggle-list-columns::before,
+  #toggle-list-filters::before {
+    content: '';
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    background: currentColor;
+    -webkit-mask: var(--pt-ico) center / contain no-repeat;
+    mask: var(--pt-ico) center / contain no-repeat;
+  }
+
+  /* buttons: make the content row flex so the glyph sits beside the label */
+  .list-create-new-doc__create-new-button .btn__content,
+  .list-header__title-actions .btn[aria-label='Bulk Upload'] .btn__content,
+  #action-save .btn__content,
+  #action-save-draft .btn__content {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  /* popup rows are anchors/buttons — give them the same row anatomy */
+  #action-create,
+  #action-duplicate,
+  #action-delete,
+  #action-unpublish {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  /* pills: glyph leads the label */
+  #toggle-list-columns,
+  #toggle-list-filters {
+    gap: 6px;
+  }
+  #toggle-list-columns::before,
+  #toggle-list-filters::before {
+    width: 13px;
+    height: 13px;
+  }
+
+  /* the glyphs (lucide, stroke 2) */
+  .list-create-new-doc__create-new-button .btn__content,
+  #action-create {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M12 5v14'/%3E%3C/svg%3E");
+  }
+  .list-header__title-actions .btn[aria-label='Bulk Upload'] .btn__content {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v12'/%3E%3Cpath d='m17 8-5-5-5 5'/%3E%3Cpath d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3C/svg%3E");
+  }
+  #action-save .btn__content {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+  }
+  #action-save-draft .btn__content {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z'/%3E%3Cpath d='M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7'/%3E%3Cpath d='M7 3v4a1 1 0 0 0 1 1h7'/%3E%3C/svg%3E");
+  }
+  #action-duplicate {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='14' height='14' x='8' y='8' rx='2' ry='2'/%3E%3Cpath d='M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2'/%3E%3C/svg%3E");
+  }
+  #action-delete {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/%3E%3Cpath d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/%3E%3Cpath d='M10 11v6'/%3E%3Cpath d='M14 11v6'/%3E%3C/svg%3E");
+  }
+  #action-unpublish {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='5' x='2' y='3' rx='1'/%3E%3Cpath d='M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8'/%3E%3Cpath d='M10 12h4'/%3E%3C/svg%3E");
+  }
+  #toggle-list-columns {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2'/%3E%3Cpath d='M9 3v18'/%3E%3Cpath d='M15 3v18'/%3E%3C/svg%3E");
+  }
+  #toggle-list-filters {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M7 12h10'/%3E%3Cpath d='M10 18h4'/%3E%3C/svg%3E");
+  }
+
+  /* destructive rows read as destructive on hover */
+  #action-delete:hover,
+  #action-delete:focus-visible {
+    background: color-mix(in srgb, var(--theme-error-500) 12%, transparent);
+    color: var(--theme-error-600);
+  }
+}
+
+/* ==================================================================== *
+ * CONTROLS — list toolbar, pills, doc tabs, add buttons
+ *
+ * The list search bar + its Columns/Filters toggles, generic pills, the
+ * Edit/API doc tabs (a shadcn segmented control), the relationship "+"
+ * and array/blocks add-row buttons. Pure CSS — markup and behavior
+ * untouched.
+ * ==================================================================== */
+@layer payload {
+  /* ---- list search bar: same language as inputs (border + ring).
    * The ring moves to the container; the inner input must stay borderless
    * in every state or it would double up with the FORMS focus rule. */
   .search-bar {
     background: var(--theme-input-bg);
-    border: 1px solid var(--theme-elevation-150);
+    border: 1px solid var(--pt-input-border);
     border-radius: var(--pt-radius-ctl);
+    box-shadow: var(--pt-shadow-xs);
     transition:
       border-color 0.12s ease,
       box-shadow 0.12s ease;
   }
   .search-bar:focus-within {
     border-color: var(--pt-accent);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--pt-accent-ring) 10%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--pt-accent-ring) 18%, transparent);
   }
   .search-bar .search-filter__input,
   .search-bar .search-filter__input:focus,
@@ -1217,7 +1846,8 @@
   }
 
   /* ---- pills (Columns/Filters toggles, column-selector chips, …) ----
-   * light = quiet outline chip; dark (= selected/active) = accent chip. */
+   * light = quiet outline chip with a neutral hover; dark (= selected/
+   * active) = accent chip. */
   .pill {
     border-radius: var(--pt-radius-ctl);
   }
@@ -1226,13 +1856,13 @@
   }
   .pill--style-light {
     background: var(--theme-input-bg);
-    border: 1px solid var(--theme-elevation-150);
+    border: 1px solid var(--theme-border-color);
     color: var(--theme-elevation-600);
   }
   .pill--style-light.pill--has-action:hover {
-    background: color-mix(in srgb, var(--pt-accent) 10%, transparent);
-    border-color: color-mix(in srgb, var(--pt-accent) 30%, var(--theme-elevation-150));
-    color: var(--theme-elevation-800);
+    background: color-mix(in srgb, var(--theme-elevation-500) 8%, transparent);
+    border-color: var(--theme-elevation-300);
+    color: var(--theme-text);
   }
   .pill--style-dark {
     background: var(--pt-accent);
@@ -1253,9 +1883,9 @@
     --hover-color: var(--pt-accent-contrast);
   }
 
-  /* ---- doc tabs (Edit / Versions / API): ONE bordered segmented control;
-   * the active segment lifts on a raised chip. Reads as a single, defined
-   * switch instead of floating links. */
+  /* ---- doc tabs (Edit / Versions / API): the shadcn Tabs list — a muted
+   * rounded track; the active segment lifts on a white chip with an xs
+   * shadow. */
   .doc-tabs__tabs {
     display: inline-flex;
     align-items: center;
@@ -1263,8 +1893,8 @@
     margin: 0;
     padding: 3px;
     list-style: none;
-    background: var(--theme-bg);
-    border: 1px solid var(--theme-elevation-150);
+    background: var(--theme-elevation-100);
+    border: 0;
     border-radius: var(--pt-radius-ctl);
   }
   html[data-theme='dark'] .doc-tabs__tabs {
@@ -1272,7 +1902,7 @@
   }
   .doc-tab {
     background: transparent;
-    border-radius: var(--pt-radius-ctl);
+    border-radius: calc(var(--pt-radius-ctl) - 2px);
     color: var(--theme-elevation-500);
     --btn-padding-block-start: 4px;
     --btn-padding-block-end: 4px;
@@ -1284,23 +1914,20 @@
   a.doc-tab:hover,
   a.doc-tab:focus-visible {
     background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
-    color: var(--theme-elevation-800);
+    color: var(--theme-text);
     text-decoration: none;
   }
   .doc-tab--active {
     background: var(--theme-elevation-0);
     color: var(--theme-text);
-    box-shadow:
-      0 1px 2px rgb(0 0 0 / 0.07),
-      0 0 0 1px var(--theme-elevation-150);
+    box-shadow: var(--pt-shadow-xs);
   }
   html[data-theme='dark'] .doc-tab--active {
     background: var(--theme-elevation-150);
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
   }
 
-  /* ---- relationship "+" (add new related doc): a detached circle that
-   * matches the 40px input height instead of a glued square. */
+  /* ---- relationship "+" (add new related doc): a detached square chip
+   * matching the 40px input height. */
   .relationship-add-new__add-button {
     width: 40px;
     height: 40px;
@@ -1309,7 +1936,7 @@
     align-items: center;
     justify-content: center;
     background: var(--theme-input-bg);
-    border: 1px solid var(--theme-elevation-150);
+    border: 1px solid var(--pt-input-border);
     border-radius: var(--pt-radius-ctl);
     color: var(--theme-elevation-600);
     transition:
@@ -1320,12 +1947,12 @@
   .relationship-add-new__add-button:hover,
   .relationship-add-new__add-button:focus-visible {
     background: var(--pt-accent-subtle);
-    border-color: color-mix(in srgb, var(--pt-accent) 40%, var(--theme-elevation-150));
+    border-color: color-mix(in srgb, var(--pt-accent) 40%, var(--pt-input-border));
     color: var(--pt-accent);
   }
 
   /* ---- array / blocks "add row" (e.g. "Add Social Link"): accent ghost
-   * button; the plus icon sits in an accent-subtle circle. */
+   * button; the plus icon sits in an accent-subtle chip. */
   .array-field__add-row,
   .blocks-field__drawer-toggler {
     /* Payload paints the label/stroke of add-row buttons from its own
@@ -1343,15 +1970,13 @@
   .blocks-field__drawer-toggler .btn__icon {
     background: var(--pt-accent-subtle);
     border: 0;
-    border-radius: var(--pt-radius-ctl);
+    border-radius: var(--pt-radius-item);
     color: var(--pt-accent);
   }
-
 }
 
 /* ==================================================================== *
  * DOC CHROME — popup menus, confirmation modal, status, API view
- * (Phase 5, module 5)
  *
  * The document-level chrome: the "..." actions popup (and every other
  * Popup instance — per-page, sort, column menus inherit this), the
@@ -1364,14 +1989,11 @@
     background: var(--theme-elevation-0);
     border: 1px solid var(--theme-border-color);
     border-radius: var(--pt-radius-card);
-    box-shadow:
-      0 8px 30px -6px rgb(0 0 0 / 0.15),
-      0 2px 8px rgb(0 0 0 / 0.06);
-    padding: 6px;
+    box-shadow: var(--pt-shadow-md);
+    padding: 5px;
   }
   html[data-theme='dark'] .popup__content {
     background: var(--theme-elevation-50);
-    border-color: var(--theme-elevation-150);
   }
   .popup__caret {
     display: none; /* floating menu, no caret (shadcn) */
@@ -1379,7 +2001,7 @@
   .popup-button-list__button {
     border-radius: var(--pt-radius-item);
     padding: 7px 10px;
-    color: var(--theme-elevation-800);
+    color: var(--theme-text);
     text-decoration: none;
     transition:
       background-color 0.12s ease,
@@ -1387,7 +2009,7 @@
   }
   .popup-button-list__button:hover,
   .popup-button-list__button:focus-visible {
-    background: color-mix(in srgb, var(--pt-accent) 10%, transparent);
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
     color: var(--theme-text);
     text-decoration: none;
   }
@@ -1396,11 +2018,10 @@
   .confirmation-modal__wrapper {
     border: 1px solid var(--theme-border-color);
     border-radius: var(--pt-radius-card);
-    box-shadow: 0 20px 60px -12px rgb(0 0 0 / 0.3);
+    box-shadow: var(--pt-shadow-lg);
   }
   html[data-theme='dark'] .confirmation-modal__wrapper {
     background: var(--theme-elevation-50);
-    border-color: var(--theme-elevation-150);
   }
   .confirmation-modal__content h1 {
     font-size: 1.3rem;
@@ -1412,7 +2033,7 @@
     display: inline-flex;
     align-items: center;
     padding: 2px 10px;
-    border-radius: var(--pt-radius-ctl);
+    border-radius: 999px;
     background: var(--theme-elevation-100);
     font-size: 0.8rem;
   }
@@ -1432,7 +2053,6 @@
   }
   html[data-theme='dark'] .query-inspector__results {
     background: var(--theme-elevation-50);
-    border-color: var(--theme-elevation-150);
   }
   .copy-to-clipboard {
     border-radius: var(--pt-radius-item);
@@ -1443,14 +2063,13 @@
   }
   .copy-to-clipboard:hover,
   .copy-to-clipboard:focus-visible {
-    background: color-mix(in srgb, var(--pt-accent) 10%, transparent);
-    color: var(--pt-accent);
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+    color: var(--theme-text);
   }
 }
 
 /* ==================================================================== *
  * UPLOAD FAMILY — dropzone, file details, upload cards, thumbnails
- * (Phase 5, module 6)
  *
  * Media create (Dropzone), media edit (FileDetails header card), the
  * upload field card (e.g. Cover Image) and thumbnails in table cells.
@@ -1463,7 +2082,7 @@
   }
   .dropzone {
     background: var(--theme-input-bg);
-    border: 1px dashed var(--theme-elevation-250);
+    border: 1px dashed var(--theme-elevation-300);
     border-radius: var(--pt-radius-card);
     transition:
       border-color 0.15s ease,
@@ -1487,7 +2106,6 @@
   }
   html[data-theme='dark'] .file-details {
     background: var(--theme-elevation-50);
-    border-color: var(--theme-elevation-150);
   }
   .file-meta__url a {
     text-decoration: none;
@@ -1508,7 +2126,6 @@
   }
   html[data-theme='dark'] .upload-field-card {
     background: var(--theme-elevation-50);
-    border-color: var(--theme-elevation-150);
   }
   .upload-relationship-details__filename a {
     text-decoration: none;
@@ -1531,7 +2148,7 @@
 }
 
 /* ==================================================================== *
- * FEEDBACK — toasts, tooltips, banners, error pills (Phase 5, module 7)
+ * FEEDBACK — toasts, tooltips, banners, error pills
  *
  * Shape-only pass: Payload's feedback layer already uses the semantic
  * success/error/warning tokens (kept independent of the accent, per the
@@ -1541,14 +2158,13 @@
   /* ---- toasts (sonner): softer card ---- */
   .payload-toast-container .payload-toast-item {
     border-radius: var(--pt-radius-card);
-    box-shadow:
-      0 8px 30px -6px rgb(0 0 0 / 0.14),
-      0 2px 8px rgb(0 0 0 / 0.06);
+    border: 1px solid var(--theme-border-color);
+    box-shadow: var(--pt-shadow-md);
   }
 
   /* ---- tooltips: rounded bubble ---- */
   .tooltip {
-    border-radius: var(--pt-radius-card);
+    border-radius: var(--pt-radius-item);
     font-size: 0.8rem;
     font-weight: 500;
   }
@@ -1561,7 +2177,7 @@
 
   /* ---- error pills (tab/collapsible error counts) ---- */
   .error-pill {
-    border-radius: var(--pt-radius-ctl);
+    border-radius: 999px;
     font-weight: 600;
   }
 
@@ -1572,11 +2188,11 @@
 }
 
 /* ==================================================================== *
- * AUTH SCREENS — login / forgot-password / reset (Phase 5, module 8)
+ * AUTH SCREENS — login / forgot-password / reset
  *
  * Payload renders auth views in `template-minimal` on the bare page
- * background. We turn the inner wrap into a centered login card:
- * logo on top, themed inputs (already styled by the FORMS
+ * background (the gray field). We turn the inner wrap into a centered
+ * login card: logo on top, themed inputs (already styled by the FORMS
  * module), full-width accent submit.
  * ==================================================================== */
 @layer payload {
@@ -1584,12 +2200,11 @@
     background: var(--theme-elevation-0);
     border: 1px solid var(--theme-border-color);
     border-radius: var(--pt-radius-card);
-    box-shadow: 0 10px 40px -12px rgb(0 0 0 / 0.12);
+    box-shadow: var(--pt-shadow-lg);
     padding: 40px 36px 36px;
   }
   html[data-theme='dark'] .template-minimal .template-minimal__wrap {
     background: var(--theme-elevation-50);
-    border-color: var(--theme-elevation-150);
   }
 
   /* brand block: centered logo with air below */
@@ -1622,10 +2237,10 @@
 }
 
 /* ==================================================================== *
- * VERSIONS — compare/diff polish (Phase 5, module 9)
+ * VERSIONS — compare/diff polish
  *
  * The versions list and diff view inherit almost everything (table card,
- * pills, accent buttons, pill selects, gray well). Only the diff
+ * pills, accent buttons, selects, content card). Only the diff
  * highlights needed softening; their colors stay semantic via Payload's
  * own --diff-* variables.
  * ==================================================================== */
@@ -1647,7 +2262,7 @@
 }
 
 /* ==================================================================== *
- * POLISH — toast close, modal sizing, pill centering (Phase 5 fixes)
+ * POLISH — toast close, modal sizing, pill centering
  * ==================================================================== */
 @layer payload {
   /* confirmation dialogs (delete / leave-without-saving): tighter box,
@@ -1666,7 +2281,7 @@
     text-align: center;
   }
   .id-label {
-    border-radius: var(--pt-radius-ctl);
+    border-radius: 999px;
     justify-content: center;
   }
 }
@@ -1680,7 +2295,7 @@
 }
 
 /* ==================================================================== *
- * RESPONSIVE — mobile fixes + hamburger redesign (Phase 5, module 11)
+ * RESPONSIVE — mobile fixes + hamburger redesign
  *
  * 1) Hamburger becomes a chip with a custom two-bar mark (the boxed
  *    default reads dated); the nav's mobile close X becomes a matching
@@ -1694,7 +2309,7 @@
   .app-header__mobile-nav-toggler {
     width: 40px;
     height: 40px;
-    border-radius: var(--pt-radius-card);
+    border-radius: var(--pt-radius-ctl);
     align-items: center;
     justify-content: center;
     transition: background-color 0.12s ease;
@@ -1708,7 +2323,7 @@
   }
   .app-header__mobile-nav-toggler:hover,
   .app-header__mobile-nav-toggler:focus-visible {
-    background: color-mix(in srgb, var(--pt-accent) 12%, transparent);
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
   }
   .app-header__mobile-nav-toggler .hamburger {
     position: relative;
@@ -1734,7 +2349,7 @@
     position: absolute;
     left: 0;
     height: 2px;
-    border-radius: var(--pt-radius-ctl);
+    border-radius: 2px;
     background: var(--theme-elevation-800);
   }
   .app-header__mobile-nav-toggler .hamburger::before {
@@ -1754,7 +2369,7 @@
   .pt-nav .nav__mobile-close {
     width: 40px;
     height: 40px;
-    border-radius: var(--pt-radius-card);
+    border-radius: var(--pt-radius-ctl);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1762,7 +2377,7 @@
   }
   .pt-nav .nav__mobile-close:hover,
   .pt-nav .nav__mobile-close:focus-visible {
-    background: color-mix(in srgb, var(--pt-accent) 12%, transparent);
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
   }
 }
 
@@ -1778,8 +2393,7 @@
     }
 
     /* search bar hosts the Columns/Filters pills on mobile: stack them
-     * cleanly inside a rounded-rect (a full pill radius on a two-row box
-     * is what caused the overlapping-outline mess) */
+     * cleanly inside a rounded-rect box */
     .search-bar {
       height: auto;
       flex-wrap: wrap;
@@ -1801,26 +2415,27 @@
 }
 
 /* ==================================================================== *
- * LAYOUT V2 — content container + card-based forms (Phase 5, module 10)
+ * LAYOUT V2 — content container + card-based forms
  *
  * 1) Every page's content is centered and capped (~1280px) so ultra-wide
  *    screens stop stretching forms edge to edge. Centering happens via
- *    GROWING PADDING, not max-width: these gutters paint the well
- *    background, so capping their box would leak white side bands.
+ *    GROWING PADDING, not max-width: these gutters paint the content
+ *    surface, so capping their box would leak side bands.
  * 2) Edit views (collections, account, globals — NOT drawers, hence the
  *    direct-child scope on the page root): the main fields column is ONE
- *    white card; each top-level group field (e.g. Seo) becomes its own
- *    inset panel; the sidebar becomes a sticky card; the old full-height
- *    divider goes away; doc-controls slims down on the well surface.
+ *    bordered card; each top-level group field (e.g. Seo) becomes its own
+ *    muted inset panel; the sidebar becomes a bordered card too; the old
+ *    full-height divider goes away; doc-controls slims down into a sticky
+ *    translucent command bar under the app header.
  * ==================================================================== */
 @layer payload {
   /* ---- 1) global content container ---- */
   .template-default__wrap .gutter--left.gutter--right {
-    padding-inline: max(var(--gutter-h), calc((100% - 1280px) / 2));
+    padding-inline: max(var(--gutter-h), calc((100% - var(--pt-content-width, 1280px)) / 2));
   }
   .template-default__wrap > .collection-edit .document-fields {
     width: 100%;
-    max-width: calc(1280px + 120px);
+    max-width: calc(var(--pt-content-width, 1280px) + 120px);
     margin-inline: auto;
   }
 
@@ -1843,6 +2458,7 @@
     background: var(--theme-elevation-0);
     border: 1px solid var(--theme-border-color);
     border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-xs);
     padding: 28px 32px 32px;
   }
   html[data-theme='dark']
@@ -1850,7 +2466,6 @@
     > .collection-edit
     .document-fields__fields {
     background: var(--theme-elevation-50);
-    border-color: var(--theme-elevation-150);
   }
 
   /* the divider between main and sidebar is replaced by the cards */
@@ -1858,17 +2473,21 @@
     border-right: 0;
   }
 
-  /* top-level group fields (Seo, …): their own inset panel on the well
-   * color, with a clear header — reads as a separate section */
+  /* top-level group fields (Seo, …): their own muted inset panel with a
+   * clear header — reads as a separate section */
   .template-default__wrap > .collection-edit .group-field--top-level {
-    background: var(--theme-bg);
-    border: 1px solid var(--theme-border-color);
+    background: var(--theme-elevation-50);
+    border: 1px solid var(--theme-elevation-100);
     border-radius: var(--pt-radius-card);
     padding: 22px 26px 26px;
     /* Payload bleeds top-level groups with negative side margins — reset
      * so the panel stays inside the card instead of jutting out */
     margin: 10px 0;
     width: 100%;
+  }
+  html[data-theme='dark'] .template-default__wrap > .collection-edit .group-field--top-level {
+    background: var(--theme-elevation-0);
+    border-color: var(--theme-elevation-100);
   }
   .template-default__wrap
     > .collection-edit
@@ -1890,6 +2509,7 @@
     background: var(--theme-elevation-0);
     border: 1px solid var(--theme-border-color);
     border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-xs);
     padding: 24px 26px;
     margin: 30px 40px 0 0; /* top-align with the main card; keep a right gutter */
   }
@@ -1905,14 +2525,16 @@
     > .collection-edit
     .document-fields__sidebar-fields {
     background: var(--theme-elevation-50);
-    border-color: var(--theme-elevation-150);
   }
 
   /* ---- 3) doc-controls: floating command bar ----
-   * Payload already makes this bar sticky; a translucent well surface with
-   * backdrop blur and a bottom hairline turns it into a floating command
-   * bar once the page scrolls. The hairline doubles as the header/content
-   * separator of the edit views. */
+   * Payload already makes this bar sticky; it now docks right under the
+   * sticky app header — a translucent surface with backdrop blur and a
+   * bottom hairline that doubles as the header/content separator of the
+   * edit views. (--theme-bg resolves to the card surface inside the wrap.) */
+  .template-default__wrap .doc-controls {
+    top: var(--app-header-height);
+  }
   .template-default__wrap > .collection-edit .doc-controls {
     background: color-mix(in srgb, var(--theme-bg) 82%, transparent);
     -webkit-backdrop-filter: blur(10px);
@@ -1956,11 +2578,11 @@
     align-items: center;
     gap: 7px;
     padding: 3px 11px;
-    border-radius: var(--pt-radius-ctl);
+    border-radius: 999px;
     background: var(--theme-elevation-100);
     color: var(--theme-elevation-600);
     font-size: 0.78rem;
-    font-weight: 600;
+    font-weight: 500;
   }
   .doc-controls .status__value-wrap::before {
     content: '';
@@ -1973,7 +2595,7 @@
 }
 
 /* ==================================================================== *
- * LOGIN — split-layout brand panel (Premium pass, module 1)
+ * LOGIN — split-layout brand panel
  *
  * The LoginHero component (registered via beforeLogin) injects
  * `.pt-login-hero` into the login view only; all split-layout rules are
@@ -2123,27 +2745,29 @@
 }
 
 /* ==================================================================== *
- * NAV — search trigger (Premium pass, module 2)
+ * NAV — search trigger
  *
- * A quiet input-look pill under the logo that opens the ⌘K palette.
+ * A real input-look box under the logo that opens the ⌘K palette — on the
+ * gray sidebar it reads as the reference's sidebar SearchForm (white
+ * field, xs shadow, kbd hint).
  * ==================================================================== */
 @layer payload {
-  /* air between the logo and the search pill — THE knob for this gap
-   * (overrides the shorthand in the NAV section above) */
+  /* air between the logo and the search box — THE knob for this gap */
   .pt-nav__logo {
-    padding-block-end: 40px;
+    padding-block-end: 20px;
   }
 
   .pt-nav__search {
     display: flex;
     align-items: center;
     gap: 8px;
-    width: calc(100% - 4px);
-    margin: 0 2px 20px;
-    padding: 8px 12px;
-    background: var(--theme-input-bg);
-    border: 1px solid var(--theme-elevation-150);
-    border-radius: var(--pt-radius-item);
+    width: 100%;
+    margin: 0 0 16px;
+    padding: 7px 10px;
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-ctl);
+    box-shadow: var(--pt-shadow-xs);
     color: var(--theme-elevation-500);
     font-size: 12.5px;
     font-weight: 500;
@@ -2155,8 +2779,11 @@
   }
   .pt-nav__search:hover,
   .pt-nav__search:focus-visible {
-    border-color: color-mix(in srgb, var(--pt-accent) 35%, var(--theme-elevation-150));
+    border-color: var(--theme-elevation-300);
     color: var(--theme-elevation-700);
+  }
+  html[data-theme='dark'] .pt-nav__search {
+    background: var(--theme-elevation-50);
   }
   .pt-nav__search-icon {
     width: 14px;
@@ -2169,7 +2796,7 @@
   }
   .pt-nav__search-kbd {
     padding: 2px 6px;
-    border: 1px solid var(--theme-elevation-150);
+    border: 1px solid var(--theme-border-color);
     border-radius: 5px;
     background: var(--theme-elevation-50);
     color: var(--theme-elevation-500);
@@ -2178,25 +2805,28 @@
     font-weight: 600;
     letter-spacing: 0.04em;
   }
+  html[data-theme='dark'] .pt-nav__search-kbd {
+    background: var(--theme-elevation-100);
+  }
 }
 
 /* ==================================================================== *
  * DASHBOARD V2 — sparklines
- * (Premium pass, module 3)
  * ==================================================================== */
 @layer payload {
-  /* ---- sparkline strip at the bottom of stat cards ---- */
+  /* ---- sparkline strip pinned to the bottom of stat cards (cards share
+   * one height, so the strip anchors to the bottom edge on every card) ---- */
   .pt-dash__spark {
     display: block;
     width: 100%;
     height: 34px;
-    margin-top: -2px;
+    margin-top: auto;
     color: var(--pt-accent);
   }
 }
 
 /* ==================================================================== *
- * COMMAND PALETTE — ⌘K (Premium pass, module 4)
+ * COMMAND PALETTE — ⌘K
  *
  * Rendered by the CommandPalette component into a body portal, so these
  * rules are UNLAYERED-safe inside @layer (nothing else targets them).
@@ -2227,11 +2857,9 @@
     width: min(620px, 100%);
     max-height: min(460px, 68vh);
     background: var(--theme-elevation-0);
-    border: 1px solid var(--theme-elevation-150);
+    border: 1px solid var(--theme-border-color);
     border-radius: var(--pt-radius-card);
-    box-shadow:
-      0 24px 80px -16px rgb(0 0 0 / 0.45),
-      0 4px 16px rgb(0 0 0 / 0.12);
+    box-shadow: var(--pt-shadow-lg);
     overflow: hidden;
   }
   html[data-theme='dark'] .pt-palette__panel {
@@ -2269,7 +2897,7 @@
     flex-shrink: 0;
     padding: 3px 7px;
     background: var(--theme-elevation-50);
-    border: 1px solid var(--theme-elevation-150);
+    border: 1px solid var(--theme-border-color);
     border-radius: var(--pt-radius-item);
     color: var(--theme-elevation-500);
     font-family: var(--font-body);
@@ -2291,10 +2919,10 @@
   .pt-palette__group-label {
     padding: 10px 10px 4px;
     color: var(--theme-elevation-500);
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
   }
   .pt-palette__item {
     display: flex;
@@ -2305,7 +2933,7 @@
     background: transparent;
     border: 0;
     border-radius: var(--pt-radius-item);
-    color: var(--theme-elevation-800);
+    color: var(--theme-text);
     font-family: var(--font-body);
     font-size: 0.9rem;
     font-weight: 500;
@@ -2313,7 +2941,7 @@
     cursor: pointer;
   }
   .pt-palette__item--active {
-    background: color-mix(in srgb, var(--pt-accent) 10%, transparent);
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
     color: var(--theme-text);
   }
   .pt-palette__item-icon {
@@ -2383,7 +3011,7 @@
     min-width: 16px;
     padding: 1px 4px;
     background: var(--theme-elevation-0);
-    border: 1px solid var(--theme-elevation-150);
+    border: 1px solid var(--theme-border-color);
     border-radius: 4px;
     font-family: var(--font-body);
     font-size: 10px;
@@ -2430,7 +3058,7 @@
 }
 
 /* ==================================================================== *
- * LIST — empty state + generic value badges (Premium pass, module 5)
+ * LIST — empty state + generic value badges
  * ==================================================================== */
 @layer payload {
   /* (empty-state rules live UNLAYERED at the end of this file — Payload
@@ -2451,22 +3079,22 @@
 
   /* ---- generic select-value badges ----
    * Payload tags every select cell value with `selected--<value>`; every
-   * value renders as the same neutral pill — no per-value semantic colors,
+   * value renders as the same neutral badge — no per-value semantic colors,
    * so custom select fields and the status column all look alike. */
   .table td [class*='selected--'] {
     display: inline-flex;
     align-items: center;
-    padding: 3px 12px;
-    border-radius: var(--pt-radius-ctl);
+    padding: 3px 10px;
+    border-radius: 999px;
     background: var(--theme-elevation-100);
     color: var(--theme-elevation-600);
     font-size: 0.82em;
-    font-weight: 600;
+    font-weight: 500;
   }
 }
 
 /* ==================================================================== *
- * MOTION + FORM POLISH (Premium pass, module 6)
+ * MOTION + FORM POLISH
  *
  * A soft fade-rise as each view's content mounts, a light stagger on the
  * dashboard cards, and quieter field typography. Every animation sits
@@ -2518,11 +3146,6 @@
   .collapsible__toggle-wrap {
     transition: background-color 0.12s ease;
   }
-
-  /* ---- toasts: hairline border on the soft card ---- */
-  .payload-toast-container .payload-toast-item {
-    border: 1px solid var(--theme-elevation-150);
-  }
 }
 
 @keyframes pt-view-in {
@@ -2533,16 +3156,12 @@
 }
 
 /* ==================================================================== *
- * BUTTONS V2 — size & presence (Premium pass, revisions)
+ * BUTTONS V2 — split buttons
  *
- * Payload buttons expose --btn-padding-* / --btn-font-weight locals; we
- * retune those instead of fighting the box model. Text buttons get a
- * roomier hit area and a confident label; the primary picks up a soft
- * accent shadow so it reads as THE action.
+ * split buttons (e.g. Publish changes ▾): one continuous control — the
+ * main half keeps the start radius, the chevron half the end radius.
  * ==================================================================== */
 @layer payload {
-  /* split buttons (e.g. Publish changes ▾): one continuous capsule — the
-   * main half keeps the start radius, the chevron half the end radius. */
   .btn--withPopup {
     border-radius: var(--pt-radius-ctl);
   }
@@ -2557,13 +3176,15 @@
 }
 
 /* ==================================================================== *
- * DOC CONTROLS + LOCALIZER — header chrome (Premium pass, revisions)
+ * DOC CONTROLS + LOCALIZER — header chrome
  *
  * The document toolbar's icon buttons (preview, live-preview, copy-locale)
- * and the app-header locale switcher — both previously untouched.
+ * and the app-header locale switcher (hidden by default — its features
+ * live in the sidebar user menu, but the styles stay for configs that
+ * resurface it).
  * ==================================================================== */
 @layer payload {
-  /* ---- icon buttons in the doc toolbar: quiet input-look chips ---- */
+  /* ---- icon buttons in the doc toolbar: quiet outline chips ---- */
   .doc-controls__controls .btn--icon-only {
     width: 40px;
     height: 40px;
@@ -2571,7 +3192,7 @@
     align-items: center;
     justify-content: center;
     background: var(--theme-input-bg);
-    border: 1px solid var(--theme-elevation-150);
+    border: 1px solid var(--theme-border-color);
     border-radius: var(--pt-radius-ctl);
     color: var(--theme-elevation-600);
     transition:
@@ -2581,9 +3202,9 @@
   }
   .doc-controls__controls .btn--icon-only:hover,
   .doc-controls__controls .btn--icon-only:focus-visible {
-    background: var(--pt-accent-subtle);
-    border-color: color-mix(in srgb, var(--pt-accent) 40%, var(--theme-elevation-150));
-    color: var(--pt-accent);
+    background: color-mix(in srgb, var(--theme-elevation-500) 8%, transparent);
+    border-color: var(--theme-elevation-300);
+    color: var(--theme-text);
   }
 
   /* ---- locale switcher in the app header: restyle Payload's own
@@ -2592,7 +3213,7 @@
   .localizer-button {
     padding: 7px 14px;
     background: var(--theme-input-bg);
-    border: 1px solid var(--theme-elevation-150);
+    border: 1px solid var(--theme-border-color);
     border-radius: var(--pt-radius-ctl);
     color: var(--theme-elevation-600);
     font-size: 0.85rem;
@@ -2601,8 +3222,8 @@
       color 0.12s ease;
   }
   .localizer-button:hover {
-    border-color: color-mix(in srgb, var(--pt-accent) 35%, var(--theme-elevation-150));
-    color: var(--theme-elevation-800);
+    border-color: var(--theme-elevation-300);
+    color: var(--theme-text);
   }
   /* keep breathing room between the locale chip and the account avatar */
   .app-header__localizer {
@@ -2611,11 +3232,14 @@
 }
 
 /* ==================================================================== *
- * LIST HEADER — page top redesign (Premium pass, revisions 2)
+ * LIST HEADER — page top redesign
  *
- * Title on the left, "Create New" as a real accent button on the right
- * (styling scoped to the header only — global button sizes stay stock),
- * a calmer description line, and clear air before the search bar.
+ * The reference toolbar grammar: a calm title + muted description block,
+ * then ONE toolbar row = search field + Columns/Filters + the solid
+ * "Create New" action at its right end. The create button lives in the
+ * title row in the DOM; on desktop it is pinned onto the toolbar row
+ * (deterministic offsets: the toolbar always starts right after the
+ * header block), and the search bar reserves its width.
  * ==================================================================== */
 @layer payload {
   .list-header__content {
@@ -2630,7 +3254,10 @@
     align-items: center;
     gap: 16px;
   }
+  /* calmer page title (shadcn text-2xl, not Payload's display size) */
   .list-header__title {
+    font-size: 1.6rem;
+    font-weight: 650;
     letter-spacing: -0.02em;
   }
 
@@ -2649,7 +3276,8 @@
     --btn-padding-block-end: 5px;
     --btn-padding-inline-start: 14px;
     --btn-padding-inline-end: 14px;
-    --btn-font-weight: 600;
+    --btn-font-weight: 500;
+    box-shadow: var(--pt-shadow-xs);
   }
 
   /* muted description tucked right under the title (Payload pads the
@@ -2659,29 +3287,82 @@
     padding-top: 0;
   }
   .custom-view-description {
-    margin-top: 5px;
+    margin-top: 4px;
     color: var(--theme-elevation-500);
     font-size: 0.9rem;
     max-width: 72ch;
   }
-  /* hairline closes the header block; the search bar starts a new zone */
   .collection-list .list-header {
-    padding-bottom: 18px;
-    border-bottom: 1px solid var(--theme-elevation-100);
-    margin-bottom: 18px;
+    padding-bottom: 0;
+    border-bottom: 0;
+    margin-bottom: 16px;
+  }
+
+  /* ---- desktop: dock the create button onto the toolbar row ----
+   * The toolbar (search bar) always starts 16px after the header block,
+   * so `top: 100% + 16px` lands exactly on it; the button box matches the
+   * search bar height and centers its content. The search bar gives up
+   * the reserved width so nothing overlaps. */
+  @media (min-width: 1025px) {
+    .collection-list {
+      /* space the search bar gives up for the docked actions; grows when a
+       * second action (e.g. Media's Bulk Upload) renders next to Create */
+      --pt-list-actions-reserve: 152px;
+    }
+    .collection-list:has(.list-header__title-actions > :nth-child(2)) {
+      --pt-list-actions-reserve: 296px;
+    }
+    .collection-list .list-header {
+      position: relative;
+    }
+    .collection-list .list-header__title-actions {
+      position: absolute;
+      inset-inline-end: 0;
+      top: calc(100% + 16px);
+      z-index: 3;
+      height: var(--pt-toolbar-h, 46px);
+      display: flex;
+      align-items: center;
+      gap: 8px; /* docked buttons sit as one tight group */
+    }
+    /* reserve action space only when at least one action renders */
+    .collection-list:has(.list-header__title-actions .btn) .search-bar {
+      width: calc(100% - var(--pt-list-actions-reserve));
+    }
+    .collection-list .search-bar {
+      min-height: var(--pt-toolbar-h, 46px);
+    }
+  }
+
+  /* secondary list actions (Bulk Upload & friends): the shadcn outline
+   * variant, so only Create New reads as THE primary action */
+  .list-header__title-actions .btn--style-pill:not(.list-create-new-doc__create-new-button) {
+    --bg-color: var(--theme-elevation-0);
+    --color: var(--theme-text);
+    --btn-border: 1px solid var(--theme-border-color);
+    --hover-bg: color-mix(in srgb, var(--theme-elevation-500) 8%, transparent);
+    --hover-color: var(--theme-text);
+    --btn-padding-block-start: 5px;
+    --btn-padding-block-end: 5px;
+    --btn-padding-inline-start: 14px;
+    --btn-padding-inline-end: 14px;
+    --btn-font-weight: 500;
+    box-shadow: var(--pt-shadow-xs);
   }
 
   /* ---- edit views (collections, globals, account): same grammar ----
-   * Title left (Payload's own scale), tabs as the right-side control,
-   * description below. The header/content separator is the doc-controls
-   * bar's hairline. */
+   * Title left, tabs as the right-side control, description below. The
+   * header/content separator is the doc-controls bar's hairline. */
   .doc-header__title {
+    font-size: 1.6rem;
+    font-weight: 650;
     letter-spacing: -0.02em;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   .doc-header__header {
     justify-content: space-between;
+    align-items: center;
     gap: 20px;
   }
   .doc-header__after-header {
@@ -2691,7 +3372,7 @@
   }
   /* trim the oversized gap between title block and the controls bar */
   .template-default__wrap > .doc-header {
-    padding-bottom: 14px;
+    padding-bottom: 12px;
   }
 }
 
@@ -2710,7 +3391,7 @@
   gap: 6px;
   padding: 56px 24px 48px;
   background: var(--theme-elevation-0);
-  border: 1px dashed var(--theme-elevation-200);
+  border: 1px dashed var(--theme-elevation-250);
   border-radius: var(--pt-radius-card);
   text-align: center;
 }

@@ -14,9 +14,9 @@ import { normalizeHex } from './theme'
 export type ThemePreset = 'minimal' | 'noir' | 'soft'
 
 /**
- * Global corner-rounding scale. Applied to every surface: `full` gives pill
- * buttons/inputs and soft cards (the default look), `none` squares everything
- * off, the rest sit in between.
+ * Global corner-rounding scale. Applied to every surface: `md` is the default
+ * shadcn geometry (8px controls, 12px cards), `full` gives pill
+ * buttons/inputs, `none` squares everything off, the rest sit in between.
  */
 export type ThemeRadius = 'full' | 'lg' | 'md' | 'none' | 'sm'
 
@@ -87,7 +87,7 @@ export interface PayloadThemeOptions {
   accent?: string
   /** Surface/neutral palette. @default 'soft' */
   preset?: ThemePreset
-  /** Global corner rounding. @default 'full' */
+  /** Global corner rounding. @default 'md' */
   radius?: ThemeRadius
   /**
    * Sidebar logo, rendered as `<img>` at the top of the nav. A URL
@@ -125,6 +125,8 @@ export interface ResolvedDashboardWidget {
 export interface ResolvedThemeConfig {
   /** Precomputed `--pt-*` CSS custom properties (light + dark), injected at runtime. */
   css: string
+  /** The configured accent as canonical hex — read by the header customizer. */
+  accent: string
   preset: ThemePreset
   radius: ThemeRadius
   /** Normalized widget list; empty when the option is omitted. */
@@ -146,20 +148,21 @@ const RADII: ThemeRadius[] = ['none', 'sm', 'md', 'lg', 'full']
  * Radius option → the three `--pt-radius-*` tokens the stylesheet reads.
  * `ctl` = controls (buttons, inputs, pills, nav links), `card` = surfaces
  * (cards, tables, popovers, modals), `item` = small inner items (menu rows,
- * chips, paginator pages). `full`'s values match the theme's original look.
+ * chips, paginator pages). `md` matches the reference shadcn geometry
+ * (rounded-md controls, rounded-xl cards) and is the default.
  */
-const RADIUS_TOKENS: Record<ThemeRadius, { card: string; ctl: string; item: string }> = {
+export const RADIUS_TOKENS: Record<ThemeRadius, { card: string; ctl: string; item: string }> = {
   full: { card: '14px', ctl: '999px', item: '9px' },
-  lg: { card: '16px', ctl: '14px', item: '10px' },
-  md: { card: '12px', ctl: '10px', item: '8px' },
-  sm: { card: '8px', ctl: '6px', item: '5px' },
+  lg: { card: '16px', ctl: '10px', item: '8px' },
+  md: { card: '12px', ctl: '8px', item: '6px' },
+  sm: { card: '8px', ctl: '6px', item: '4px' },
   none: { card: '0px', ctl: '0px', item: '0px' },
 }
 
 const DEFAULTS = {
   accent: '#4f4ece',
   preset: 'soft' as ThemePreset,
-  radius: 'full' as ThemeRadius,
+  radius: 'md' as ThemeRadius,
   fallbackIconName: 'folder',
 }
 
@@ -284,6 +287,7 @@ export function resolveOptions(options: PayloadThemeOptions): {
     cssVariables,
     resolved: {
       css: '', // filled by the plugin after computing the scale
+      accent: normalizeHex(accent),
       preset,
       radius,
       dashboard: { widgets },
