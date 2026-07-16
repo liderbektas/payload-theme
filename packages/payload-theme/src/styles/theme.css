@@ -168,7 +168,7 @@
  * ==================================================================== */
 @layer payload {
   /* ---- text-like inputs + textarea ---- */
-  .field-type input:not([type='checkbox']),
+  .field-type input:not([type='checkbox']):not(.section-title__input),
   .field-type textarea {
     border: 1px solid var(--pt-input-border);
     border-radius: var(--pt-radius-ctl);
@@ -178,8 +178,8 @@
       box-shadow 0.12s ease;
   }
 
-  .field-type input:not([type='checkbox']):focus,
-  .field-type input:not([type='checkbox']):focus-visible,
+  .field-type input:not([type='checkbox']):not(.section-title__input):focus,
+  .field-type input:not([type='checkbox']):not(.section-title__input):focus-visible,
   .field-type textarea:focus,
   .field-type textarea:focus-visible {
     outline: none;
@@ -1951,27 +1951,44 @@
     color: var(--pt-accent);
   }
 
-  /* ---- array / blocks "add row" (e.g. "Add Social Link"): accent ghost
-   * button; the plus icon sits in an accent-subtle chip. */
+  /* ---- array / blocks "add row" (Add Image, Add Layout, …): ONE standard
+   * control — a full-width dashed "add card" bar that matches the row cards
+   * it appends to. Rest: muted; hover: accent border + wash, like a dropzone
+   * receiving a drag. Payload paints label/stroke from --btn-color. */
   .array-field__add-row,
   .blocks-field__drawer-toggler {
-    /* Payload paints the label/stroke of add-row buttons from its own
-     * --btn-color local var — override that, not `color`. */
-    --btn-color: var(--pt-accent);
-    border-radius: var(--pt-radius-ctl);
+    --btn-color: var(--theme-elevation-500);
+    width: 100%;
+    margin-block-start: 4px;
+    justify-content: center;
+    border: 1px dashed var(--theme-elevation-300);
+    border-radius: var(--pt-radius-card);
+    background: color-mix(in srgb, var(--theme-elevation-50) 40%, transparent);
+    transition:
+      border-color 0.15s ease,
+      background-color 0.15s ease;
+  }
+  .array-field__add-row .btn__content,
+  .blocks-field__drawer-toggler .btn__content {
+    width: 100%;
+    justify-content: center;
+    padding-block: 4px;
+    font-weight: 500;
   }
   .array-field__add-row:hover,
   .array-field__add-row:focus-visible,
   .blocks-field__drawer-toggler:hover,
   .blocks-field__drawer-toggler:focus-visible {
-    --btn-color: var(--pt-accent-hover);
+    --btn-color: var(--pt-accent);
+    border-color: color-mix(in srgb, var(--pt-accent) 45%, var(--theme-elevation-300));
+    background: var(--pt-accent-subtle);
   }
   .array-field__add-row .btn__icon,
   .blocks-field__drawer-toggler .btn__icon {
-    background: var(--pt-accent-subtle);
+    background: transparent;
     border: 0;
-    border-radius: var(--pt-radius-item);
-    color: var(--pt-accent);
+    border-radius: 0;
+    color: inherit;
   }
 }
 
@@ -2081,12 +2098,15 @@
     background: transparent; /* the zone paints itself; no gray box behind */
   }
   .dropzone {
-    background: var(--theme-input-bg);
+    background: color-mix(in srgb, var(--theme-elevation-50) 55%, transparent);
     border: 1px dashed var(--theme-elevation-300);
     border-radius: var(--pt-radius-card);
     transition:
       border-color 0.15s ease,
       background-color 0.15s ease;
+  }
+  .dropzone:hover {
+    border-color: var(--theme-elevation-400);
   }
   .dropzone.dragging {
     border-color: var(--pt-accent);
@@ -2102,6 +2122,7 @@
     background: var(--theme-elevation-0);
     border: 1px solid var(--theme-border-color);
     border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-xs);
     overflow: hidden; /* clips the flush-left thumbnail to the radius */
   }
   html[data-theme='dark'] .file-details {
@@ -3138,20 +3159,362 @@
     font-size: 0.8rem;
   }
 
-  /* ---- collapsibles / array & block rows: rounded, calm borders ---- */
-  .collapsible {
-    border-radius: var(--pt-radius-card);
-    overflow: hidden;
-  }
-  .collapsible__toggle-wrap {
-    transition: background-color 0.12s ease;
-  }
+  /* (collapsible / array / blocks row chrome lives in the STRUCTURED
+   * FIELDS module below) */
 }
 
 @keyframes pt-view-in {
   from {
     opacity: 0;
     transform: translateY(8px);
+  }
+}
+
+/* ==================================================================== *
+ * STRUCTURED FIELDS — blocks, arrays, collapsibles (card system v2)
+ *
+ * A full departure from stock Payload: every block/array row is a real
+ * CARD — bordered, softly shadowed, with a composed header: grip dots, a
+ * numbered accent chip (blocks), a confident title, a ghost inline title
+ * editor, and bordered icon-chip controls (kebab + chevron). The add-row
+ * action is a standardized full-width dashed "add card" bar (styled with
+ * its button in the CONTROLS module). Behavior — toggle, drag, kebab,
+ * inline editing — is untouched.
+ * ==================================================================== */
+@layer payload {
+  /* ---- the row card ---- */
+  .collapsible {
+    border-radius: var(--pt-radius-card);
+    overflow: hidden;
+  }
+  .collapsible--style-default {
+    border: 1px solid var(--theme-border-color);
+    background: var(--theme-elevation-0);
+    box-shadow: var(--pt-shadow-xs);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+  .collapsible--style-default:hover {
+    border-color: var(--theme-elevation-300);
+  }
+  /* the card being edited announces itself quietly */
+  .collapsible--style-default:focus-within {
+    border-color: color-mix(in srgb, var(--pt-accent) 40%, var(--theme-border-color));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--pt-accent) 18%, transparent),
+      var(--pt-shadow-xs);
+  }
+  /* dark: rows read as darker wells on the elevated form card */
+  html[data-theme='dark'] .collapsible--style-default {
+    background: var(--theme-elevation-0);
+    border-color: var(--theme-elevation-150);
+  }
+
+  /* ---- composed header ---- */
+  .collapsible--style-default > .collapsible__toggle-wrap {
+    background: transparent;
+    padding: 9px 9px 9px 12px;
+    gap: 8px;
+    transition: background-color 0.12s ease;
+  }
+  .collapsible--style-default > .collapsible__toggle-wrap:hover {
+    background: color-mix(in srgb, var(--theme-elevation-500) 4%, transparent);
+  }
+
+  /* body joins through a hairline; the card bg shows through */
+  .collapsible__content {
+    background: transparent;
+    border-top: 1px solid var(--theme-elevation-100);
+    padding: 20px 18px;
+  }
+
+  /* grip dots: quiet, wake on hover */
+  .collapsible__drag {
+    color: var(--theme-elevation-350);
+    transition: color 0.12s ease;
+  }
+  .collapsible__drag:hover {
+    color: var(--theme-elevation-700);
+  }
+
+  /* chevron + kebab: standardized bordered icon chips */
+  .collapsible__indicator {
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-item);
+    background: var(--theme-elevation-0);
+    box-shadow: var(--pt-shadow-xs);
+    color: var(--theme-elevation-500);
+  }
+  html[data-theme='dark'] .collapsible__indicator {
+    background: var(--theme-elevation-50);
+  }
+  .collapsible__toggle-wrap .popup-button {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-item);
+    background: var(--theme-elevation-0);
+    box-shadow: var(--pt-shadow-xs);
+    color: var(--theme-elevation-500);
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease,
+      border-color 0.12s ease;
+  }
+  html[data-theme='dark'] .collapsible__toggle-wrap .popup-button {
+    background: var(--theme-elevation-50);
+  }
+  .collapsible__toggle-wrap .popup-button:hover,
+  .collapsible__toggle-wrap .popup-button:focus-visible {
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+    border-color: var(--theme-elevation-300);
+    color: var(--theme-text);
+  }
+  .collapsible__actions-wrap {
+    gap: 6px;
+  }
+
+  /* ---- blocks row header: № chip · type title · ghost label ---- */
+  .blocks-field__block-header {
+    align-items: center;
+    gap: 10px;
+  }
+  /* the row number becomes a small accent chip — the card's anchor */
+  .blocks-field__block-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 6px;
+    border-radius: calc(var(--pt-radius-item) + 1px);
+    background: var(--pt-accent-subtle);
+    color: var(--pt-accent);
+    font-size: 11px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  /* the block type reads as the row TITLE, not a pill */
+  .blocks-field__block-pill,
+  .blocks-field__block-pill.pill--style-light {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--theme-text);
+    font-size: 13px;
+    font-weight: 550;
+    line-height: 1.5;
+  }
+
+  /* array row labels ("Image 01") — same title voice */
+  .array-field__row-header {
+    gap: 10px;
+  }
+  .row-label {
+    font-size: 13px;
+    font-weight: 550;
+    color: var(--theme-text);
+  }
+
+  /* the inline title editor ("Untitled"): a ghost SUBTITLE — text at rest,
+   * a soft field while editing. (Excluded from the generic input chrome.) */
+  .section-title__input {
+    font-weight: 450;
+    font-size: 12.5px;
+    color: var(--theme-elevation-500);
+    border: 0;
+    border-radius: 6px;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+  .section-title__input:hover {
+    color: var(--theme-elevation-700);
+  }
+  .section-title__input:focus,
+  .section-title__input:focus-visible {
+    outline: none;
+    border: 0;
+    box-shadow: none;
+    background: color-mix(in srgb, var(--theme-elevation-500) 8%, transparent);
+    color: var(--theme-text);
+  }
+
+  /* ---- field header: a stronger section voice + chip actions ---- */
+  .array-field__title .field-label,
+  .blocks-field__heading-with-error .field-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--theme-text);
+  }
+  .array-field__header-actions,
+  .blocks-field__header-actions {
+    align-items: center;
+    gap: 4px;
+  }
+  button.array-field__header-action,
+  button.blocks-field__header-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 9px;
+    border-radius: var(--pt-radius-item);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--theme-elevation-500);
+    cursor: pointer;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+  button.array-field__header-action:hover,
+  button.array-field__header-action:focus-visible,
+  button.blocks-field__header-action:hover,
+  button.blocks-field__header-action:focus-visible {
+    background: color-mix(in srgb, var(--theme-elevation-500) 8%, transparent);
+    color: var(--theme-text);
+  }
+  /* Collapse All / Show All get their glyphs (order: collapse, show, ⋯) */
+  .array-field__header-actions li:nth-child(1) > button::before,
+  .array-field__header-actions li:nth-child(2) > button::before,
+  .blocks-field__header-actions li:nth-child(1) > button::before,
+  .blocks-field__header-actions li:nth-child(2) > button::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background: currentColor;
+    -webkit-mask: var(--pt-ico) center / contain no-repeat;
+    mask: var(--pt-ico) center / contain no-repeat;
+  }
+  .array-field__header-actions li:nth-child(1) > button,
+  .blocks-field__header-actions li:nth-child(1) > button {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 20 5-5 5 5'/%3E%3Cpath d='m7 4 5 5 5-5'/%3E%3C/svg%3E");
+  }
+  .array-field__header-actions li:nth-child(2) > button,
+  .blocks-field__header-actions li:nth-child(2) > button {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 15 5 5 5-5'/%3E%3Cpath d='m7 9 5-5 5 5'/%3E%3C/svg%3E");
+  }
+
+  /* ---- air between stacked row cards ---- */
+  .blocks-field__rows > * + *,
+  .array-field__draggable-rows > * + * {
+    margin-top: 12px;
+  }
+
+  /* ---- "Add Layout" drawer: block-type pickers as shadcn cards ---- */
+  .thumbnail-card {
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-xs);
+    overflow: hidden;
+    transition:
+      border-color 0.12s ease,
+      box-shadow 0.12s ease;
+  }
+  html[data-theme='dark'] .thumbnail-card {
+    background: var(--theme-elevation-100);
+  }
+  .thumbnail-card:hover,
+  .thumbnail-card:focus-visible {
+    border-color: color-mix(in srgb, var(--pt-accent) 45%, var(--theme-border-color));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--pt-accent) 25%, transparent),
+      var(--pt-shadow-sm);
+  }
+  .thumbnail-card__label {
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+}
+
+/* ==================================================================== *
+ * FORM GRID — two-column field flow
+ *
+ * Stock Payload stacks every field full-width. The main fields column
+ * (and every nested group / block / array body inside it) becomes a
+ * 2-column grid on desktop: compact field types (text, number, email,
+ * select, date, checkbox, radio, relationship) pair up side by side —
+ * "Title | Slug" on one line — while wide surfaces (textarea, rich text,
+ * uploads, arrays, blocks, groups, code) keep the full row. Unknown or
+ * custom fields default to the FULL row, so nothing ever cramps.
+ * Scoped to the page root: drawers and the doc sidebar stay stacked.
+ * ==================================================================== */
+@layer payload {
+  @media (min-width: 1025px) {
+    /* the fields ROOT is itself a .render-fields — cover it and every
+     * nested one (groups, block/array bodies) with one alias */
+    .template-default__wrap
+      > .collection-edit
+      :is(.document-fields__fields.render-fields, .document-fields__fields .render-fields) {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px 20px;
+      align-items: start;
+    }
+    /* grid gap owns the rhythm — drop Payload's per-field margins */
+    .template-default__wrap
+      > .collection-edit
+      :is(.document-fields__fields.render-fields, .document-fields__fields .render-fields)
+      > .field-type {
+      margin-bottom: 0;
+      min-width: 0;
+      grid-column: 1 / -1; /* default: full row (safe for custom fields) */
+    }
+    /* hidden carriers must not leave empty grid cells */
+    .template-default__wrap
+      > .collection-edit
+      :is(.document-fields__fields.render-fields, .document-fields__fields .render-fields)
+      > [type='hidden'] {
+      display: none;
+    }
+
+    /* compact types share a row, two by two */
+    .template-default__wrap
+      > .collection-edit
+      :is(.document-fields__fields.render-fields, .document-fields__fields .render-fields)
+      > :is(
+        .field-type.text,
+        .field-type.number,
+        .field-type.email,
+        .field-type.select,
+        .field-type.checkbox,
+        .field-type.date-time-field,
+        .field-type.radio-group,
+        .field-type.relationship
+      ) {
+      grid-column: span 1;
+    }
+
+    /* toggles align with the text baseline of a neighbouring input */
+    .template-default__wrap
+      > .collection-edit
+      :is(.document-fields__fields.render-fields, .document-fields__fields .render-fields)
+      > .field-type.checkbox {
+      align-self: center;
+    }
+
+    /* Lexical renders its own nested field UIs — keep those stacked */
+    .template-default__wrap > .collection-edit .document-fields__fields .rich-text-lexical .render-fields {
+      display: block;
+    }
+    .template-default__wrap
+      > .collection-edit
+      .document-fields__fields
+      .rich-text-lexical
+      .render-fields
+      > .field-type {
+      margin-bottom: var(--spacing-field, var(--base));
+    }
   }
 }
 

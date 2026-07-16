@@ -61,7 +61,16 @@ Payload's account button and content-locale switcher move into a shadcn-style us
 
 ### A live theme customizer in the header
 
-The palette button opens a small panel where anyone can restyle the panel at runtime: **10 preset accents plus any custom hex** (overrides the plugin's `accent`), the **radius scale**, **light/dark**, and **centered vs full-width content**. Choices persist in the browser and "Reset to Default" returns to your `payloadTheme({ ... })` config.
+The palette button opens a small panel where anyone can restyle the panel at runtime — no rebuild, no config edit:
+
+- **Accent** — 10 curated presets plus a free hex field with a live preview dot; the choice overrides the plugin's `accent` and recolors the entire panel through the same OKLCH engine.
+- **Radius** — the whole `'none' → 'full'` scale.
+- **Color mode** — light/dark, stored in the same preference Payload's Account page uses (a sun/moon toggle sits right next to the palette for one-click switching).
+- **Content layout** — centered (~1280px) or full width.
+
+Everything persists in the browser; **Reset to Default** returns to your `payloadTheme({ ... })` config.
+
+![Theme customizer](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/customizer.png)
 
 ### ⌘K command palette
 
@@ -71,15 +80,21 @@ Press `⌘K` / `Ctrl+K` (or click the search pill in the sidebar) to jump anywhe
 
 ### List views with real polish
 
-Tables become clean cards: a redesigned page header — title, muted description and the create button on one line, closed by a hairline — quiet **neutral value badges** for statuses and selects (no color-coding, so every collection reads calm and consistent), soft row hovers, and an illustrated empty state instead of a blank page.
+Tables become clean cards under a **single-row toolbar**: search, the Columns/Filters pills (with their own glyphs) and the solid **＋ Create New** button all share one line — secondary actions like Media's Bulk Upload dock next to it as quiet outline buttons. Status and boolean values render as **always-round neutral badges** (radius-setting-agnostic), rows get soft neutral hovers, and empty collections show an illustrated empty state instead of a blank page.
 
 ![List view](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/list-view.png)
 
-### Calm, card-based edit views
+### Edit views: a real form layout, not a field pile
 
-The edit form lives on one white card with top-level groups as inset panels, the sidebar becomes its own card, inputs follow the shadcn language (thin borders, accent focus ring), and checkboxes render as toggles. Up top, **Edit / Versions / API** becomes a bordered segmented control, the status chip and timestamps read as one quiet meta line, and the sticky action bar (Save Draft / Publish) blurs the content scrolling underneath it.
+The edit form lives on one card with a **two-column field grid**: compact fields (text, number, email, select, date, checkbox, radio, relationship) pair up side by side — *Title | Slug* on one line — while wide surfaces (textareas, rich text, uploads, arrays, blocks, groups) keep the full row; custom fields safely default to full width, and everything stacks again below 1024px. Inputs follow the shadcn language (thin borders, accent focus ring), checkboxes render as toggles, top-level groups sit in muted inset panels and the doc sidebar is its own card. Up top, **Edit / Versions / API** is a segmented control, the status chip and timestamps read as one quiet meta line, and the sticky action bar — with **icons on every action**: publish, save draft, duplicate, delete, and friends — blurs the content scrolling underneath it.
 
 ![Edit view](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/edit-view.png)
+
+### Blocks & arrays as a card system
+
+Structured content stops looking like stock Payload. Every block/array row is a real **card**: a numbered accent chip anchors it, the block type reads as the row title, the optional custom label is a ghost inline editor, and the kebab/chevron are standardized bordered chips. The row being edited announces itself with a soft accent ring. Adding rows is one consistent gesture everywhere — a full-width **dashed "add card" bar** that lights up in the accent on hover, for arrays and blocks alike. Collapse All / Show All get their own glyphs, and the block-picker drawer shows shadcn-style cards.
+
+![Blocks as cards](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/blocks.png)
 
 ### Dark mode, for free
 
@@ -209,6 +224,9 @@ The plugin registers every widget in `admin.dependencies`, so `payload generate:
 - **Toggles, not checkboxes** — checkboxes are restyled into switches with pure CSS; form behavior and accessibility are untouched.
 - **Zero runtime dependencies for color math** — the scale is computed once at startup and injected as CSS custom properties. No FOUC, SSR-safe.
 - **Non-destructive** — everything ships in `@layer payload`, overriding Payload's defaults without specificity wars. Validation, form state and keyboard focus keep working.
+- **Zinc foundation** — Payload's neutral scale is retargeted to the zinc palette (light *and* dark), so every elevation, border and muted text lands on the same shadcn gray ladder.
+- **Icons via CSS masks** — action-button glyphs are `currentColor` masks, so they recolor with every state, accent and scheme; no markup changes, no icon fonts.
+- **Runtime restyling** — the header customizer recomputes the accent scale client-side with the same engine the server uses, persists to `localStorage`, and never touches your config.
 
 ## Fine-tuning with CSS variables
 
