@@ -1,0 +1,198 @@
+/* ==================================================================== *
+ * FORMS — inputs + checkbox-as-toggle
+ *
+ * shadcn Input anatomy for text-like fields (thin zinc border, xs shadow,
+ * calm bg, accent border + soft 3px ring on focus) and a track/thumb
+ * switch for boolean fields. The toggle is scoped to `.field-type.checkbox`
+ * so the table's bulk-select checkboxes stay checkboxes. Form behaviour is
+ * untouched — we only restyle the box; the real <input> keeps its checked
+ * logic.
+ * ==================================================================== */
+@layer payload {
+  /* ---- text-like inputs + textarea ---- */
+  .field-type input:not([type='checkbox']):not(.section-title__input),
+  .field-type textarea {
+    border: 1px solid var(--pt-input-border);
+    border-radius: var(--pt-radius-ctl);
+    box-shadow: var(--pt-shadow-xs);
+    transition:
+      border-color 0.12s ease,
+      box-shadow 0.12s ease;
+  }
+
+  .field-type input:not([type='checkbox']):not(.section-title__input):focus,
+  .field-type input:not([type='checkbox']):not(.section-title__input):focus-visible,
+  .field-type textarea:focus,
+  .field-type textarea:focus-visible {
+    outline: none;
+    background: var(--theme-input-bg);
+    border: 1px solid var(--pt-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--pt-accent-ring) 18%, transparent);
+  }
+
+  /* ---- search inputs share the same language ---- */
+  .search-filter__input {
+    border-radius: var(--pt-radius-ctl);
+    transition:
+      border-color 0.12s ease,
+      box-shadow 0.12s ease;
+  }
+  .search-filter__input:focus,
+  .search-filter__input:focus-visible {
+    outline: none;
+    border: 1px solid var(--pt-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--pt-accent-ring) 18%, transparent);
+  }
+
+  /* ---- checkbox -> toggle (form fields only) ---- */
+  .field-type.checkbox .checkbox-input__input {
+    width: 34px;
+    height: 20px;
+    border-radius: 999px; /* switches stay round at every radius setting */
+    border: 1px solid var(--theme-elevation-250);
+    background: var(--theme-elevation-200);
+    box-shadow: none;
+    flex-shrink: 0;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  /* reuse the check-icon holder as the sliding thumb */
+  .field-type.checkbox .checkbox-input__icon {
+    position: absolute;
+    top: 50%;
+    inset-inline-start: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+    transform: translateY(-50%);
+    transition: transform 0.15s ease;
+  }
+  .field-type.checkbox .checkbox-input__icon svg {
+    display: none;
+  }
+
+  /* checked: accent track + thumb slides across */
+  .field-type.checkbox .checkbox-input--checked .checkbox-input__input {
+    background: var(--pt-accent);
+    border-color: var(--pt-accent);
+  }
+  .field-type.checkbox .checkbox-input--checked .checkbox-input__icon {
+    transform: translate(16px, -50%);
+  }
+
+  /* Payload paints the checkbox focus glow with a hard-coded, !important
+   * box-shadow that reads --theme-success-400. Across cascade layers an
+   * !important in the earlier `payload-default` layer beats our !important,
+   * so we can't override the box-shadow directly. Instead we reassign that
+   * variable locally to a faint accent, softening the glow to a subtle halo,
+   * and mark focus with an accent border. */
+  .field-type.checkbox .checkbox-input:not(.checkbox-input--read-only):focus-within .checkbox-input__input,
+  .field-type.checkbox .checkbox-input:not(.checkbox-input--read-only):active .checkbox-input__input {
+    --theme-success-400: color-mix(in srgb, var(--pt-accent-ring) 18%, transparent);
+    border-color: var(--pt-accent);
+  }
+}
+
+/* ==================================================================== *
+ * SELECT — react-select trigger + popover
+ *
+ * Payload styles .rs__* in its own layer, so our layer wins cleanly.
+ * ==================================================================== */
+@layer payload {
+  .rs__control {
+    border: 1px solid var(--pt-input-border);
+    border-radius: var(--pt-radius-ctl);
+    box-shadow: var(--pt-shadow-xs);
+    transition:
+      border-color 0.12s ease,
+      box-shadow 0.12s ease;
+  }
+  .rs__control--is-focused {
+    border-color: var(--pt-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--pt-accent-ring) 18%, transparent);
+  }
+
+  /* dropdown menu = shadcn popover */
+  .rs__menu {
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-md);
+    overflow: hidden;
+  }
+  .rs__menu-list {
+    padding: 4px;
+  }
+  .rs__option {
+    border-radius: var(--pt-radius-item);
+    transition: background-color 0.1s ease;
+  }
+  .rs__option--is-focused {
+    background-color: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+    color: var(--theme-text);
+  }
+  .rs__option--is-selected {
+    background-color: color-mix(in srgb, var(--pt-accent) 10%, transparent);
+    color: var(--pt-accent);
+    font-weight: 600;
+  }
+  .rs__option--is-selected.rs__option--is-focused {
+    background-color: color-mix(in srgb, var(--pt-accent) 16%, transparent);
+  }
+
+  /* multi-value chips -> quiet neutral badges */
+  .rs__multi-value {
+    border-radius: 999px;
+    background: var(--theme-elevation-100);
+  }
+}
+
+/* ==================================================================== *
+ * DATE PICKER — shadcn Calendar
+ *
+ * react-datepicker ships its own default stylesheet with hard-coded colours
+ * (#216ba5 selected, #f0f0f0 hover) that Payload does not theme. These rules
+ * are UNLAYERED on purpose so they reliably win over that third-party sheet.
+ * ==================================================================== */
+.react-datepicker {
+  border: 1px solid var(--theme-border-color);
+  border-radius: var(--pt-radius-card);
+  box-shadow: var(--pt-shadow-md);
+  background: var(--theme-elevation-0);
+  color: var(--theme-text);
+  font-family: var(--font-body);
+}
+.react-datepicker__header {
+  background: transparent;
+  border-bottom: 1px solid var(--theme-elevation-100);
+}
+.react-datepicker__current-month,
+.react-datepicker-time__header,
+.react-datepicker__day-name,
+.react-datepicker__day,
+.react-datepicker__time-name {
+  color: var(--theme-text);
+}
+.react-datepicker__day--outside-month {
+  color: var(--theme-elevation-400);
+}
+.react-datepicker__day:hover {
+  background: color-mix(in srgb, var(--theme-elevation-500) 12%, transparent);
+}
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected,
+.react-datepicker__day--in-range {
+  background: var(--pt-accent);
+  color: var(--pt-accent-contrast);
+}
+.react-datepicker__day--selected:hover,
+.react-datepicker__day--keyboard-selected:hover {
+  background: var(--pt-accent-hover);
+}
+.react-datepicker__day--today {
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px var(--pt-accent);
+}

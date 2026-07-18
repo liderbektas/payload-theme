@@ -1,0 +1,112 @@
+@layer payload {
+  /* ------------------------------------------------------------------ *
+   * FOUNDATION — zinc neutrals + surfaces
+   *
+   * Payload derives every --theme-elevation-* rung from --color-base-*, so
+   * retargeting the base scale to zinc (the reference palette) re-tints the
+   * entire panel — light and dark — in one block. Interpolated mid-steps
+   * (150/250/350/…) keep Payload's 21-step ladder monotonic.
+   * ------------------------------------------------------------------ */
+  :root {
+    --color-base-0: #ffffff;
+    --color-base-50: #fafafa;
+    --color-base-100: #f4f4f5;
+    --color-base-150: #ececee;
+    --color-base-200: #e4e4e7;
+    --color-base-250: #dcdce0;
+    --color-base-300: #d4d4d8;
+    --color-base-350: #bbbbc1;
+    --color-base-400: #a1a1aa;
+    --color-base-450: #898992;
+    --color-base-500: #71717a;
+    --color-base-550: #62626a;
+    --color-base-600: #52525b;
+    --color-base-650: #494950;
+    --color-base-700: #3f3f46;
+    --color-base-750: #333338;
+    --color-base-800: #27272a;
+    --color-base-850: #1f1f22;
+    --color-base-900: #18181b;
+    --color-base-950: #09090b;
+    --color-base-1000: #030303;
+
+    /* zinc-100: the gray field the sidebar and the content card sit on */
+    --theme-bg: #f4f4f6;
+    /* zinc-200 — the shadcn card/table border */
+    --theme-border-color: var(--theme-elevation-200);
+    /* inputs get the slightly darker border shadcn gives form controls */
+    --pt-input-border: var(--theme-elevation-250);
+
+    /* Semantic status colors for the theme's own accents (bool tick chips,
+     * toast icons, dashboard trend deltas). Payload's --theme-success-* scale
+     * is BLUE (it doubles as its info color), so anything painted with it
+     * reads as accent noise — these are real greens/ambers instead, tuned
+     * per scheme below. */
+    --pt-ok: #16a34a;
+    --pt-ok-text: #15803d;
+    --pt-warn: #d97706;
+
+    /* shadcn shadow steps */
+    --pt-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --pt-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.08);
+    --pt-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.09), 0 2px 4px -2px rgb(0 0 0 / 0.09);
+    --pt-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+    /* App-wide accent focus ring. Payload's outline is already 2px solid with
+     * a 2px offset (the shadcn geometry); we only swap the colour to accent. */
+    --accessibility-outline: 2px solid var(--pt-accent-ring);
+  }
+
+  html[data-theme='dark'] {
+    /* zinc-900: the dark gray field (reference dark sidebar) */
+    --theme-bg: #18181b;
+
+    /* brighter status hues so the dots register on near-black */
+    --pt-ok: #22c55e;
+    --pt-ok-text: #4ade80;
+    --pt-warn: #f59e0b;
+
+    /* Shift the bottom of the dark elevation ladder one rung darker so the
+     * content card lands on zinc-950 (the reference dark background) and the
+     * card border on zinc-800 — text rungs (300+) keep Payload's mapping. */
+    --theme-elevation-0: var(--color-base-950);
+    --theme-elevation-50: var(--color-base-900);
+    --theme-elevation-100: var(--color-base-850);
+    --theme-elevation-150: var(--color-base-800);
+    --theme-elevation-200: var(--color-base-750);
+    --theme-elevation-250: var(--color-base-700);
+
+    /* zinc-800 borders, zinc-700 input borders (the reference dark tokens) */
+    --theme-border-color: var(--theme-elevation-150);
+    --pt-input-border: var(--theme-elevation-250);
+
+    /* dark shadows need more weight to register on near-black */
+    --pt-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+    --pt-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.45), 0 1px 2px -1px rgb(0 0 0 / 0.45);
+    --pt-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.45), 0 2px 4px -2px rgb(0 0 0 / 0.45);
+    --pt-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+
+    --accessibility-outline: 2px solid var(--pt-accent-ring);
+  }
+
+  /* ------------------------------------------------------------------ *
+   * accent binding — colour only. The accent paints primary actions;
+   * secondary/outline buttons are NEUTRAL (the shadcn outline variant),
+   * so the panel reads calm and the accent reads intentional.
+   * ------------------------------------------------------------------ */
+  .btn--style-primary {
+    --bg-color: var(--pt-accent);
+    --color: var(--pt-accent-contrast);
+    --hover-bg: var(--pt-accent-hover);
+    --hover-color: var(--pt-accent-contrast);
+  }
+
+  /* shadcn outline button: neutral border, plain text, muted wash on hover */
+  .btn--style-secondary {
+    --color: var(--theme-text);
+    --btn-border: 1px solid var(--theme-border-color);
+    --hover-color: var(--theme-text);
+    --hover-btn-border: 1px solid var(--theme-elevation-300);
+    --hover-bg: color-mix(in srgb, var(--theme-elevation-500) 8%, transparent);
+  }
+}

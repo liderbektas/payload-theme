@@ -1,0 +1,125 @@
+/* ==================================================================== *
+ * LAYOUT FRAME — the inset content card (the reference's signature)
+ *
+ * The whole page is the gray field (--theme-bg on .template-default, which
+ * Payload paints by default). The sidebar sits directly on it. EVERYTHING
+ * else — header + views — lives in ONE white card: rounded, bordered,
+ * shadow-sm, floating with an 8px gutter (flush only toward the sidebar,
+ * whose own padding provides that gap — exactly the reference's
+ * `m-2 ml-0` inset). The app header is sticky and translucent inside the
+ * card, with the breadcrumb restored as its content.
+ * ==================================================================== */
+@layer payload {
+  /* 1) Remove the desktop nav collapse toggle (the "<" chevron, top-left).
+   *    Mobile keeps its own toggler (.app-header__mobile-nav-toggler). */
+  .template-default__nav-toggler-wrapper {
+    display: none;
+  }
+
+  /* 2) The content card. Inside it, --theme-bg is remapped to the card
+   *    surface so every Payload gradient/shim that fades "to the page
+   *    background" (doc-controls overflow fades, step-nav fade, …) resolves
+   *    to WHITE here, while the page outside stays gray. */
+  .template-default__wrap {
+    --theme-bg: var(--theme-elevation-0);
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    background: var(--theme-elevation-0);
+  }
+  .template-default__wrap > * {
+    flex: 0 0 auto;
+  }
+
+  @media (min-width: 769px) {
+    .template-default__wrap {
+      margin-block: 8px;
+      margin-inline: 0 8px;
+      min-height: calc(100dvh - 16px);
+      border: 1px solid var(--theme-border-color);
+      border-radius: var(--pt-radius-card);
+      box-shadow: var(--pt-shadow-sm);
+    }
+    /* drawer mode / closed nav: no sidebar gutter on the left — add our own */
+    .template-default:not(.template-default--nav-open) .template-default__wrap {
+      margin-inline-start: 8px;
+    }
+  }
+
+  /* 3) Sticky translucent header (h-14, border-b, backdrop blur), top
+   *    corners rounded to match the card it caps. */
+  .app-header {
+    position: sticky;
+    top: 0;
+    background: color-mix(in srgb, var(--theme-elevation-0) 72%, transparent);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--theme-elevation-100);
+  }
+  @media (min-width: 769px) {
+    .app-header {
+      border-start-start-radius: calc(var(--pt-radius-card) - 1px);
+      border-start-end-radius: calc(var(--pt-radius-card) - 1px);
+    }
+  }
+  .app-header__bg {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  /* 4) No breadcrumbs, no Payload mark — the header carries only the right
+   *    side actions (theme customizer, light/dark toggle, user menu) plus
+   *    the mobile hamburger. */
+  .app-header__step-nav-wrapper {
+    display: none;
+  }
+
+  /* 5) Payload's own account button and content-locale switcher stay hidden:
+   *    both features live in the theme's user menus (sidebar + header). */
+  .app-header__account,
+  .app-header__localizer,
+  .app-header__localizer-spacing {
+    display: none;
+  }
+  .app-header__actions-wrapper {
+    margin-left: auto;
+    margin-right: 0;
+  }
+  .app-header__actions {
+    max-width: none;
+    overflow: visible;
+  }
+  /* flush to the right edge: the content strip keeps its wide reading
+   * gutter only on the start side; actions hug the card's right corner */
+  .app-header__content {
+    padding-inline-end: 20px;
+  }
+  .app-header__last-action {
+    margin-right: 0;
+  }
+  /* the fade shim next to the actions reads as a smudge on the clean header */
+  .app-header__gradient-placeholder {
+    display: none;
+  }
+
+  /* 6) Views stretch the card to the bottom edge; a little air above and
+   *    below the content. (No gray well anymore — the card IS the surface.) */
+  .template-default__wrap > .app-header + [class] {
+    padding-block-start: 24px;
+  }
+  .template-default__wrap > [class]:not(.app-header):not(.doc-header) {
+    flex: 1 0 auto;
+    padding-block-end: 24px;
+  }
+
+  /* 7) Payload wraps the account/auth fields (email, password buttons) in an
+   *    elevation-50 card with 40px padding — on the white card that reads as
+   *    a random gray slab. Flatten it so auth fields align with everything
+   *    else. */
+  .auth-fields {
+    padding: 0;
+    background: transparent;
+    border: 0;
+  }
+}

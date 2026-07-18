@@ -1,0 +1,272 @@
+/* ==================================================================== *
+ * STRUCTURED FIELDS — blocks, arrays, collapsibles (card system v2)
+ *
+ * A full departure from stock Payload: every block/array row is a real
+ * CARD — bordered, softly shadowed, with a composed header: grip dots, a
+ * numbered accent chip (blocks), a confident title, a ghost inline title
+ * editor, and bordered icon-chip controls (kebab + chevron). The add-row
+ * action is a standardized full-width dashed "add card" bar (styled with
+ * its button in the CONTROLS module). Behavior — toggle, drag, kebab,
+ * inline editing — is untouched.
+ * ==================================================================== */
+@layer payload {
+  /* ---- the row card ---- */
+  .collapsible {
+    border-radius: var(--pt-radius-card);
+    overflow: hidden;
+  }
+  .collapsible--style-default {
+    border: 1px solid var(--theme-border-color);
+    background: var(--theme-elevation-0);
+    box-shadow: var(--pt-shadow-xs);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+  .collapsible--style-default:hover {
+    border-color: var(--theme-elevation-300);
+  }
+  /* the card being edited announces itself quietly */
+  .collapsible--style-default:focus-within {
+    border-color: color-mix(in srgb, var(--pt-accent) 40%, var(--theme-border-color));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--pt-accent) 18%, transparent),
+      var(--pt-shadow-xs);
+  }
+  /* dark: rows read as darker wells on the elevated form card */
+  html[data-theme='dark'] .collapsible--style-default {
+    background: var(--theme-elevation-0);
+    border-color: var(--theme-elevation-150);
+  }
+
+  /* ---- composed header ---- */
+  .collapsible--style-default > .collapsible__toggle-wrap {
+    background: transparent;
+    padding: 9px 9px 9px 12px;
+    gap: 8px;
+    transition: background-color 0.12s ease;
+  }
+  .collapsible--style-default > .collapsible__toggle-wrap:hover {
+    background: color-mix(in srgb, var(--theme-elevation-500) 4%, transparent);
+  }
+
+  /* body joins through a hairline; the card bg shows through */
+  .collapsible__content {
+    background: transparent;
+    border-top: 1px solid var(--theme-elevation-100);
+    padding: 20px 18px;
+  }
+
+  /* grip dots: quiet, wake on hover */
+  .collapsible__drag {
+    color: var(--theme-elevation-350);
+    transition: color 0.12s ease;
+  }
+  .collapsible__drag:hover {
+    color: var(--theme-elevation-700);
+  }
+
+  /* chevron + kebab: standardized bordered icon chips */
+  .collapsible__indicator {
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-item);
+    background: var(--theme-elevation-0);
+    box-shadow: var(--pt-shadow-xs);
+    color: var(--theme-elevation-500);
+  }
+  html[data-theme='dark'] .collapsible__indicator {
+    background: var(--theme-elevation-50);
+  }
+  .collapsible__toggle-wrap .popup-button {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-item);
+    background: var(--theme-elevation-0);
+    box-shadow: var(--pt-shadow-xs);
+    color: var(--theme-elevation-500);
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease,
+      border-color 0.12s ease;
+  }
+  html[data-theme='dark'] .collapsible__toggle-wrap .popup-button {
+    background: var(--theme-elevation-50);
+  }
+  .collapsible__toggle-wrap .popup-button:hover,
+  .collapsible__toggle-wrap .popup-button:focus-visible {
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+    border-color: var(--theme-elevation-300);
+    color: var(--theme-text);
+  }
+  .collapsible__actions-wrap {
+    gap: 6px;
+  }
+
+  /* ---- blocks row header: № chip · type title · ghost label ---- */
+  .blocks-field__block-header {
+    align-items: center;
+    gap: 10px;
+  }
+  /* the row number becomes a small accent chip — the card's anchor */
+  .blocks-field__block-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 6px;
+    border-radius: calc(var(--pt-radius-item) + 1px);
+    background: var(--pt-accent-subtle);
+    color: var(--pt-accent);
+    font-size: 11px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  /* the block type reads as the row TITLE, not a pill */
+  .blocks-field__block-pill,
+  .blocks-field__block-pill.pill--style-light {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--theme-text);
+    font-size: 13px;
+    font-weight: 550;
+    line-height: 1.5;
+  }
+
+  /* array row labels ("Image 01") — same title voice */
+  .array-field__row-header {
+    gap: 10px;
+  }
+  .row-label {
+    font-size: 13px;
+    font-weight: 550;
+    color: var(--theme-text);
+  }
+
+  /* the inline title editor ("Untitled"): a ghost SUBTITLE — text at rest,
+   * a soft field while editing. (Excluded from the generic input chrome.) */
+  .section-title__input {
+    font-weight: 450;
+    font-size: 12.5px;
+    color: var(--theme-elevation-500);
+    border: 0;
+    border-radius: 6px;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+  .section-title__input:hover {
+    color: var(--theme-elevation-700);
+  }
+  .section-title__input:focus,
+  .section-title__input:focus-visible {
+    outline: none;
+    border: 0;
+    box-shadow: none;
+    background: color-mix(in srgb, var(--theme-elevation-500) 8%, transparent);
+    color: var(--theme-text);
+  }
+
+  /* ---- field header: a stronger section voice + chip actions ---- */
+  .array-field__title .field-label,
+  .blocks-field__heading-with-error .field-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--theme-text);
+  }
+  .array-field__header-actions,
+  .blocks-field__header-actions {
+    align-items: center;
+    gap: 4px;
+  }
+  button.array-field__header-action,
+  button.blocks-field__header-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 9px;
+    border-radius: var(--pt-radius-item);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--theme-elevation-500);
+    cursor: pointer;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+  button.array-field__header-action:hover,
+  button.array-field__header-action:focus-visible,
+  button.blocks-field__header-action:hover,
+  button.blocks-field__header-action:focus-visible {
+    background: color-mix(in srgb, var(--theme-elevation-500) 8%, transparent);
+    color: var(--theme-text);
+  }
+  /* Collapse All / Show All get their glyphs (order: collapse, show, ⋯) */
+  .array-field__header-actions li:nth-child(1) > button::before,
+  .array-field__header-actions li:nth-child(2) > button::before,
+  .blocks-field__header-actions li:nth-child(1) > button::before,
+  .blocks-field__header-actions li:nth-child(2) > button::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background: currentColor;
+    -webkit-mask: var(--pt-ico) center / contain no-repeat;
+    mask: var(--pt-ico) center / contain no-repeat;
+  }
+  .array-field__header-actions li:nth-child(1) > button,
+  .blocks-field__header-actions li:nth-child(1) > button {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 20 5-5 5 5'/%3E%3Cpath d='m7 4 5 5 5-5'/%3E%3C/svg%3E");
+  }
+  .array-field__header-actions li:nth-child(2) > button,
+  .blocks-field__header-actions li:nth-child(2) > button {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 15 5 5 5-5'/%3E%3Cpath d='m7 9 5-5 5 5'/%3E%3C/svg%3E");
+  }
+
+  /* ---- air between stacked row cards ---- */
+  .blocks-field__rows > * + *,
+  .array-field__draggable-rows > * + * {
+    margin-top: 12px;
+  }
+
+  /* ---- "Add Layout" drawer: block-type pickers as shadcn cards ---- */
+  .thumbnail-card {
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-xs);
+    overflow: hidden;
+    transition:
+      border-color 0.12s ease,
+      box-shadow 0.12s ease,
+      transform 0.12s ease;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .thumbnail-card:hover {
+      transform: translateY(-1px);
+    }
+  }
+  html[data-theme='dark'] .thumbnail-card {
+    background: var(--theme-elevation-100);
+  }
+  .thumbnail-card:hover,
+  .thumbnail-card:focus-visible {
+    border-color: color-mix(in srgb, var(--pt-accent) 45%, var(--theme-border-color));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--pt-accent) 25%, transparent),
+      var(--pt-shadow-sm);
+  }
+  .thumbnail-card__label {
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+}

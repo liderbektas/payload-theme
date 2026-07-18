@@ -1,0 +1,35 @@
+/* ==================================================================== *
+ * LIST — empty state + generic value badges
+ * ==================================================================== */
+@layer payload {
+  /* (empty-state rules live UNLAYERED at the end of this file — Payload
+   * ships NoListResults styles unlayered, and unlayered beats @layer) */
+  /* lucide 'inbox' drawn via mask so it recolors with the accent */
+  .no-results::before {
+    content: '';
+    width: 42px;
+    height: 42px;
+    margin-bottom: 8px;
+    background: var(--pt-accent);
+    opacity: 0.85;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='22 12 16 12 14 15 10 15 8 12 2 12'/%3E%3Cpath d='M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z'/%3E%3C/svg%3E") no-repeat center / contain;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='22 12 16 12 14 15 10 15 8 12 2 12'/%3E%3Cpath d='M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z'/%3E%3C/svg%3E") no-repeat center / contain;
+  }
+  /* (h3/p/actions rules live in the unlayered block at the end of the file —
+   * they fight Payload's own unlayered NoListResults rules) */
+
+  /* ---- generic select-value badges ----
+   * Payload tags every select cell value with `selected--<value>`; every
+   * value renders as the same neutral badge — no per-value semantic colors,
+   * so custom select fields and the status column all look alike. */
+  .table td [class*='selected--'] {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--theme-elevation-100);
+    color: var(--theme-elevation-600);
+    font-size: 0.82em;
+    font-weight: 500;
+  }
+}

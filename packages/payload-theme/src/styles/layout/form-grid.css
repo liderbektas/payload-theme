@@ -1,0 +1,86 @@
+/* ==================================================================== *
+ * FORM GRID — two-column field flow
+ *
+ * Stock Payload stacks every field full-width. The main fields column
+ * (and every nested group / block / array body inside it) becomes a
+ * 2-column grid on desktop: compact field types (text, number, email,
+ * select, date, checkbox, radio, relationship) pair up side by side —
+ * "Title | Slug" on one line — while wide surfaces (textarea, rich text,
+ * uploads, arrays, blocks, groups, code) keep the full row. Unknown or
+ * custom fields default to the FULL row, so nothing ever cramps.
+ * Scoped to the page root: drawers and the doc sidebar stay stacked.
+ * ==================================================================== */
+@layer payload {
+  @media (min-width: 1025px) {
+    /* the fields ROOT is itself a .render-fields — cover it and every
+     * nested one (groups, block/array bodies) with one alias */
+    .template-default__wrap
+      > .collection-edit
+      :is(.document-fields__fields.render-fields, .document-fields__fields .render-fields) {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px 20px;
+      align-items: start;
+    }
+    /* grid gap owns the rhythm — drop Payload's per-field margins */
+    .template-default__wrap
+      > .collection-edit
+      :is(.document-fields__fields.render-fields, .document-fields__fields .render-fields)
+      > .field-type {
+      margin-bottom: 0;
+      min-width: 0;
+      grid-column: 1 / -1; /* default: full row (safe for custom fields) */
+    }
+    /* hidden carriers must not leave empty grid cells */
+    .template-default__wrap
+      > .collection-edit
+      :is(.document-fields__fields.render-fields, .document-fields__fields .render-fields)
+      > [type='hidden'] {
+      display: none;
+    }
+
+    /* compact types share a row, two by two */
+    .template-default__wrap
+      > .collection-edit
+      :is(.document-fields__fields.render-fields, .document-fields__fields .render-fields)
+      > :is(
+        .field-type.text,
+        .field-type.number,
+        .field-type.email,
+        .field-type.select,
+        .field-type.checkbox,
+        .field-type.date-time-field,
+        .field-type.radio-group,
+        .field-type.relationship
+      ) {
+      grid-column: span 1;
+    }
+
+    /* toggles line up with the neighbouring input's box, not the cell
+     * center: the neighbour stacks label (~30px incl. margin) above a 40px
+     * control, so start-aligning with a label-height offset centers the
+     * 20px switch on the input row */
+    .template-default__wrap
+      > .collection-edit
+      :is(.document-fields__fields.render-fields, .document-fields__fields .render-fields)
+      > .field-type.checkbox {
+      align-self: start;
+      /* measured: label row + this offset puts the 20px switch's center
+       * exactly on the neighbouring 40px input's center line */
+      padding-top: 35px;
+    }
+
+    /* Lexical renders its own nested field UIs — keep those stacked */
+    .template-default__wrap > .collection-edit .document-fields__fields .rich-text-lexical .render-fields {
+      display: block;
+    }
+    .template-default__wrap
+      > .collection-edit
+      .document-fields__fields
+      .rich-text-lexical
+      .render-fields
+      > .field-type {
+      margin-bottom: var(--spacing-field, var(--base));
+    }
+  }
+}

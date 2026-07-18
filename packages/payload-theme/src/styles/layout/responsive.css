@@ -1,0 +1,119 @@
+/* ==================================================================== *
+ * RESPONSIVE — mobile fixes + hamburger redesign
+ *
+ * 1) Hamburger becomes a chip with a custom two-bar mark (the boxed
+ *    default reads dated); the nav's mobile close X becomes a matching
+ *    chip pinned to the RIGHT edge.
+ * 2) Small screens: Payload pulls the table full-bleed and moves the
+ *    Columns/Filters pills inside the search bar — we undo the bleed
+ *    (cards keep breathing room) and restack the search bar cleanly.
+ * ==================================================================== */
+@layer payload {
+  /* ---- hamburger (app header, mobile): chip + two-bar mark ---- */
+  .app-header__mobile-nav-toggler {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--pt-radius-ctl);
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.12s ease;
+  }
+  /* only below Payload's nav breakpoint — forcing display everywhere
+   * would resurrect the toggler on desktop where Payload hides it */
+  @media (max-width: 1440px) {
+    .app-header__mobile-nav-toggler {
+      display: inline-flex;
+    }
+  }
+  .app-header__mobile-nav-toggler:hover,
+  .app-header__mobile-nav-toggler:focus-visible {
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+  }
+  .app-header__mobile-nav-toggler .hamburger {
+    position: relative;
+    width: 20px;
+    height: 14px;
+    background: transparent; /* Payload paints the .hamburger box itself */
+    border-radius: 0;
+    box-shadow: none; /* the stock 1px ring is a box-shadow, not a border */
+  }
+  .pt-nav .nav__mobile-close .hamburger {
+    background: transparent; /* same stock box behind the close X */
+    border-radius: 0;
+    box-shadow: none;
+    width: auto;
+    height: auto;
+  }
+  .app-header__mobile-nav-toggler .hamburger > * {
+    display: none; /* replace the stock menu icon with our own bars */
+  }
+  .app-header__mobile-nav-toggler .hamburger::before,
+  .app-header__mobile-nav-toggler .hamburger::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--theme-elevation-800);
+  }
+  .app-header__mobile-nav-toggler .hamburger::before {
+    top: 2px;
+    width: 20px;
+  }
+  .app-header__mobile-nav-toggler .hamburger::after {
+    bottom: 2px;
+    width: 13px;
+  }
+
+  /* ---- nav mobile close: chip, pinned right ---- */
+  .pt-nav .nav__header-content {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .pt-nav .nav__mobile-close {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--pt-radius-ctl);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.12s ease;
+  }
+  .pt-nav .nav__mobile-close:hover,
+  .pt-nav .nav__mobile-close:focus-visible {
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+  }
+}
+
+@media (max-width: 768px) {
+  @layer payload {
+    /* undo Payload's full-bleed table so the card keeps side margins
+     * (the bleed lives on .table-wrap, the table just fills it) */
+    .table,
+    .table-wrap {
+      margin-inline: 0;
+      padding-left: 0;
+      width: 100%;
+    }
+
+    /* search bar hosts the Columns/Filters pills on mobile: stack them
+     * cleanly inside a rounded-rect box */
+    .search-bar {
+      height: auto;
+      flex-wrap: wrap;
+      align-items: center;
+      row-gap: 10px;
+      padding: 10px 14px;
+      border-radius: var(--pt-radius-card);
+    }
+    .search-bar__actions {
+      width: 100%;
+      display: flex;
+      gap: 8px;
+    }
+    .search-bar__actions .pill {
+      flex: 1 1 0;
+      height: 32px;
+    }
+  }
+}

@@ -1,0 +1,65 @@
+/* ==================================================================== *
+ * NAV — search trigger
+ *
+ * A real input-look box under the logo that opens the ⌘K palette — on the
+ * gray sidebar it reads as the reference's sidebar SearchForm (white
+ * field, xs shadow, kbd hint).
+ * ==================================================================== */
+@layer payload {
+  /* air between the logo and the search box — THE knob for this gap */
+  .pt-nav__logo {
+    padding-block-end: 20px;
+  }
+
+  .pt-nav__search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin: 0 0 16px;
+    padding: 7px 10px;
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-ctl);
+    box-shadow: var(--pt-shadow-xs);
+    color: var(--theme-elevation-500);
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      border-color 0.12s ease,
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+  .pt-nav__search:hover,
+  .pt-nav__search:focus-visible {
+    border-color: var(--theme-elevation-300);
+    color: var(--theme-elevation-700);
+  }
+  html[data-theme='dark'] .pt-nav__search {
+    background: var(--theme-elevation-50);
+  }
+  .pt-nav__search-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+  .pt-nav__search-label {
+    flex: 1;
+    text-align: start;
+  }
+  .pt-nav__search-kbd {
+    padding: 2px 6px;
+    border: 1px solid var(--theme-border-color);
+    border-radius: 5px;
+    background: var(--theme-elevation-50);
+    color: var(--theme-elevation-500);
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  html[data-theme='dark'] .pt-nav__search-kbd {
+    background: var(--theme-elevation-100);
+  }
+}

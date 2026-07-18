@@ -1,0 +1,76 @@
+/* ==================================================================== *
+ * LIST — persistent row actions
+ *
+ * The edit + delete pair pinned to the table's right edge on EVERY row
+ * (rendered into Payload's table markup by ListQuickActions). The column
+ * hugs its content, the header cell stays empty, and delete is a two-step
+ * control — first click arms it into a red "Delete?" chip, second click
+ * commits.
+ * ==================================================================== */
+@layer payload {
+  .table th.pt-actions-cell {
+    width: 1%;
+  }
+  .table td.pt-actions-cell {
+    width: 1%;
+    white-space: nowrap;
+    text-align: end;
+    padding-inline-end: 12px;
+  }
+  .table td.pt-actions-cell .pt-actions__btn + .pt-actions__btn {
+    margin-inline-start: 2px;
+  }
+
+  .pt-actions__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    border-radius: var(--pt-radius-item);
+    color: var(--theme-elevation-400);
+    font-family: var(--font-body);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color 0.1s ease,
+      color 0.1s ease;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+  a.pt-actions__btn:hover,
+  a.pt-actions__btn:focus-visible {
+    text-decoration: none;
+  }
+  .pt-actions__btn:hover,
+  .pt-actions__btn:focus-visible {
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+    color: var(--theme-text);
+  }
+  .pt-actions__btn:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .pt-actions__btn--danger:hover,
+  .pt-actions__btn--danger:focus-visible {
+    background: color-mix(in srgb, var(--theme-error-500) 12%, transparent);
+    color: var(--theme-error-600);
+  }
+  .pt-actions__btn--armed,
+  .pt-actions__btn--armed:hover,
+  .pt-actions__btn--armed:focus-visible {
+    width: auto;
+    padding: 0 9px;
+    background: color-mix(in srgb, var(--theme-error-500) 12%, transparent);
+    color: var(--theme-error-600);
+    font-size: 11.5px;
+    font-weight: 600;
+  }
+}

@@ -1,0 +1,48 @@
+/* ==================================================================== *
+ * AUTH SCREENS — login / forgot-password / reset
+ *
+ * Payload renders auth views in `template-minimal` on the bare page
+ * background (the gray field). We turn the inner wrap into a centered
+ * login card: logo on top, themed inputs (already styled by the FORMS
+ * module), full-width accent submit.
+ * ==================================================================== */
+@layer payload {
+  .template-minimal .template-minimal__wrap {
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-lg);
+    padding: 40px 36px 36px;
+  }
+  html[data-theme='dark'] .template-minimal .template-minimal__wrap {
+    background: var(--theme-elevation-50);
+  }
+
+  /* brand block: centered logo with air below */
+  .login__brand {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+  .template-minimal__wrap .graphic-logo {
+    height: 30px;
+    width: auto;
+  }
+
+  /* forgot-password link: quiet, accent on hover */
+  .login__form > a {
+    font-size: 0.85rem;
+    color: var(--theme-elevation-500);
+    text-decoration: none;
+  }
+  .login__form > a:hover,
+  .login__form > a:focus-visible {
+    color: var(--pt-accent);
+    text-decoration: none;
+  }
+
+  /* full-width submit inside auth cards only */
+  .template-minimal .form-submit .btn {
+    width: 100%;
+  }
+}

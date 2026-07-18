@@ -1,0 +1,75 @@
+/* ==================================================================== *
+ * BUTTONS V2 — split buttons
+ *
+ * split buttons (e.g. Publish changes ▾): one continuous control — the
+ * main half keeps the start radius, the chevron half the end radius.
+ * ==================================================================== */
+@layer payload {
+  .btn--withPopup {
+    border-radius: var(--pt-radius-ctl);
+  }
+  .btn--withPopup .btn {
+    border-start-start-radius: var(--pt-radius-ctl);
+    border-end-start-radius: var(--pt-radius-ctl);
+  }
+  .btn--withPopup .popup-button {
+    border-start-end-radius: var(--pt-radius-ctl);
+    border-end-end-radius: var(--pt-radius-ctl);
+  }
+}
+
+/* ==================================================================== *
+ * DOC CONTROLS + LOCALIZER — header chrome
+ *
+ * The document toolbar's icon buttons (preview, live-preview, copy-locale)
+ * and the app-header locale switcher (hidden by default — its features
+ * live in the sidebar user menu, but the styles stay for configs that
+ * resurface it).
+ * ==================================================================== */
+@layer payload {
+  /* ---- icon buttons in the doc toolbar: quiet outline chips ---- */
+  .doc-controls__controls .btn--icon-only {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--theme-input-bg);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-ctl);
+    color: var(--theme-elevation-600);
+    transition:
+      border-color 0.12s ease,
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+  .doc-controls__controls .btn--icon-only:hover,
+  .doc-controls__controls .btn--icon-only:focus-visible {
+    background: color-mix(in srgb, var(--theme-elevation-500) 8%, transparent);
+    border-color: var(--theme-elevation-300);
+    color: var(--theme-text);
+  }
+
+  /* ---- locale switcher in the app header: restyle Payload's own
+   * .localizer-button box (styling the popup trigger too created a broken
+   * double chip) ---- */
+  .localizer-button {
+    padding: 7px 14px;
+    background: var(--theme-input-bg);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-ctl);
+    color: var(--theme-elevation-600);
+    font-size: 0.85rem;
+    transition:
+      border-color 0.12s ease,
+      color 0.12s ease;
+  }
+  .localizer-button:hover {
+    border-color: var(--theme-elevation-300);
+    color: var(--theme-text);
+  }
+  /* keep breathing room between the locale chip and the account avatar */
+  .app-header__localizer {
+    margin-inline-end: 12px;
+  }
+}

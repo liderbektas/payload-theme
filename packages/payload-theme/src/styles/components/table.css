@@ -1,0 +1,241 @@
+/* ==================================================================== *
+ * TABLE / LIST — selection, sort, pagination
+ *
+ * No dedicated "selected row" class exists, so we key off the row-select
+ * checkbox's own --checked state via :has(). Table select checkboxes stay
+ * checkboxes (the toggle is scoped to .field-type.checkbox) but pick up the
+ * accent when checked.
+ * ==================================================================== */
+@layer payload {
+  /* selected row = faint accent wash (selection is a deliberate state) */
+  .table tbody tr:has(.checkbox-input--checked) {
+    background: color-mix(in srgb, var(--pt-accent) 7%, transparent);
+  }
+
+  /* row + header select checkboxes: accent box + contrast check when checked */
+  .checkbox-input--checked .checkbox-input__input {
+    background: var(--pt-accent);
+    border-color: var(--pt-accent);
+  }
+  .checkbox-input--checked .checkbox-input__icon,
+  .checkbox-input--checked .checkbox-input__icon svg,
+  .checkbox-input--checked .checkbox-input__icon .stroke {
+    color: var(--pt-accent-contrast);
+    stroke: var(--pt-accent-contrast);
+  }
+
+  /* active sort direction arrow = accent */
+  .sort-column__button.sort-column--active {
+    color: var(--pt-accent);
+  }
+
+  /* pagination: current page = accent, others get a neutral hover */
+  .paginator__page {
+    border-radius: var(--pt-radius-item);
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+  .paginator__page--is-current {
+    background: var(--pt-accent);
+    color: var(--pt-accent-contrast);
+  }
+  .paginator__page:not(.paginator__page--is-current):not(:disabled):hover {
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+    color: var(--theme-text);
+  }
+
+  /* ---- bulk selection bar: muted count + chip actions ----
+   * Payload renders "1 selected — Select all (10) — Edit Publish … Delete"
+   * as underlined text links; here every action becomes a small outline
+   * chip and the em-dash separators go away (chips separate themselves). */
+  .list-selection {
+    gap: 10px;
+    font-size: 13px;
+    color: var(--theme-elevation-500);
+  }
+  .list-selection > span:not(:first-child) {
+    display: none; /* the "—" separators */
+  }
+  .list-selection__actions {
+    align-items: center;
+    gap: 6px;
+  }
+  .list-selection__button {
+    padding: 4px 11px;
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: 999px;
+    color: var(--theme-elevation-600);
+    font-size: 12.5px;
+    font-weight: 500;
+    text-decoration: none;
+    box-shadow: var(--pt-shadow-xs);
+    transition:
+      background-color 0.12s ease,
+      border-color 0.12s ease,
+      color 0.12s ease;
+  }
+  html[data-theme='dark'] .list-selection__button {
+    background: var(--theme-elevation-50);
+  }
+  .list-selection__button:hover,
+  .list-selection__button:focus-visible {
+    background: color-mix(in srgb, var(--theme-elevation-500) 8%, transparent);
+    border-color: var(--theme-elevation-300);
+    color: var(--theme-text);
+    text-decoration: none;
+  }
+}
+
+/* ==================================================================== *
+ * Soften Payload's hard-coded checkbox focus glow for ALL checkboxes
+ * (table selects included), same mechanism as the forms module: reassign
+ * the --theme-success-400 the !important box-shadow reads, to a faint accent.
+ * ==================================================================== */
+@layer payload {
+  .checkbox-input:not(.checkbox-input--read-only):focus-within .checkbox-input__input,
+  .checkbox-input:not(.checkbox-input--read-only):active .checkbox-input__input {
+    --theme-success-400: color-mix(in srgb, var(--pt-accent-ring) 16%, transparent);
+  }
+}
+
+/* ==================================================================== *
+ * TABLE — resting-state shadcn look
+ *
+ * shadcn Table: no zebra stripes, thin row separators, a muted header band
+ * with a clean bottom rule, and a NEUTRAL row hover (bg-muted/50 in the
+ * reference) — the accent only appears for selection/sort/pagination.
+ * ==================================================================== */
+@layer payload {
+  .table tbody tr {
+    transition: background-color 0.1s ease;
+  }
+  .table tbody tr:hover {
+    background: color-mix(in srgb, var(--theme-elevation-500) 6%, transparent);
+  }
+  /* keep selected rows clearly stronger than hover */
+  .table tbody tr:has(.checkbox-input--checked):hover {
+    background: color-mix(in srgb, var(--pt-accent) 11%, transparent);
+  }
+
+  /* drop the zebra striping */
+  .table tbody tr:nth-child(odd) {
+    background: transparent;
+    border-radius: 0;
+  }
+
+  /* muted header with a clean bottom rule */
+  .table thead {
+    color: var(--theme-elevation-500);
+  }
+  .table thead th {
+    font-weight: 500;
+    border-bottom: 1px solid var(--theme-border-color);
+  }
+
+  /* thin separators between rows */
+  .table tbody td {
+    border-bottom: 1px solid var(--theme-elevation-100);
+  }
+
+  /* cell links: no underline (shadcn) — hover shifts to accent instead */
+  .table a {
+    text-decoration: none;
+  }
+  .table a:hover,
+  .table a:focus-visible {
+    text-decoration: none;
+    color: var(--pt-accent);
+  }
+}
+
+/* ==================================================================== *
+ * TABLE — card frame + value badges
+ *
+ * Wrap the table in a rounded, bordered card (overflow:auto from Payload
+ * clips to the radius, so horizontal scroll still works). Payload tags each
+ * select value with a `.selected--<value>` class, so select cells render as
+ * quiet neutral badges.
+ * ==================================================================== */
+@layer payload {
+  .table {
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    background: var(--theme-elevation-0);
+    box-shadow: var(--pt-shadow-xs);
+  }
+
+  /* subtle header band; the card's radius clips its top corners */
+  .table thead th {
+    background: var(--theme-elevation-50);
+  }
+  /* the card border is the bottom edge, so drop the last row separator */
+  .table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  /* softly rounded select checkboxes */
+  .table .checkbox-input__input {
+    border-radius: 5px;
+  }
+
+  /* status pills — one neutral chip for every value; no semantic coloring,
+   * consistent with the rest of the theme's badges */
+  .cell-status .selected--draft,
+  .cell-status .selected--published,
+  .cell-status .selected--archived {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px; /* badges are ALWAYS fully round, radius-agnostic */
+    background: var(--theme-elevation-100);
+    color: var(--theme-elevation-600);
+    font-size: 0.82em;
+    font-weight: 500;
+  }
+
+  /* boolean cell fallback (fields that kept Payload's stock CheckboxCell —
+   * the plugin normally swaps in the BoolCell chip below) */
+  .bool-cell {
+    display: inline-flex;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--theme-elevation-100);
+    color: var(--theme-elevation-600);
+    font-family: var(--font-body);
+    font-size: 0.82em;
+  }
+}
+
+/* ==================================================================== *
+ * LIST BADGES — boolean icon chips
+ *
+ * The BoolCell component (swapped in for every checkbox column by the
+ * plugin) renders `.pt-bool`: a small round chip carrying only an icon —
+ * green tick for true, muted X for false. Status/select badges stay the
+ * neutral chip everywhere (no dots, no semantic colors — one calm voice).
+ * ==================================================================== */
+@layer payload {
+  .pt-bool {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+
+    svg {
+      flex-shrink: 0;
+      width: 12px;
+      height: 12px;
+    }
+  }
+  .pt-bool--true {
+    background: color-mix(in srgb, var(--pt-ok) 14%, transparent);
+    color: var(--pt-ok-text);
+  }
+  .pt-bool--false {
+    background: var(--theme-elevation-100);
+    color: var(--theme-elevation-400);
+  }
+}

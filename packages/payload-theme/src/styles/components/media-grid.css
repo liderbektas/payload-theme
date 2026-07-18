@@ -1,0 +1,238 @@
+/* ==================================================================== *
+ * MEDIA LIBRARY — grid view
+ *
+ * Upload collections get a grid/table switch (MediaListToggle, rendered by
+ * the plugin above the list table). While it says "grid", the list table is
+ * relaid as a card grid — pure CSS on Payload's own table markup, keyed off
+ * `:has(.pt-media-toggle[data-view='grid'])`, so sorting, selection,
+ * pagination and bulk actions keep working untouched:
+ *   · each row becomes a card — full-bleed thumbnail, filename, small meta
+ *   · the select checkbox floats over the artwork (visible on hover/checked;
+ *     a checked card gets an accent ring instead of the row wash)
+ *   · updatedAt surfaces as a dark glass chip over the image on hover
+ *   · every other column stays hidden but remains in the DOM
+ * ==================================================================== */
+@layer payload {
+  /* ---- the toggle itself: a compact segmented control, right-aligned ---- */
+  .pt-media-toggle {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    width: max-content;
+    margin-inline-start: auto;
+    margin-block: 2px 12px;
+    padding: 3px;
+    background: var(--theme-elevation-100);
+    border-radius: var(--pt-radius-ctl);
+  }
+  .pt-media-toggle__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    border-radius: calc(var(--pt-radius-ctl) - 2px);
+    color: var(--theme-elevation-500);
+    cursor: pointer;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+  .pt-media-toggle__btn:hover {
+    color: var(--theme-text);
+  }
+  .pt-media-toggle__btn--active {
+    background: var(--theme-elevation-0);
+    color: var(--theme-text);
+    box-shadow: var(--pt-shadow-xs);
+  }
+  html[data-theme='dark'] .pt-media-toggle__btn--active {
+    background: var(--theme-elevation-200);
+  }
+
+  /* ---- grid mode ---- */
+  .collection-list:has(.pt-media-toggle[data-view='grid']) {
+    /* the table card frame goes away — the grid brings its own cards */
+    .table {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      overflow: visible;
+    }
+    .table > table {
+      display: block;
+      width: 100%;
+    }
+    .table thead {
+      display: none;
+    }
+    .table tbody {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 14px;
+    }
+
+    /* row -> card */
+    .table tbody tr {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      column-gap: 8px;
+      background: var(--theme-elevation-0);
+      border: 1px solid var(--theme-border-color);
+      border-radius: var(--pt-radius-card);
+      overflow: hidden;
+      box-shadow: var(--pt-shadow-xs);
+      transition:
+        transform 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+    }
+    .table tbody tr:hover {
+      background: var(--theme-elevation-0);
+      border-color: var(--theme-elevation-300);
+      box-shadow: var(--pt-shadow-md);
+      transform: translateY(-2px);
+    }
+    /* checked card: accent ring, not the row wash */
+    .table tbody tr:has(.checkbox-input--checked),
+    .table tbody tr:has(.checkbox-input--checked):hover {
+      background: var(--theme-elevation-0);
+      border-color: color-mix(in srgb, var(--pt-accent) 55%, var(--theme-border-color));
+      box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--pt-accent) 30%, transparent),
+        var(--pt-shadow-xs);
+    }
+
+    /* hide every cell by default; opt the composed ones back in */
+    .table tbody td {
+      display: none;
+      border: 0;
+      padding: 0;
+    }
+
+    /* thumbnail + filename */
+    .table td.cell-filename {
+      display: block;
+      order: 1;
+      flex: 1 1 100%;
+      min-width: 0;
+    }
+    .table td.cell-filename > a,
+    .table td.cell-filename > span {
+      display: block;
+      min-width: 0;
+      text-decoration: none;
+    }
+    .table td.cell-filename .file {
+      display: block;
+    }
+    /* (the full-bleed thumbnail sizing lives UNLAYERED at the end of the
+     * file — Payload's Thumbnail stylesheet is unlayered and wins over any
+     * @layer rule) */
+    .table td.cell-filename .file__filename {
+      display: block;
+      margin: 0; /* Payload indents the filename next to the chip — not here */
+      padding: 10px 12px 3px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 12.5px;
+      font-weight: 550;
+      color: var(--theme-text);
+    }
+
+    /* small meta line under the filename (alt text, size, mime — whichever
+     * of those columns are enabled) */
+    .table td.cell-alt,
+    .table td.cell-filesize,
+    .table td.cell-mimeType {
+      display: block;
+      flex: 0 1 auto;
+      min-width: 0;
+      padding: 0 0 10px 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--theme-elevation-500);
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .table td.cell-alt {
+      order: 2;
+      max-width: 100%;
+    }
+    .table td.cell-filesize {
+      order: 3;
+    }
+    .table td.cell-mimeType {
+      order: 4;
+      padding-inline-end: 12px;
+    }
+
+    /* select checkbox floats over the artwork */
+    .table td.cell-_select {
+      display: flex;
+      position: absolute;
+      top: 10px;
+      inset-inline-start: 10px;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 0.12s ease;
+    }
+    .table tbody tr:hover td.cell-_select,
+    .table tbody tr:has(.checkbox-input--checked) td.cell-_select,
+    .table tbody tr:focus-within td.cell-_select {
+      opacity: 1;
+    }
+    .table td.cell-_select .checkbox-input__input {
+      background: var(--theme-elevation-0);
+      box-shadow: var(--pt-shadow-sm);
+    }
+    .table td.cell-_select .checkbox-input--checked .checkbox-input__input {
+      background: var(--pt-accent);
+    }
+
+    /* updatedAt: dark glass chip over the image, revealed on hover */
+    .table td.cell-updatedAt {
+      display: flex;
+      position: absolute;
+      top: 10px;
+      inset-inline-end: 10px;
+      z-index: 2;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgb(9 9 11 / 0.6);
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+      color: #fff;
+      font-size: 10.5px;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.12s ease;
+      pointer-events: none;
+    }
+    .table tbody tr:hover td.cell-updatedAt {
+      opacity: 1;
+    }
+  }
+  html[data-theme='dark'] .collection-list:has(.pt-media-toggle[data-view='grid']) .table tbody tr,
+  html[data-theme='dark']
+    .collection-list:has(.pt-media-toggle[data-view='grid'])
+    .table
+    tbody
+    tr:hover {
+    background: var(--theme-elevation-50);
+  }
+}

@@ -1,0 +1,24 @@
+/* ==================================================================== *
+ * VERSIONS — compare/diff polish
+ *
+ * The versions list and diff view inherit almost everything (table card,
+ * pills, accent buttons, selects, content card). Only the diff
+ * highlights needed softening; their colors stay semantic via Payload's
+ * own --diff-* variables.
+ * ==================================================================== */
+@layer payload {
+  /* rounded corners for the block-level diff highlight backgrounds */
+  .html-diff :is(p, h1, h2, h3, h4, h5, h6, blockquote, pre)::before {
+    border-radius: var(--pt-radius-item);
+  }
+  /* inline added/removed marks */
+  .html-diff [data-match-type='create'],
+  .html-diff [data-match-type='delete'] {
+    border-radius: 4px;
+  }
+  /* compare-table field labels: quiet hierarchy */
+  .field-diff-label {
+    color: var(--theme-elevation-600);
+    font-size: 0.85rem;
+  }
+}

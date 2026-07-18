@@ -48,7 +48,7 @@
     "build": "pnpm run clean && pnpm run build:swc && pnpm run build:types && pnpm run build:styles",
     "build:swc": "swc src -d dist --strip-leading-paths --ignore \"**/*.test.ts\"",
     "build:types": "tsc --emitDeclarationOnly --outDir dist",
-    "build:styles": "copyfiles -u 1 \"src/**/*.css\" dist",
+    "build:styles": "node scripts/build-styles.mjs",
     "clean": "rm -rf dist",
     "dev": "swc src -d dist --strip-leading-paths --ignore \"**/*.test.ts\" --watch",
     "test": "vitest run"
@@ -75,7 +75,6 @@
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "4.5.2",
-    "copyfiles": "2.4.1",
     "next": "16.2.6",
     "payload": "3.85.2",
     "react": "19.2.6",

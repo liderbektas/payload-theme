@@ -1,0 +1,276 @@
+/* ==================================================================== *
+ * ACTION ICONS — every primary action button gets its glyph
+ *
+ * Payload's action buttons render text-only. Each known action gets a
+ * lucide glyph drawn as a currentColor mask, so it recolors with the
+ * button in every state and theme. Pure CSS — markup untouched.
+ * ==================================================================== */
+@layer payload {
+  /* the icon chip itself */
+  .list-create-new-doc__create-new-button .btn__content::before,
+  .list-header__title-actions .btn[aria-label='Bulk Upload'] .btn__content::before,
+  #action-save .btn__content::before,
+  #action-save-draft .btn__content::before,
+  #action-create::before,
+  #action-duplicate::before,
+  #action-delete::before,
+  #action-unpublish::before,
+  #toggle-list-columns::before,
+  #toggle-list-filters::before {
+    content: '';
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    background: currentColor;
+    -webkit-mask: var(--pt-ico) center / contain no-repeat;
+    mask: var(--pt-ico) center / contain no-repeat;
+  }
+
+  /* buttons: make the content row flex so the glyph sits beside the label */
+  .list-create-new-doc__create-new-button .btn__content,
+  .list-header__title-actions .btn[aria-label='Bulk Upload'] .btn__content,
+  #action-save .btn__content,
+  #action-save-draft .btn__content {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  /* popup rows are anchors/buttons — give them the same row anatomy */
+  #action-create,
+  #action-duplicate,
+  #action-delete,
+  #action-unpublish {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  /* pills: glyph leads the label */
+  #toggle-list-columns,
+  #toggle-list-filters {
+    gap: 6px;
+  }
+  #toggle-list-columns::before,
+  #toggle-list-filters::before {
+    width: 13px;
+    height: 13px;
+  }
+
+  /* the glyphs (lucide, stroke 2) */
+  .list-create-new-doc__create-new-button .btn__content,
+  #action-create {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M12 5v14'/%3E%3C/svg%3E");
+  }
+  .list-header__title-actions .btn[aria-label='Bulk Upload'] .btn__content {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v12'/%3E%3Cpath d='m17 8-5-5-5 5'/%3E%3Cpath d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3C/svg%3E");
+  }
+  #action-save .btn__content {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+  }
+  #action-save-draft .btn__content {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z'/%3E%3Cpath d='M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7'/%3E%3Cpath d='M7 3v4a1 1 0 0 0 1 1h7'/%3E%3C/svg%3E");
+  }
+  #action-duplicate {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='14' height='14' x='8' y='8' rx='2' ry='2'/%3E%3Cpath d='M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2'/%3E%3C/svg%3E");
+  }
+  #action-delete {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'/%3E%3Cpath d='M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/%3E%3Cpath d='M10 11v6'/%3E%3Cpath d='M14 11v6'/%3E%3C/svg%3E");
+  }
+  #action-unpublish {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='5' x='2' y='3' rx='1'/%3E%3Cpath d='M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8'/%3E%3Cpath d='M10 12h4'/%3E%3C/svg%3E");
+  }
+  #toggle-list-columns {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2'/%3E%3Cpath d='M9 3v18'/%3E%3Cpath d='M15 3v18'/%3E%3C/svg%3E");
+  }
+  #toggle-list-filters {
+    --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M7 12h10'/%3E%3Cpath d='M10 18h4'/%3E%3C/svg%3E");
+  }
+
+  /* destructive rows read as destructive on hover */
+  #action-delete:hover,
+  #action-delete:focus-visible {
+    background: color-mix(in srgb, var(--theme-error-500) 12%, transparent);
+    color: var(--theme-error-600);
+  }
+}
+
+/* ==================================================================== *
+ * CONTROLS — list toolbar, pills, doc tabs, add buttons
+ *
+ * The list search bar + its Columns/Filters toggles, generic pills, the
+ * Edit/API doc tabs (a shadcn segmented control), the relationship "+"
+ * and array/blocks add-row buttons. Pure CSS — markup and behavior
+ * untouched.
+ * ==================================================================== */
+@layer payload {
+  /* ---- list search bar: same language as inputs (border + ring).
+   * The ring moves to the container; the inner input must stay borderless
+   * in every state or it would double up with the FORMS focus rule. */
+  .search-bar {
+    background: var(--theme-input-bg);
+    border: 1px solid var(--pt-input-border);
+    border-radius: var(--pt-radius-ctl);
+    box-shadow: var(--pt-shadow-xs);
+    transition:
+      border-color 0.12s ease,
+      box-shadow 0.12s ease;
+  }
+  .search-bar:focus-within {
+    border-color: var(--pt-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--pt-accent-ring) 18%, transparent);
+  }
+  .search-bar .search-filter__input,
+  .search-bar .search-filter__input:focus,
+  .search-bar .search-filter__input:focus-visible {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  /* ---- pills (Columns/Filters toggles, column-selector chips, …) ----
+   * light = quiet outline chip with a neutral hover; dark (= selected/
+   * active) = accent chip. */
+  .pill {
+    border-radius: var(--pt-radius-ctl);
+  }
+  .pill--size-small {
+    padding: 0 10px;
+  }
+  .pill--style-light {
+    background: var(--theme-input-bg);
+    border: 1px solid var(--theme-border-color);
+    color: var(--theme-elevation-600);
+  }
+  .pill--style-light.pill--has-action:hover {
+    background: color-mix(in srgb, var(--theme-elevation-500) 8%, transparent);
+    border-color: var(--theme-elevation-300);
+    color: var(--theme-text);
+  }
+  .pill--style-dark {
+    background: var(--pt-accent);
+    border: 1px solid transparent;
+    color: var(--pt-accent-contrast);
+  }
+  .pill--style-dark.pill--has-action:hover {
+    background: var(--pt-accent-hover);
+    color: var(--pt-accent-contrast);
+  }
+
+  /* ---- "Create New" (btn--style-pill): accent-subtle chip that fills
+   * with the accent on hover. Buttons paint from their local vars. */
+  .btn--style-pill {
+    --bg-color: var(--pt-accent-subtle);
+    --color: var(--pt-accent);
+    --hover-bg: var(--pt-accent);
+    --hover-color: var(--pt-accent-contrast);
+  }
+
+  /* ---- doc tabs (Edit / Versions / API): the shadcn Tabs list — a muted
+   * rounded track; the active segment lifts on a white chip with an xs
+   * shadow. */
+  .doc-tabs__tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    margin: 0;
+    padding: 3px;
+    list-style: none;
+    background: var(--theme-elevation-100);
+    border: 0;
+    border-radius: var(--pt-radius-ctl);
+  }
+  html[data-theme='dark'] .doc-tabs__tabs {
+    background: var(--theme-elevation-50);
+  }
+  .doc-tab {
+    background: transparent;
+    border-radius: calc(var(--pt-radius-ctl) - 2px);
+    color: var(--theme-elevation-500);
+    --btn-padding-block-start: 4px;
+    --btn-padding-block-end: 4px;
+    --btn-padding-inline-start: 14px;
+    --btn-padding-inline-end: 14px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  a.doc-tab:hover,
+  a.doc-tab:focus-visible {
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+    color: var(--theme-text);
+    text-decoration: none;
+  }
+  .doc-tab--active {
+    background: var(--theme-elevation-0);
+    color: var(--theme-text);
+    box-shadow: var(--pt-shadow-xs);
+  }
+  html[data-theme='dark'] .doc-tab--active {
+    background: var(--theme-elevation-150);
+  }
+
+  /* ---- relationship "+" (add new related doc): a detached square chip
+   * matching the 40px input height. */
+  .relationship-add-new__add-button {
+    width: 40px;
+    height: 40px;
+    margin-left: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--theme-input-bg);
+    border: 1px solid var(--pt-input-border);
+    border-radius: var(--pt-radius-ctl);
+    color: var(--theme-elevation-600);
+    transition:
+      border-color 0.12s ease,
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+  .relationship-add-new__add-button:hover,
+  .relationship-add-new__add-button:focus-visible {
+    background: var(--pt-accent-subtle);
+    border-color: color-mix(in srgb, var(--pt-accent) 40%, var(--pt-input-border));
+    color: var(--pt-accent);
+  }
+
+  /* ---- array / blocks "add row" (Add Image, Add Layout, …): ONE standard
+   * control — a full-width dashed "add card" bar that matches the row cards
+   * it appends to. Rest: muted; hover: accent border + wash, like a dropzone
+   * receiving a drag. Payload paints label/stroke from --btn-color. */
+  .array-field__add-row,
+  .blocks-field__drawer-toggler {
+    --btn-color: var(--theme-elevation-500);
+    width: 100%;
+    margin-block-start: 4px;
+    justify-content: center;
+    border: 1px dashed var(--theme-elevation-300);
+    border-radius: var(--pt-radius-card);
+    background: color-mix(in srgb, var(--theme-elevation-50) 40%, transparent);
+    transition:
+      border-color 0.15s ease,
+      background-color 0.15s ease;
+  }
+  .array-field__add-row .btn__content,
+  .blocks-field__drawer-toggler .btn__content {
+    width: 100%;
+    justify-content: center;
+    padding-block: 4px;
+    font-weight: 500;
+  }
+  .array-field__add-row:hover,
+  .array-field__add-row:focus-visible,
+  .blocks-field__drawer-toggler:hover,
+  .blocks-field__drawer-toggler:focus-visible {
+    --btn-color: var(--pt-accent);
+    border-color: color-mix(in srgb, var(--pt-accent) 45%, var(--theme-elevation-300));
+    background: var(--pt-accent-subtle);
+  }
+  .array-field__add-row .btn__icon,
+  .blocks-field__drawer-toggler .btn__icon {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    color: inherit;
+  }
+}

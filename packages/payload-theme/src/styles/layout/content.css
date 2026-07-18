@@ -1,0 +1,179 @@
+/* ==================================================================== *
+ * LAYOUT V2 — content container + card-based forms
+ *
+ * 1) Every page's content is centered and capped (~1280px) so ultra-wide
+ *    screens stop stretching forms edge to edge. Centering happens via
+ *    GROWING PADDING, not max-width: these gutters paint the content
+ *    surface, so capping their box would leak side bands.
+ * 2) Edit views (collections, account, globals — NOT drawers, hence the
+ *    direct-child scope on the page root): the main fields column is ONE
+ *    bordered card; each top-level group field (e.g. Seo) becomes its own
+ *    muted inset panel; the sidebar becomes a bordered card too; the old
+ *    full-height divider goes away; doc-controls slims down into a sticky
+ *    translucent command bar under the app header.
+ * ==================================================================== */
+@layer payload {
+  /* ---- 1) global content container ---- */
+  .template-default__wrap .gutter--left.gutter--right {
+    padding-inline: max(var(--gutter-h), calc((100% - var(--pt-content-width, 1280px)) / 2));
+  }
+  .template-default__wrap > .collection-edit .document-fields {
+    width: 100%;
+    max-width: calc(var(--pt-content-width, 1280px) + 120px);
+    margin-inline: auto;
+  }
+
+  /* tables stay inside the container at every width — Payload full-bleeds
+   * them below its 1440px breakpoint; horizontal overflow scrolls INSIDE
+   * the rounded card instead of jutting past the toolbar */
+  .table-wrap,
+  .table {
+    width: 100%;
+    margin-inline: 0;
+    padding-inline: 0;
+    /* Payload also shifts tables with position:relative + negative left
+     * at some breakpoints — pin them back inside the container */
+    inset-inline: 0;
+  }
+
+  /* ---- 2) edit views: cards ---- */
+  /* main fields column = one card (outer gutter paddings preserved) */
+  .template-default__wrap > .collection-edit .document-fields__fields {
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-xs);
+    padding: 28px 32px 32px;
+  }
+  html[data-theme='dark']
+    .template-default__wrap
+    > .collection-edit
+    .document-fields__fields {
+    background: var(--theme-elevation-50);
+  }
+
+  /* the divider between main and sidebar is replaced by the cards */
+  .template-default__wrap > .collection-edit .document-fields__edit {
+    border-right: 0;
+  }
+
+  /* top-level group fields (Seo, …): their own muted inset panel with a
+   * clear header — reads as a separate section */
+  .template-default__wrap > .collection-edit .group-field--top-level {
+    background: var(--theme-elevation-50);
+    border: 1px solid var(--theme-elevation-100);
+    border-radius: var(--pt-radius-card);
+    padding: 22px 26px 26px;
+    /* Payload bleeds top-level groups with negative side margins — reset
+     * so the panel stays inside the card instead of jutting out */
+    margin: 10px 0;
+    width: 100%;
+  }
+  html[data-theme='dark'] .template-default__wrap > .collection-edit .group-field--top-level {
+    background: var(--theme-elevation-0);
+    border-color: var(--theme-elevation-100);
+  }
+  .template-default__wrap
+    > .collection-edit
+    .group-field--top-level
+    > .group-field__header {
+    margin-bottom: 14px;
+  }
+
+  /* sidebar card — static per user preference (no sticky, no pinning).
+   * The card is the inner __sidebar-fields box: the outer __sidebar is
+   * the full-height column, so carding it painted a wall to the edge. */
+  .template-default__wrap > .collection-edit .document-fields__sidebar-wrap {
+    position: static;
+  }
+  .template-default__wrap > .collection-edit .document-fields__sidebar {
+    background: transparent;
+  }
+  .template-default__wrap > .collection-edit .document-fields__sidebar-fields {
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-xs);
+    padding: 24px 26px;
+    margin: 30px 40px 0 0; /* top-align with the main card; keep a right gutter */
+  }
+  /* ≤1024px Payload stacks the sidebar under the main card — the desktop
+   * right gutter would make it narrower than the card above it */
+  @media (max-width: 1024px) {
+    .template-default__wrap > .collection-edit .document-fields__sidebar-fields {
+      margin: 16px 0 0;
+    }
+  }
+  html[data-theme='dark']
+    .template-default__wrap
+    > .collection-edit
+    .document-fields__sidebar-fields {
+    background: var(--theme-elevation-50);
+  }
+
+  /* ---- 3) doc-controls: floating command bar ----
+   * Payload already makes this bar sticky; it now docks right under the
+   * sticky app header — a translucent surface with backdrop blur and a
+   * bottom hairline that doubles as the header/content separator of the
+   * edit views. (--theme-bg resolves to the card surface inside the wrap.) */
+  .template-default__wrap .doc-controls {
+    top: var(--app-header-height);
+  }
+  .template-default__wrap > .collection-edit .doc-controls {
+    background: color-mix(in srgb, var(--theme-bg) 82%, transparent);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--theme-elevation-100);
+  }
+  .template-default__wrap > .collection-edit .doc-controls__content {
+    padding: 10px 0;
+  }
+
+  /* meta line: status chip + "·"-separated muted timestamps */
+  .doc-controls__meta {
+    align-items: center;
+    gap: 12px;
+    font-size: 0.85rem;
+  }
+  .doc-controls__list-item {
+    display: flex;
+    align-items: center;
+  }
+  .doc-controls__list-item + .doc-controls__list-item::before {
+    content: '·';
+    margin-right: 12px;
+    color: var(--theme-elevation-300);
+  }
+  .doc-controls__label {
+    color: var(--theme-elevation-500);
+    font-size: 0.82rem;
+  }
+  .doc-controls__value {
+    color: var(--theme-elevation-700);
+    font-size: 0.82rem;
+    font-weight: 500;
+  }
+  /* status: drop the "Status:" prefix — the chip form says it already */
+  .doc-controls .status__label {
+    display: none;
+  }
+  .doc-controls .status__value-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 3px 11px;
+    border-radius: 999px;
+    background: var(--theme-elevation-100);
+    color: var(--theme-elevation-600);
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+  .doc-controls .status__value-wrap::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.55;
+  }
+}

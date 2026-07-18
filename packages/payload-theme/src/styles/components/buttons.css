@@ -1,0 +1,37 @@
+/* ==================================================================== *
+ * BUTTONS — shape & state
+ *
+ * Colour binding (primary/outline) lives in the accent-binding section
+ * above; here buttons get the shadcn silhouette: 8px corners (via the
+ * radius token), font-medium labels, an xs shadow on solid/outline
+ * variants, quiet transitions. The visual box is `.btn` itself; radius is
+ * scoped to the text-button styles so Payload's round icon buttons stay
+ * round.
+ * ==================================================================== */
+@layer payload {
+  .btn {
+    transition:
+      background-color 0.12s ease,
+      border-color 0.12s ease,
+      box-shadow 0.12s ease,
+      color 0.12s ease;
+  }
+
+  .btn--style-primary,
+  .btn--style-secondary,
+  .btn--style-subtle,
+  .btn--style-pill {
+    --btn-font-weight: 500;
+    border-radius: var(--pt-radius-ctl);
+  }
+
+  .btn--style-primary,
+  .btn--style-secondary {
+    box-shadow: var(--pt-shadow-xs);
+  }
+
+  /* subtle buttons hover with a neutral wash, not an accent tint */
+  .btn--style-subtle {
+    --hover-bg: color-mix(in srgb, var(--theme-elevation-500) 8%, transparent);
+  }
+}

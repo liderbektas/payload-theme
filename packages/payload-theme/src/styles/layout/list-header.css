@@ -1,0 +1,144 @@
+/* ==================================================================== *
+ * LIST HEADER — page top redesign
+ *
+ * The reference toolbar grammar: a calm title + muted description block,
+ * then ONE toolbar row = search field + Columns/Filters + the solid
+ * "Create New" action at its right end. The create button lives in the
+ * title row in the DOM; on desktop it is pinned onto the toolbar row
+ * (deterministic offsets: the toolbar always starts right after the
+ * header block), and the search bar reserves its width.
+ * ==================================================================== */
+@layer payload {
+  .list-header__content {
+    align-items: center;
+    /* the create button and the "N selected" bulk bar live in adjacent
+     * grid columns — without this they touch edge to edge */
+    column-gap: 20px;
+  }
+  .list-header__title-and-actions {
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  /* calmer page title (shadcn text-2xl, not Payload's display size) */
+  .list-header__title {
+    font-size: 1.6rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+
+  /* header-scoped: the create pill becomes the page's one solid action */
+  .list-header__title-actions {
+    margin-bottom: 0;
+    align-items: center;
+    gap: 16px; /* air between the create button and the "N selected" bar */
+  }
+  .list-header__title-actions .btn--style-pill {
+    --bg-color: var(--pt-accent);
+    --color: var(--pt-accent-contrast);
+    --hover-bg: var(--pt-accent-hover);
+    --hover-color: var(--pt-accent-contrast);
+    --btn-padding-block-start: 5px;
+    --btn-padding-block-end: 5px;
+    --btn-padding-inline-start: 14px;
+    --btn-padding-inline-end: 14px;
+    --btn-font-weight: 500;
+    box-shadow: var(--pt-shadow-xs);
+  }
+
+  /* muted description tucked right under the title (Payload pads the
+   * sub-header wrapper by 15px — remove it, keep a small gap of our own).
+   * Shared with the edit views' doc-header description. */
+  .collection-list .collection-list__sub-header {
+    padding-top: 0;
+  }
+  .custom-view-description {
+    margin-top: 4px;
+    color: var(--theme-elevation-500);
+    font-size: 0.9rem;
+    max-width: 72ch;
+  }
+  .collection-list .list-header {
+    padding-bottom: 0;
+    border-bottom: 0;
+    margin-bottom: 16px;
+  }
+
+  /* ---- desktop: dock the create button onto the toolbar row ----
+   * The toolbar (search bar) always starts 16px after the header block,
+   * so `top: 100% + 16px` lands exactly on it; the button box matches the
+   * search bar height and centers its content. The search bar gives up
+   * the reserved width so nothing overlaps. */
+  @media (min-width: 1025px) {
+    .collection-list {
+      /* space the search bar gives up for the docked actions; grows when a
+       * second action (e.g. Media's Bulk Upload) renders next to Create */
+      --pt-list-actions-reserve: 152px;
+    }
+    .collection-list:has(.list-header__title-actions > :nth-child(2)) {
+      --pt-list-actions-reserve: 296px;
+    }
+    .collection-list .list-header {
+      position: relative;
+    }
+    .collection-list .list-header__title-actions {
+      position: absolute;
+      inset-inline-end: 0;
+      top: calc(100% + 16px);
+      z-index: 3;
+      height: var(--pt-toolbar-h, 46px);
+      display: flex;
+      align-items: center;
+      gap: 8px; /* docked buttons sit as one tight group */
+    }
+    /* reserve action space only when at least one action renders */
+    .collection-list:has(.list-header__title-actions .btn) .search-bar {
+      width: calc(100% - var(--pt-list-actions-reserve));
+    }
+    .collection-list .search-bar {
+      min-height: var(--pt-toolbar-h, 46px);
+    }
+  }
+
+  /* secondary list actions (Bulk Upload & friends): the shadcn outline
+   * variant, so only Create New reads as THE primary action */
+  .list-header__title-actions .btn--style-pill:not(.list-create-new-doc__create-new-button) {
+    --bg-color: var(--theme-elevation-0);
+    --color: var(--theme-text);
+    --btn-border: 1px solid var(--theme-border-color);
+    --hover-bg: color-mix(in srgb, var(--theme-elevation-500) 8%, transparent);
+    --hover-color: var(--theme-text);
+    --btn-padding-block-start: 5px;
+    --btn-padding-block-end: 5px;
+    --btn-padding-inline-start: 14px;
+    --btn-padding-inline-end: 14px;
+    --btn-font-weight: 500;
+    box-shadow: var(--pt-shadow-xs);
+  }
+
+  /* ---- edit views (collections, globals, account): same grammar ----
+   * Title left, tabs as the right-side control, description below. The
+   * header/content separator is the doc-controls bar's hairline. */
+  .doc-header__title {
+    font-size: 1.6rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .doc-header__header {
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+  .doc-header__after-header {
+    /* Payload pads this wrapper by up to .8×base — the description's own
+     * margin is enough */
+    padding-top: 0;
+  }
+  /* trim the oversized gap between title block and the controls bar */
+  .template-default__wrap > .doc-header {
+    padding-bottom: 12px;
+  }
+}

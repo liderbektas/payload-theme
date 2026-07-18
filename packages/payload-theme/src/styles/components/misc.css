@@ -1,0 +1,46 @@
+/* ==================================================================== *
+ * MISC — tabs, drawer/dialog, radio, links, loading
+ *
+ * The remaining accent touches. Semantic pills (success/warning/error)
+ * stay independent of the accent.
+ * ==================================================================== */
+@layer payload {
+  /* ---- document tabs: styled as a segmented control in the CONTROLS
+   * section; here only the neutral version-count badge remains ---- */
+  .pill-version-count {
+    background-color: var(--theme-elevation-100);
+    color: var(--theme-elevation-600);
+    border-radius: 999px;
+  }
+
+  /* ---- radio: accent when checked ---- */
+  .radio-input--checked .radio-input__styled-radio {
+    border-color: var(--pt-accent);
+  }
+  .radio-input--checked .radio-input__styled-radio::before {
+    background-color: var(--pt-accent);
+  }
+
+  /* ---- content links pick up the accent ---- */
+  .rich-text a,
+  .rich-text-lexical a {
+    color: var(--pt-accent);
+    text-decoration-color: color-mix(in srgb, var(--pt-accent) 40%, transparent);
+  }
+
+  /* ---- initial loading bars = accent ---- */
+  .loading-overlay__bars,
+  .loading-overlay__bar {
+    color: var(--pt-accent);
+  }
+
+  /* ---- drawer / dialog: shadcn sheet (radius, shadow, soft overlay) ---- */
+  .drawer__content {
+    border-start-start-radius: calc(var(--pt-radius-card) + 4px);
+    border-end-start-radius: calc(var(--pt-radius-card) + 4px);
+    box-shadow: -8px 0 40px rgb(0 0 0 / 0.18);
+  }
+  .drawer__blur-bg {
+    background: rgb(0 0 0 / 0.4);
+  }
+}

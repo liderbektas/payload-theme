@@ -1,0 +1,158 @@
+/* ==================================================================== *
+ * LOGIN — split-layout brand panel
+ *
+ * The LoginHero component (registered via beforeLogin) injects
+ * `.pt-login-hero` into the login view only; all split-layout rules are
+ * gated on `:has(.pt-login-hero)` so forgot-password / reset keep the
+ * plain centered card. The hero is permanently dark and paints its glow
+ * from the accent scale, so it works with any accent + either scheme.
+ * ==================================================================== */
+@layer payload {
+  .template-minimal:has(.pt-login-hero) {
+    width: min(1060px, 100%);
+    max-width: none;
+  }
+
+  .template-minimal__wrap:has(.pt-login-hero) {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    /* Payload caps the minimal-template card around 600px — the split card
+     * needs the whole widened section. */
+    width: 100%;
+    max-width: none;
+    min-height: 620px;
+    overflow: hidden;
+    padding: 56px 64px;
+    padding-inline-start: calc(46% + 64px);
+  }
+
+  /* The hero carries the branding — drop the duplicate logo above the form. */
+  .template-minimal__wrap:has(.pt-login-hero) .login__brand {
+    display: none;
+  }
+
+  /* the form column fills the space right of the hero */
+  .template-minimal__wrap:has(.pt-login-hero) .login__form {
+    width: 100%;
+  }
+  .template-minimal__wrap:has(.pt-login-hero) .login__form .field-type input:not([type='checkbox']) {
+    width: 100%;
+  }
+
+  .pt-login-hero {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 46%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 44px 44px 40px;
+    overflow: hidden;
+    background: #0b0c12;
+    color: #fff;
+    /* Payload's wordmark paints inline with var(--theme-elevation-1000)
+     * (black in light scheme) — remap it inside the always-dark panel. */
+    --theme-elevation-1000: #fff;
+  }
+
+  .pt-login-hero__glow {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        120% 90% at 15% -5%,
+        color-mix(in srgb, var(--pt-accent) 78%, transparent),
+        transparent 64%
+      ),
+      radial-gradient(
+        110% 85% at 95% 105%,
+        color-mix(in srgb, var(--pt-accent-active) 55%, transparent),
+        transparent 60%
+      );
+  }
+  /* a very slow breathing drift on the glow — CSS-only, so the login panel
+   * moves in a screen recording without a single script. The layer scales
+   * past its box while drifting so no edge is ever exposed; the hero clips. */
+  @media (prefers-reduced-motion: no-preference) {
+    .pt-login-hero__glow {
+      animation: pt-glow-drift 16s ease-in-out infinite alternate;
+      will-change: transform, opacity;
+    }
+  }
+
+  .pt-login-hero__grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.055) 1px, transparent 1px);
+    background-size: 36px 36px;
+    -webkit-mask-image: radial-gradient(120% 110% at 25% 15%, #000, transparent 78%);
+    mask-image: radial-gradient(120% 110% at 25% 15%, #000, transparent 78%);
+  }
+
+  /* The user's own logo, centered above the login form (rendered only when
+   * a logo/icon option is configured — no Payload-logo fallback). Sized by
+   * the same --pt-logo-height knob as the nav logo. */
+  .pt-login__logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+  .pt-login__logo-img {
+    height: var(--pt-logo-height, 32px);
+    width: auto;
+  }
+  /* Payload's fallback mark sizes the same way (its fill follows the scheme). */
+  .pt-login__logo .graphic-logo {
+    height: var(--pt-logo-height, 32px);
+    width: auto;
+  }
+  html[data-theme='dark'] .pt-login__logo-img--light,
+  html:not([data-theme='dark']) .pt-login__logo-img--dark {
+    display: none;
+  }
+
+  .pt-login-hero__copy {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    /* No logo in the panel anymore — the copy is the panel's only content
+     * and sits at the bottom; keep it there even in a flex column. */
+    margin-top: auto;
+  }
+  .pt-login-hero__heading {
+    margin: 0;
+    font-size: clamp(1.7rem, 2.4vw, 2.1rem);
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: #fff;
+  }
+  .pt-login-hero__tagline {
+    margin: 0;
+    max-width: 34ch;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: rgb(255 255 255 / 0.66);
+  }
+
+  /* Narrow screens: the panel folds away, the card returns to a single
+   * column. The default .login__brand stays hidden — the pt-login__logo
+   * above the form is the branding at every width. */
+  @media (max-width: 900px) {
+    .pt-login-hero {
+      display: none;
+    }
+    .template-minimal__wrap:has(.pt-login-hero) {
+      min-height: 0;
+      padding: 40px 36px 36px;
+    }
+  }
+}

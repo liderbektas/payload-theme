@@ -1,0 +1,352 @@
+/* ==================================================================== *
+ * CUSTOM NAV — replacement sidebar
+ *
+ * Styles for the custom Nav component at src/components/Nav, which
+ * REPLACES Payload's default nav via admin.components.Nav. The component
+ * keeps Payload's structural classes (.nav, .nav__scroll, .nav__wrap,
+ * .nav__controls) so geometry/open-close behavior is inherited, and
+ * renders its own pt-nav__* classes for the redesign.
+ *
+ * The sidebar is the shadcn "inset" sidebar: it sits DIRECTLY on the gray
+ * page background (no white panel, no divider), with compact rounded menu
+ * items, neutral hovers and an accent fill only for the active item. The
+ * solid --theme-bg background also serves the ≤1440px drawer, which needs
+ * an opaque panel.
+ * ==================================================================== */
+@layer payload {
+  .pt-nav {
+    /* The default nav reserves an app-header-sized dead zone at the top;
+     * our logo owns that space instead. */
+    --nav-padding-block-start: 0px;
+    background: var(--theme-bg);
+    border-right: 0;
+  }
+
+  /* Sidebar column width + inner inset (reference: 16rem + p-2 gutters).
+   * Scoped to >768px so the mobile drawer keeps Payload's full-width
+   * (100vw) override. The layout grid reads the same variable, so the
+   * content well adjusts by itself. */
+  @media (min-width: 769px) {
+    :root {
+      --nav-width: 276px;
+    }
+  }
+  .pt-nav .nav__scroll {
+    --nav-padding-inline-start: 16px;
+    --nav-padding-inline-end: 16px;
+    /* The column itself never scrolls: logo + search stay pinned on top,
+     * the user block stays pinned at the bottom, and ONLY the menu block
+     * (.pt-nav__wrap) scrolls when the entities overflow. */
+    overflow: hidden;
+  }
+  .pt-nav__wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--theme-elevation-250) transparent;
+    /* breathing room so the last item never kisses the user block */
+    padding-bottom: 10px;
+  }
+  .pt-nav__controls {
+    flex: 0 0 auto;
+    margin-top: auto; /* pinned even when the menu is short */
+    padding-top: 8px;
+  }
+
+  /* ---- logo (Payload's own wordmark until a custom logo is provided) ---- */
+  .pt-nav__logo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px 10px 0; /* the logo→search gap is set in the search-trigger section below */
+    text-decoration: none;
+  }
+  .pt-nav__logo:hover,
+  .pt-nav__logo:focus-visible {
+    text-decoration: none;
+  }
+  .pt-nav__logo .graphic-logo {
+    height: var(--pt-logo-height, 24px);
+    width: auto;
+  }
+  .pt-nav__logo-img {
+    height: var(--pt-logo-height, 24px);
+    width: auto;
+  }
+  /* light/dark logo pair: show only the variant matching the active scheme */
+  html[data-theme='dark'] .pt-nav__logo-img--light,
+  html:not([data-theme='dark']) .pt-nav__logo-img--dark {
+    display: none;
+  }
+
+  /* ---- groups ---- */
+  .pt-nav__wrap {
+    gap: 2px; /* space between stacked groups */
+  }
+  .pt-nav__group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+  }
+  /* shadcn group label: small, muted, sentence case — no shouting */
+  .pt-nav__group-label {
+    margin: 16px 0 4px;
+    padding: 0 10px;
+    color: var(--theme-elevation-500);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  /* ---- links (shadcn sidebar-menu-button) ---- */
+  .pt-nav__link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: var(--pt-radius-ctl);
+    color: var(--theme-elevation-600); /* muted inactive; icon inherits */
+    font-size: 13.5px;
+    font-weight: 500;
+    text-decoration: none;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+  /* hover = the neutral sidebar-accent wash, not an accent tint */
+  a.pt-nav__link:hover,
+  a.pt-nav__link:focus-visible {
+    text-decoration: none;
+    color: var(--theme-text);
+    background: color-mix(in srgb, var(--theme-elevation-500) 12%, transparent);
+  }
+  /* active = accent fill (the sidebar-primary treatment) */
+  .pt-nav__link--active {
+    background: var(--pt-accent);
+    color: var(--pt-accent-contrast);
+    font-weight: 500;
+    box-shadow: var(--pt-shadow-xs);
+  }
+  a.pt-nav__link--active:hover,
+  a.pt-nav__link--active:focus-visible {
+    background: var(--pt-accent-hover);
+    color: var(--pt-accent-contrast);
+  }
+  .pt-nav__icon {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+  }
+  .pt-nav__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ---- bottom user block (shadcn sidebar footer, faithfully) --------------
+   * One full-width GHOST trigger (no border, no card chrome — it's a sidebar
+   * item, not a form control): accent initials avatar + name/email + up/down
+   * chevron. Hover/open = quiet neutral tint, exactly like shadcn's
+   * sidebar-accent. The popup above it follows shadcn's dropdown-menu
+   * anatomy: soft border, shadow-md, 4px padding, compact rows, full-bleed
+   * separators. */
+  .pt-nav__controls {
+    width: 100%;
+    padding-inline: 0;
+    padding-bottom: 4px;
+  }
+  .pt-nav__user {
+    position: relative;
+    width: 100%;
+  }
+  .pt-nav__user-trigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 8px;
+    background: transparent;
+    border: 0;
+    border-radius: var(--pt-radius-ctl);
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.12s ease;
+  }
+  .pt-nav__user-trigger:hover,
+  .pt-nav__user-trigger:focus-visible,
+  .pt-nav__user-trigger[aria-expanded='true'] {
+    background: color-mix(in srgb, var(--theme-elevation-500) 12%, transparent);
+  }
+  .pt-nav__user-trigger:focus-visible {
+    outline: 2px solid var(--pt-accent);
+    outline-offset: -2px;
+  }
+  /* Circle avatar in the accent — ALWAYS fully round, independent of the
+   * radius setting. Shared by the trigger and the menu header. */
+  .pt-nav__user-avatar {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: var(--pt-accent);
+    color: var(--pt-accent-contrast);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .pt-nav__user-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    line-height: 1.25;
+  }
+  .pt-nav__user-name {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    color: var(--theme-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pt-nav__user-email {
+    font-size: 11.5px;
+    color: var(--theme-elevation-500);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pt-nav__user-chevron {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    color: var(--theme-elevation-500);
+  }
+
+  /* ---- the popup menu (shadcn dropdown-menu), opening upward ---- */
+  .pt-nav__user-menu {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 30;
+    padding: 4px;
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-md);
+  }
+  html[data-theme='dark'] .pt-nav__user-menu {
+    background: var(--theme-elevation-50);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .pt-nav__user-menu {
+      animation: pt-user-menu-in 0.13s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+  }
+  @keyframes pt-user-menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(3px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .pt-nav__user-menu-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+  }
+  /* full-bleed hairline between menu groups (mirrors the shadcn menu) */
+  .pt-nav__user-menu-sep {
+    height: 1px;
+    margin: 4px -4px;
+    background: var(--theme-elevation-100);
+  }
+  .pt-nav__user-menu-label {
+    padding: 6px 8px 2px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--theme-elevation-500);
+  }
+  .pt-nav__user-menu-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 0;
+    background: none;
+    border-radius: var(--pt-radius-item);
+    font-size: 13px;
+    font-weight: 450;
+    color: var(--theme-text);
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color 0.1s ease,
+      color 0.1s ease;
+
+    svg {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      color: var(--theme-elevation-500);
+    }
+  }
+  .pt-nav__user-menu-item:hover,
+  .pt-nav__user-menu-item:focus-visible {
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+    color: var(--theme-text);
+    text-decoration: none;
+  }
+  .pt-nav__user-menu-item:focus-visible {
+    outline: none;
+  }
+  /* active locale: checked, not clickable */
+  .pt-nav__user-menu-item:disabled {
+    cursor: default;
+    color: var(--theme-text);
+  }
+  .pt-nav__user-menu-item:disabled:hover {
+    background: none;
+  }
+  .pt-nav__user-menu-check {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+
+    svg {
+      width: 14px;
+      height: 14px;
+      color: var(--pt-accent);
+    }
+  }
+  .pt-nav__user-menu-item--logout:hover,
+  .pt-nav__user-menu-item--logout:focus-visible {
+    background: color-mix(in srgb, var(--theme-error-500) 12%, transparent);
+    color: var(--theme-error-600);
+
+    svg {
+      color: var(--theme-error-600);
+    }
+  }
+}

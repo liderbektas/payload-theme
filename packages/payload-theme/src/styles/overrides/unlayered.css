@@ -1,0 +1,112 @@
+/* UNLAYERED on purpose: Payload's NoListResults stylesheet ships without a
+ * cascade layer (align-items: flex-start), and unlayered CSS beats every
+ * @layer rule — so the centering must be unlayered too. The class is DOUBLED
+ * (.no-results.no-results) to out-rank Payload at equal cascade level: on
+ * client-side navigation Next injects Payload's list chunk CSS *after* this
+ * stylesheet, and with equal specificity the later rules would win — which is
+ * exactly the "empty state slides left after navigating back" bug. */
+.no-results.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 56px 24px 48px;
+  background: var(--theme-elevation-0);
+  border: 1px dashed var(--theme-elevation-250);
+  border-radius: var(--pt-radius-card);
+  text-align: center;
+}
+html[data-theme='dark'] .no-results.no-results {
+  background: var(--theme-elevation-50);
+}
+.no-results.no-results > * {
+  margin-inline: auto; /* stays centered even if a wrapper stretches */
+}
+.no-results.no-results h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+.no-results.no-results p {
+  margin: 6px auto 0;
+  max-width: 40ch;
+  color: var(--theme-elevation-500);
+  font-size: 0.9rem;
+}
+.no-results.no-results .no-results__actions {
+  justify-content: center;
+  margin-top: 14px;
+}
+
+/* UNLAYERED on purpose: Payload's Thumbnail stylesheet (`.thumbnail`,
+ * `.thumbnail--size-small`, its inner img) ships without a cascade layer —
+ * same story as NoListResults — so thumbnail SIZING must be unlayered to win.
+ * Higher specificity than Payload's own rules keeps these stable across
+ * client-navigation chunk-injection order. */
+
+/* table rows: the 34px bordered avatar chip
+ * (Payload caps .file__thumbnail with max-width — reset both maxes so the
+ * declared size is the real size in every view) */
+.table td .file .thumbnail {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  max-width: none;
+  max-height: none;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--pt-radius-item);
+  background: var(--theme-elevation-100);
+  overflow: hidden;
+}
+.table td .file .thumbnail img {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  object-fit: cover;
+}
+
+/* media grid cards: full-bleed cover artwork with a soft hover zoom */
+.collection-list:has(.pt-media-toggle[data-view='grid']) .table td.cell-filename .file .thumbnail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  aspect-ratio: 4 / 3;
+  border: 0;
+  border-radius: 0;
+  background: var(--theme-elevation-100);
+  overflow: hidden;
+}
+.collection-list:has(.pt-media-toggle[data-view='grid'])
+  .table
+  td.cell-filename
+  .file
+  .thumbnail
+  img {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  border-radius: 0;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .collection-list:has(.pt-media-toggle[data-view='grid'])
+    .table
+    tbody
+    tr:hover
+    td.cell-filename
+    .file
+    .thumbnail
+    img {
+    transform: scale(1.04);
+  }
+}

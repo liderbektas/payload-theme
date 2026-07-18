@@ -1,0 +1,98 @@
+/* ==================================================================== *
+ * DOC CHROME — popup menus, confirmation modal, status, API view
+ *
+ * The document-level chrome: the "..." actions popup (and every other
+ * Popup instance — per-page, sort, column menus inherit this), the
+ * delete-confirmation dialog, the Status meta chip and the API view's
+ * JSON panel. Pure CSS.
+ * ==================================================================== */
+@layer payload {
+  /* ---- popup menus: shadcn DropdownMenu language ---- */
+  .popup__content {
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-md);
+    padding: 5px;
+  }
+  html[data-theme='dark'] .popup__content {
+    background: var(--theme-elevation-50);
+  }
+  .popup__caret {
+    display: none; /* floating menu, no caret (shadcn) */
+  }
+  .popup-button-list__button {
+    border-radius: var(--pt-radius-item);
+    padding: 7px 10px;
+    color: var(--theme-text);
+    text-decoration: none;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+  .popup-button-list__button:hover,
+  .popup-button-list__button:focus-visible {
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+    color: var(--theme-text);
+    text-decoration: none;
+  }
+
+  /* ---- confirmation modal: shadcn Dialog box ---- */
+  .confirmation-modal__wrapper {
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-lg);
+  }
+  html[data-theme='dark'] .confirmation-modal__wrapper {
+    background: var(--theme-elevation-50);
+  }
+  .confirmation-modal__content h1 {
+    margin-bottom: 6px;
+    font-size: 1.3rem;
+    letter-spacing: -0.015em;
+  }
+  /* the title and its supporting line read as ONE block */
+  .confirmation-modal__content p {
+    margin-top: 0;
+    color: var(--theme-elevation-500);
+  }
+
+  /* ---- status meta (doc controls / versions): quiet chip ---- */
+  .status__value-wrap {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--theme-elevation-100);
+    font-size: 0.8rem;
+  }
+  .status__label {
+    color: var(--theme-elevation-500);
+  }
+  .status__value {
+    font-weight: 600;
+  }
+
+  /* ---- API view: JSON results as a card; copy button gets a hover chip */
+  .query-inspector__results {
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    padding: 14px 16px;
+  }
+  html[data-theme='dark'] .query-inspector__results {
+    background: var(--theme-elevation-50);
+  }
+  .copy-to-clipboard {
+    border-radius: var(--pt-radius-item);
+    color: var(--theme-elevation-500);
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+  }
+  .copy-to-clipboard:hover,
+  .copy-to-clipboard:focus-visible {
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+    color: var(--theme-text);
+  }
+}

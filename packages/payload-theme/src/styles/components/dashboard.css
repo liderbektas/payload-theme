@@ -1,0 +1,229 @@
+/* ==================================================================== *
+ * DASHBOARD — widget grid
+ *
+ * The custom Dashboard view renders an ordered list of widgets into one
+ * responsive grid: one card per visible collection (icon chip + plural
+ * label + large doc count + '+' quick action) and per global. Cards are
+ * white shadcn cards (border + xs shadow) on the content surface; hover
+ * is a neutral border/shadow lift. All colours come from tokens so
+ * light/dark both just work.
+ * ==================================================================== */
+@layer payload {
+  .pt-dash__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    /* every card ends up the exact same size — rows share the tallest
+     * card's height, and a minimum keeps sparse cards from squatting */
+    grid-auto-rows: 1fr;
+    gap: 16px;
+  }
+  .pt-dash__cell {
+    min-height: 148px;
+  }
+
+  .pt-dash__cell {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .pt-dash__cell--full {
+    grid-column: 1 / -1;
+  }
+
+  /* -- entity cards (shadcn stat-card anatomy) ------------------------------
+   * Head row: accent icon chip + label side by side. Body: big count + muted
+   * caption. In dark mode the card lifts to elevation-50 (the content
+   * surface and elevation-0 are the same near-black, which made cards read
+   * muddy). Hover: a soft 2px lift with a deeper shadow — enough motion to
+   * feel alive, gated behind prefers-reduced-motion. */
+  .pt-dash__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex: 1 1 auto;
+    padding: 18px 18px 16px;
+    background-color: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-xs);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      transform 0.15s ease;
+  }
+  html[data-theme='dark'] .pt-dash__card {
+    background-color: var(--theme-elevation-50);
+  }
+  .pt-dash__card:hover {
+    border-color: var(--theme-elevation-300);
+    box-shadow: var(--pt-shadow-md);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .pt-dash__card:hover {
+      transform: translateY(-2px);
+    }
+  }
+
+  /* head row: muted label LEFT, round neutral icon chip RIGHT — the
+   * reference stat-card grammar */
+  .pt-dash__card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-width: 0;
+  }
+  .pt-dash__card-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    background: var(--theme-elevation-100);
+    color: var(--theme-elevation-600);
+
+    svg {
+      width: 17px;
+      height: 17px;
+    }
+  }
+  .pt-dash__card-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--theme-elevation-500);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .pt-dash__card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+  .pt-dash__card-count {
+    font-size: 2.1rem;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    color: var(--theme-text);
+  }
+  .pt-dash__card-caption {
+    font-size: 0.8rem;
+    font-weight: 450;
+    color: var(--theme-elevation-500);
+  }
+  /* sparkline strip pinned to the bottom of stat cards (cards share one
+   * height, so the strip anchors to the bottom edge on every card) */
+  .pt-dash__spark {
+    display: block;
+    width: 100%;
+    height: 34px;
+    margin-top: auto;
+    color: var(--pt-accent);
+  }
+  /* Globals have no count — the entity name itself is the big line. */
+  .pt-dash__card-title {
+    font-size: 1.3rem;
+    font-weight: 650;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: var(--theme-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Stretched link: makes the whole card clickable without nesting anchors. */
+  .pt-dash__card-link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: var(--pt-radius-card);
+  }
+  .pt-dash__card-link:focus-visible {
+    outline: 2px solid var(--pt-accent);
+    outline-offset: 2px;
+  }
+
+  /* '+' quick action sits above the stretched link, exactly covering the
+   * icon chip — invisible at rest, it fades in over the icon on hover so the
+   * resting card matches the reference stat-card exactly. */
+  .pt-dash__card-create {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    background: var(--pt-accent);
+    color: var(--pt-accent-contrast);
+    opacity: 0;
+    transition:
+      opacity 0.15s ease,
+      background-color 0.15s ease;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+  .pt-dash__card:hover .pt-dash__card-create,
+  .pt-dash__card-create:focus-visible {
+    opacity: 1;
+  }
+  .pt-dash__card-create:hover {
+    background: var(--pt-accent-hover);
+  }
+  .pt-dash__card-create:focus-visible {
+    outline: 2px solid var(--pt-accent);
+    outline-offset: 2px;
+  }
+
+  /* -- custom widget area (plugin option `dashboard.widgets`) ---------------
+   * A 12-column grid below the built-in dashboard content. Each widget cell
+   * is a plain container (no card chrome forced on it) so a widget can be a
+   * card, a table, a chart — whatever the developer renders. Width comes
+   * from the config: full = 12, half = 6, third = 4 columns; everything
+   * stacks on narrow viewports. Empty list → the block isn't rendered at
+   * all, so a widget-less dashboard is byte-identical to before. */
+  .pt-dash__widgets {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .pt-dash__widget {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    grid-column: span 6;
+  }
+  .pt-dash__widget--full {
+    grid-column: 1 / -1;
+  }
+  .pt-dash__widget--third {
+    grid-column: span 4;
+  }
+  @media (max-width: 1024px) {
+    .pt-dash__widget,
+    .pt-dash__widget--third {
+      grid-column: span 6;
+    }
+  }
+  @media (max-width: 768px) {
+    .pt-dash__widget,
+    .pt-dash__widget--third {
+      grid-column: 1 / -1;
+    }
+  }
+}

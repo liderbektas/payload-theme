@@ -1,0 +1,84 @@
+/* ==================================================================== *
+ * FEEDBACK — toasts, tooltips, banners, error pills
+ *
+ * Shape-only pass: Payload's feedback layer already uses the semantic
+ * success/error/warning tokens (kept independent of the accent, per the
+ * theme contract) — we only modernize radius, shadow and typography.
+ * ==================================================================== */
+@layer payload {
+  /* ---- toasts (sonner): the shadcn sonner card ----
+   * One quiet white card for every type; the semantic color lives ONLY in
+   * the icon (sonner stamps data-type on each toast), so a burst of toasts
+   * doesn't turn the corner of the screen into a traffic light. */
+  .payload-toast-container .payload-toast-item {
+    align-items: flex-start;
+    gap: 10px;
+    padding: 13px 15px;
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-lg);
+    color: var(--theme-text);
+    font-family: var(--font-body);
+  }
+  html[data-theme='dark'] .payload-toast-container .payload-toast-item {
+    background: var(--theme-elevation-50);
+  }
+  .payload-toast-container .payload-toast-item .toast-title {
+    font-size: 13px;
+    font-weight: 550;
+    line-height: 1.45;
+  }
+  .payload-toast-container .payload-toast-item .toast-icon {
+    color: var(--theme-elevation-500);
+  }
+  .payload-toast-container .payload-toast-item[data-type='success'] .toast-icon {
+    color: var(--pt-ok);
+  }
+  .payload-toast-container .payload-toast-item[data-type='error'] .toast-icon {
+    color: var(--theme-error-500);
+  }
+  .payload-toast-container .payload-toast-item[data-type='warning'] .toast-icon {
+    color: var(--pt-warn);
+  }
+
+  /* ---- skeletons (ShimmerEffect placeholders): calm zinc blocks with a
+   * soft sweep — list views, lazy drawers and thumbnails all inherit it ---- */
+  .shimmer-effect {
+    background-color: var(--theme-elevation-100);
+    border-radius: var(--pt-radius-item);
+    overflow: hidden;
+  }
+  .shimmer-effect__shine {
+    background-image: linear-gradient(
+      90deg,
+      transparent 8%,
+      color-mix(in srgb, var(--theme-elevation-0) 65%, transparent) 18%,
+      transparent 33%
+    );
+  }
+
+  /* ---- tooltips: rounded bubble ---- */
+  .tooltip {
+    border-radius: var(--pt-radius-item);
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  /* ---- inline field errors (red tooltip bubble) ---- */
+  .field-error.tooltip {
+    border-radius: var(--pt-radius-item);
+    font-weight: 500;
+  }
+
+  /* ---- error pills (tab/collapsible error counts) ---- */
+  .error-pill {
+    border-radius: 999px;
+    font-weight: 600;
+  }
+
+  /* ---- banners ---- */
+  .banner {
+    border-radius: var(--pt-radius-card);
+  }
+}

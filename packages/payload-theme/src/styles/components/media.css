@@ -1,0 +1,106 @@
+/* ==================================================================== *
+ * UPLOAD FAMILY — dropzone, file details, upload cards, thumbnails
+ *
+ * Media create (Dropzone), media edit (FileDetails header card), the
+ * upload field card (e.g. Cover Image) and thumbnails in table cells.
+ * ==================================================================== */
+@layer payload {
+  /* ---- dropzone: input-like surface with a dashed border; accent
+   * feedback while a file is dragged over it (Payload adds .dragging) */
+  .file-field {
+    background: transparent; /* the zone paints itself; no gray box behind */
+  }
+  .dropzone {
+    background: color-mix(in srgb, var(--theme-elevation-50) 55%, transparent);
+    border: 1px dashed var(--theme-elevation-300);
+    border-radius: var(--pt-radius-card);
+    transition:
+      border-color 0.15s ease,
+      background-color 0.15s ease;
+  }
+  .dropzone:hover {
+    border-color: var(--theme-elevation-400);
+  }
+  .dropzone.dragging {
+    border-color: var(--pt-accent);
+    background: var(--pt-accent-subtle);
+  }
+  /* a gentle breathing ring while a file hovers over the zone */
+  @media (prefers-reduced-motion: no-preference) {
+    .dropzone.dragging {
+      animation: pt-drop-pulse 1.3s ease-in-out infinite;
+    }
+  }
+  .file-field__orText,
+  .file-field__dragAndDropText {
+    color: var(--theme-elevation-500);
+  }
+
+  /* ---- media edit header card (thumbnail + filename + meta) ---- */
+  .file-details {
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-xs);
+    overflow: hidden; /* clips the flush-left thumbnail to the radius */
+  }
+  html[data-theme='dark'] .file-details {
+    background: var(--theme-elevation-50);
+  }
+  .file-meta__url a {
+    text-decoration: none;
+  }
+  .file-meta__url a:hover,
+  .file-meta__url a:focus-visible {
+    color: var(--pt-accent);
+    text-decoration: none;
+  }
+  .file-meta__size-type {
+    color: var(--theme-elevation-500);
+  }
+
+  /* ---- upload field card (Cover Image & co.) ---- */
+  .upload-field-card {
+    background: var(--theme-input-bg);
+    border-radius: var(--pt-radius-card);
+  }
+  html[data-theme='dark'] .upload-field-card {
+    background: var(--theme-elevation-50);
+  }
+  .upload-relationship-details__filename a {
+    text-decoration: none;
+  }
+  .upload-relationship-details__filename a:hover,
+  .upload-relationship-details__filename a:focus-visible {
+    color: var(--pt-accent);
+    text-decoration: none;
+  }
+  .upload-relationship-details__meta {
+    color: var(--theme-elevation-500);
+  }
+
+  /* ---- thumbnails: soft corners in table cells and upload cards ---- */
+  td .thumbnail img,
+  .upload-field-card .thumbnail img {
+    border-radius: var(--pt-radius-item);
+    object-fit: cover;
+  }
+
+  /* ---- upload rows in the table: a proper thumbnail chip + filename ----
+   * Payload's FileCell already renders thumbnail + name. The size-critical
+   * rules live UNLAYERED at the end of this file — Payload's Thumbnail
+   * stylesheet ships unlayered (like NoListResults) and would beat any
+   * @layer rule; only the layout-safe bits stay here. */
+  .table td .file {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .table td .file__filename {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+}
