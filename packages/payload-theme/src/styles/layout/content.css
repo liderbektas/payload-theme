@@ -69,10 +69,16 @@
     margin: 10px 0;
     width: 100%;
   }
+  /* dark: the panel is a RAISED surface one rung above the card — never a
+   * darker well (elevation-0 here is near-black and read as a hole). Inputs
+   * inside sit flat on the panel: transparent with a visible border, so
+   * they don't punch dark holes back into the lifted surface. */
   html[data-theme='dark'] .template-default__wrap > .collection-edit .group-field--top-level {
-    background: var(--theme-elevation-0);
-    border-color: var(--theme-elevation-100);
+    background: var(--theme-elevation-100);
+    border-color: var(--theme-elevation-150);
   }
+  /* (the flat-field rule itself lives in STRUCTURED FIELDS — it covers
+   * group panels and blocks/array row lists with one selector) */
   .template-default__wrap
     > .collection-edit
     .group-field--top-level

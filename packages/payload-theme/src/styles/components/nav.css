@@ -16,8 +16,10 @@
 @layer payload {
   .pt-nav {
     /* The default nav reserves an app-header-sized dead zone at the top;
-     * our logo owns that space instead. */
+     * our logo owns that space instead. Stock also pads ~40px under the
+     * user block — pull it down so the footer sits near the bottom edge. */
     --nav-padding-block-start: 0px;
+    --nav-padding-block-end: 10px;
     background: var(--theme-bg);
     border-right: 0;
   }

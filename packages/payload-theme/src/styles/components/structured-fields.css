@@ -1,16 +1,16 @@
 /* ==================================================================== *
- * STRUCTURED FIELDS — blocks, arrays, collapsibles (card system v2)
+ * STRUCTURED FIELDS — blocks, arrays, collapsibles (unified list v3)
  *
- * A full departure from stock Payload: every block/array row is a real
- * CARD — bordered, softly shadowed, with a composed header: grip dots, a
- * numbered accent chip (blocks), a confident title, a ghost inline title
- * editor, and bordered icon-chip controls (kebab + chevron). The add-row
- * action is a standardized full-width dashed "add card" bar (styled with
- * its button in the CONTROLS module). Behavior — toggle, drag, kebab,
- * inline editing — is untouched.
+ * Blocks/array rows no longer float as separate cards: the rows container
+ * is ONE bordered list card and each row is a hairline-divided entry —
+ * grip, muted tabular number, a neutral block-type icon tile, the title,
+ * and ghost (borderless) kebab + chevron actions. Standalone collapsible
+ * FIELDS keep the bordered card look. The add-row action stays the
+ * full-width dashed bar (CONTROLS module). Behavior — toggle, drag,
+ * kebab, inline editing — is untouched.
  * ==================================================================== */
 @layer payload {
-  /* ---- the row card ---- */
+  /* ---- standalone collapsible fields: still a card ---- */
   .collapsible {
     border-radius: var(--pt-radius-card);
     overflow: hidden;
@@ -19,42 +19,99 @@
     border: 1px solid var(--theme-border-color);
     background: var(--theme-elevation-0);
     box-shadow: var(--pt-shadow-xs);
-    transition:
-      border-color 0.15s ease,
-      box-shadow 0.15s ease;
   }
-  .collapsible--style-default:hover {
-    border-color: var(--theme-elevation-300);
-  }
-  /* the card being edited announces itself quietly */
-  .collapsible--style-default:focus-within {
-    border-color: color-mix(in srgb, var(--pt-accent) 40%, var(--theme-border-color));
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--pt-accent) 18%, transparent),
-      var(--pt-shadow-xs);
-  }
-  /* dark: rows read as darker wells on the elevated form card */
   html[data-theme='dark'] .collapsible--style-default {
-    background: var(--theme-elevation-0);
+    background: color-mix(in srgb, #fff 2%, var(--theme-elevation-50));
     border-color: var(--theme-elevation-150);
+  }
+
+  /* ---- blocks/array rows: ONE list card, rows divided by hairlines ---- */
+  .blocks-field__rows,
+  .array-field__draggable-rows {
+    gap: 0; /* stock puts air between rows; the hairlines divide instead */
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    background: var(--theme-elevation-0);
+    box-shadow: var(--pt-shadow-xs);
+    overflow: hidden;
+  }
+  /* dark: the list sits one step ABOVE the form card — never a darker well */
+  html[data-theme='dark'] .blocks-field__rows,
+  html[data-theme='dark'] .array-field__draggable-rows {
+    background: color-mix(in srgb, #fff 2%, var(--theme-elevation-50));
+    border-color: var(--theme-elevation-150);
+  }
+
+  /* rows inside the list shed all card chrome */
+  .blocks-field__rows .collapsible,
+  .array-field__draggable-rows .collapsible {
+    border-radius: 0;
+  }
+  .blocks-field__rows .collapsible--style-default,
+  .array-field__draggable-rows .collapsible--style-default,
+  html[data-theme='dark'] .blocks-field__rows .collapsible--style-default,
+  html[data-theme='dark'] .array-field__draggable-rows .collapsible--style-default {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  /* hairline between entries (the wrapper divs are the direct children) */
+  .blocks-field__rows > div + div,
+  .array-field__draggable-rows > div + div {
+    border-top: 1px solid var(--theme-elevation-100);
+  }
+  html[data-theme='dark'] .blocks-field__rows > div + div,
+  html[data-theme='dark'] .array-field__draggable-rows > div + div {
+    border-top-color: color-mix(in srgb, var(--theme-elevation-100) 55%, var(--theme-elevation-150));
+  }
+
+  /* dark: fields nested in LIFTED surfaces (row lists, group panels) sit
+   * FLAT on them — transparent boxes with their borders doing the work,
+   * never darker wells punched back into the raised surface. Wins over
+   * the forms-module focus background too (higher specificity, later in
+   * the cascade), so fields stay flat while being edited. */
+  html[data-theme='dark']
+    :is(.blocks-field__rows, .array-field__draggable-rows, .group-field--top-level)
+    :is(
+      .field-type input:not([type='checkbox']):not(.section-title__input),
+      .field-type textarea,
+      .rs__control,
+      .upload-field-card
+    ) {
+    background: transparent;
+  }
+  html[data-theme='dark']
+    :is(.blocks-field__rows, .array-field__draggable-rows, .group-field--top-level)
+    .upload-field-card {
+    border: 1px solid var(--pt-input-border);
+  }
+
+  /* the row being edited: a quiet neutral wash instead of a card ring */
+  .blocks-field__rows .collapsible--style-default:focus-within,
+  .array-field__draggable-rows .collapsible--style-default:focus-within {
+    background: color-mix(in srgb, var(--theme-elevation-500) 4%, transparent);
   }
 
   /* ---- composed header ---- */
   .collapsible--style-default > .collapsible__toggle-wrap {
     background: transparent;
-    padding: 9px 9px 9px 12px;
-    gap: 8px;
+    padding: 9px 10px 9px 14px;
+    gap: 10px;
     transition: background-color 0.12s ease;
   }
   .collapsible--style-default > .collapsible__toggle-wrap:hover {
     background: color-mix(in srgb, var(--theme-elevation-500) 4%, transparent);
   }
 
-  /* body joins through a hairline; the card bg shows through */
+  /* body joins through a hairline; the list bg shows through */
   .collapsible__content {
     background: transparent;
     border-top: 1px solid var(--theme-elevation-100);
     padding: 20px 18px;
+  }
+  html[data-theme='dark'] .blocks-field__rows .collapsible__content,
+  html[data-theme='dark'] .array-field__draggable-rows .collapsible__content {
+    border-top-color: color-mix(in srgb, var(--theme-elevation-100) 55%, var(--theme-elevation-150));
   }
 
   /* grip dots: quiet, wake on hover */
@@ -66,74 +123,70 @@
     color: var(--theme-elevation-700);
   }
 
-  /* chevron + kebab: standardized bordered icon chips */
+  /* chevron + kebab: ghost icon buttons — no borders, no shadows */
   .collapsible__indicator {
-    width: 28px;
-    height: 28px;
-    border: 1px solid var(--theme-border-color);
+    width: 26px;
+    height: 26px;
+    border: 0;
     border-radius: var(--pt-radius-item);
-    background: var(--theme-elevation-0);
-    box-shadow: var(--pt-shadow-xs);
-    color: var(--theme-elevation-500);
-  }
-  html[data-theme='dark'] .collapsible__indicator {
-    background: var(--theme-elevation-50);
+    background: transparent;
+    box-shadow: none;
+    color: var(--theme-elevation-450);
   }
   .collapsible__toggle-wrap .popup-button {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--theme-border-color);
+    border: 0;
     border-radius: var(--pt-radius-item);
-    background: var(--theme-elevation-0);
-    box-shadow: var(--pt-shadow-xs);
-    color: var(--theme-elevation-500);
+    background: transparent;
+    box-shadow: none;
+    color: var(--theme-elevation-450);
     transition:
       background-color 0.12s ease,
-      color 0.12s ease,
-      border-color 0.12s ease;
-  }
-  html[data-theme='dark'] .collapsible__toggle-wrap .popup-button {
-    background: var(--theme-elevation-50);
+      color 0.12s ease;
   }
   .collapsible__toggle-wrap .popup-button:hover,
   .collapsible__toggle-wrap .popup-button:focus-visible {
-    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
-    border-color: var(--theme-elevation-300);
+    background: color-mix(in srgb, var(--theme-elevation-500) 12%, transparent);
     color: var(--theme-text);
   }
   .collapsible__actions-wrap {
-    gap: 6px;
+    gap: 2px;
   }
 
-  /* ---- blocks row header: № chip · type title · ghost label ---- */
+  /* ---- blocks row header: № · icon tile · type title · ghost label ---- */
   .blocks-field__block-header {
     align-items: center;
-    gap: 10px;
+    gap: 12px;
   }
-  /* the row number becomes a small accent chip — the card's anchor */
+  /* the row number: muted tabular text — order info, not an accent chip */
   .blocks-field__block-number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 24px;
-    height: 24px;
-    padding: 0 6px;
-    border-radius: calc(var(--pt-radius-item) + 1px);
-    background: var(--pt-accent-subtle);
-    color: var(--pt-accent);
-    font-size: 11px;
-    font-weight: 600;
+    min-width: 18px;
+    text-align: center;
+    color: var(--color-base-400);
+    font-size: 11.5px;
+    font-weight: 550;
     font-variant-numeric: tabular-nums;
   }
-  /* the block type reads as the row TITLE, not a pill */
+  html[data-theme='dark'] .blocks-field__block-number {
+    color: var(--color-base-550);
+  }
+
+  /* the block type reads as the row TITLE behind a neutral icon tile.
+   * Payload puts the slug on the pill (blocks-field__block-pill-<slug>),
+   * so per-block icons are a --pt-block-ico override away; unknown slugs
+   * fall back to the generic layers glyph. */
   .blocks-field__block-pill,
   .blocks-field__block-pill.pill--style-light {
+    --pt-block-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z'/%3E%3Cpath d='m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65'/%3E%3Cpath d='m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65'/%3E%3C/svg%3E");
+    position: relative;
     display: inline-flex;
     align-items: center;
-    padding: 0;
+    min-height: 28px;
+    padding: 0 0 0 38px;
     border: 0;
     border-radius: 0;
     background: transparent;
@@ -141,6 +194,45 @@
     font-size: 13px;
     font-weight: 550;
     line-height: 1.5;
+  }
+  .blocks-field__block-pill::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    translate: 0 -50%;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--pt-radius-item);
+    background: var(--theme-elevation-100);
+  }
+  .blocks-field__block-pill::after {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 50%;
+    translate: 0 -50%;
+    width: 14px;
+    height: 14px;
+    background: var(--color-base-550);
+    -webkit-mask: var(--pt-block-ico) center / contain no-repeat;
+    mask: var(--pt-block-ico) center / contain no-repeat;
+  }
+  html[data-theme='dark'] .blocks-field__block-pill::before {
+    background: var(--theme-elevation-150);
+  }
+  html[data-theme='dark'] .blocks-field__block-pill::after {
+    background: var(--color-base-400);
+  }
+  /* built-in glyphs for common slugs — projects add theirs the same way */
+  .blocks-field__block-pill-content {
+    --pt-block-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 6.1H3'/%3E%3Cpath d='M21 12.1H3'/%3E%3Cpath d='M15.1 18H3'/%3E%3C/svg%3E");
+  }
+  .blocks-field__block-pill-cta {
+    --pt-block-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3 11 18-5v12L3 14v-3z'/%3E%3Cpath d='M11.6 16.8a3 3 0 1 1-5.8-1.6'/%3E%3C/svg%3E");
+  }
+  .blocks-field__block-pill-hero {
+    --pt-block-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2'/%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/%3E%3C/svg%3E");
   }
 
   /* array row labels ("Image 01") — same title voice */
@@ -230,12 +322,6 @@
   .array-field__header-actions li:nth-child(2) > button,
   .blocks-field__header-actions li:nth-child(2) > button {
     --pt-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 15 5 5 5-5'/%3E%3Cpath d='m7 9 5-5 5 5'/%3E%3C/svg%3E");
-  }
-
-  /* ---- air between stacked row cards ---- */
-  .blocks-field__rows > * + *,
-  .array-field__draggable-rows > * + * {
-    margin-top: 12px;
   }
 
   /* ---- "Add Layout" drawer: block-type pickers as shadcn cards ---- */
