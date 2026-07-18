@@ -51,13 +51,16 @@ export const LoginHero: React.FC<ServerProps> = ({ payload }) => {
         {logo ? (
           logoIsPair ? (
             <React.Fragment>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img alt="" className="pt-login__logo-img pt-login__logo-img--light" src={logo.light} />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {}
+              <img
+                alt=""
+                className="pt-login__logo-img pt-login__logo-img--light"
+                src={logo.light}
+              />
+              {}
               <img alt="" className="pt-login__logo-img pt-login__logo-img--dark" src={logo.dark} />
             </React.Fragment>
           ) : (
-            // eslint-disable-next-line @next/next/no-img-element
             <img alt="" className="pt-login__logo-img" src={logo.light} />
           )
         ) : (

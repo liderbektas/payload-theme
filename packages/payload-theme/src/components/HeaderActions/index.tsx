@@ -254,7 +254,11 @@ const Customizer: React.FC = () => {
               ))}
             </div>
             <div className="pt-custom__hex">
-              <span aria-hidden="true" className="pt-custom__hex-preview" style={{ backgroundColor: activeAccent }} />
+              <span
+                aria-hidden="true"
+                className="pt-custom__hex-preview"
+                style={{ backgroundColor: activeAccent }}
+              />
               <input
                 aria-label="Custom accent hex"
                 className="pt-custom__hex-input"
@@ -307,10 +311,7 @@ const Customizer: React.FC = () => {
               {(['light', 'dark'] as const).map((mode) => (
                 <button
                   aria-pressed={theme === mode}
-                  className={[
-                    'pt-custom__segment',
-                    theme === mode && 'pt-custom__segment--active',
-                  ]
+                  className={['pt-custom__segment', theme === mode && 'pt-custom__segment--active']
                     .filter(Boolean)
                     .join(' ')}
                   key={mode}

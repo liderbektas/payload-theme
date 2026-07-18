@@ -1,11 +1,16 @@
+import { execSync } from 'node:child_process'
+
 import { test, expect, Page } from '@playwright/test'
 import { login } from '../helpers/login'
-import { seedTestUser, cleanupTestUser, testUser } from '../helpers/seedUser'
+import { seedTestUser, cleanupTestUser, clearCollection, testUser } from '../helpers/seedUser'
 
 test.describe('Admin Panel', () => {
   let page: Page
 
-  test.beforeAll(async ({ browser }, testInfo) => {
+  test.beforeAll(async ({ browser }) => {
+    // Demo content first (fresh CI databases start empty; the posts list
+    // below must have rows), then the e2e login user.
+    execSync('pnpm seed', { stdio: 'inherit' })
     await seedTestUser()
 
     // Wide enough for the always-on desktop sidebar (drawer mode starts ≤1440px).
@@ -70,6 +75,10 @@ test.describe('Admin Panel', () => {
   })
 
   test('empty-state stays centered after client-side navigation', async () => {
+    // The demo seed fills tags — empty it so the no-results state is
+    // guaranteed regardless of local data. (`pnpm seed` restores the demo.)
+    await clearCollection('tags')
+
     // Load a doc view first so Payload's list-chunk CSS is injected late —
     // the repro for the "empty state slides left after navigating back" bug.
     await page.goto('http://localhost:3000/admin/collections/posts')

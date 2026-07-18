@@ -68,12 +68,19 @@ const Sparkline: React.FC<{ id: string; points: number[] }> = ({ id, points }) =
     x: i * step,
     y: H - 2 - (value / max) * (H - 6),
   }))
-  const line = coords.map(({ x, y }, i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)}`).join(' ')
+  const line = coords
+    .map(({ x, y }, i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)}`)
+    .join(' ')
   const area = `${line} L${W} ${H} L0 ${H} Z`
   const gradientId = `pt-spark-${id}`
 
   return (
-    <svg aria-hidden="true" className="pt-dash__spark" preserveAspectRatio="none" viewBox={`0 0 ${W} ${H}`}>
+    <svg
+      aria-hidden="true"
+      className="pt-dash__spark"
+      preserveAspectRatio="none"
+      viewBox={`0 0 ${W} ${H}`}
+    >
       <defs>
         <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
           <stop offset="0%" stopColor="currentColor" stopOpacity="0.28" />
@@ -81,7 +88,13 @@ const Sparkline: React.FC<{ id: string; points: number[] }> = ({ id, points }) =
         </linearGradient>
       </defs>
       <path d={area} fill={`url(#${gradientId})`} stroke="none" />
-      <path d={line} fill="none" stroke="currentColor" strokeWidth="1.6" vectorEffect="non-scaling-stroke" />
+      <path
+        d={line}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        vectorEffect="non-scaling-stroke"
+      />
     </svg>
   )
 }
@@ -98,7 +111,9 @@ const CollectionCard: React.FC<{ card: CollectionCardData }> = ({ card }) => {
         </span>
       </div>
       <div className="pt-dash__card-body">
-        <span className="pt-dash__card-count">{count === null ? '—' : <CountUp value={count} />}</span>
+        <span className="pt-dash__card-count">
+          {count === null ? '—' : <CountUp value={count} />}
+        </span>
         <span className="pt-dash__card-caption">
           {count === 1 ? 'document' : 'documents'}
           {spark ? ' · last 30 days' : ''}
@@ -108,7 +123,12 @@ const CollectionCard: React.FC<{ card: CollectionCardData }> = ({ card }) => {
       {/* Stretched link makes the whole card clickable without nesting the '+'. */}
       <Link aria-label={label} className="pt-dash__card-link" href={href} prefetch={false} />
       {createHref ? (
-        <Link aria-label={`Create new ${label}`} className="pt-dash__card-create" href={createHref} prefetch={false}>
+        <Link
+          aria-label={`Create new ${label}`}
+          className="pt-dash__card-create"
+          href={createHref}
+          prefetch={false}
+        >
           <DynamicIcon aria-hidden="true" name="plus" strokeWidth={2} />
         </Link>
       ) : null}
@@ -188,7 +208,8 @@ export async function Dashboard(props: DashboardViewServerProps) {
 
   for (const collection of collections) {
     const slug = collection.slug as CollectionSlug
-    if (!visibleEntities.collections.includes(slug) || !permissions?.collections?.[slug]?.read) continue
+    if (!visibleEntities.collections.includes(slug) || !permissions?.collections?.[slug]?.read)
+      continue
 
     const label = getTranslation(collection.labels?.plural as StaticLabel, i18n)
     const iconName = resolveIconName(theme, slug)
@@ -256,8 +277,14 @@ export async function Dashboard(props: DashboardViewServerProps) {
 
   // ---- built-in cells ---------------------------------------------------------
   const cells: DashboardCell[] = [
-    ...collectionCards.map((card) => ({ Component: () => <CollectionCard card={card} />, key: `collection-${card.slug}` })),
-    ...globalCards.map((card) => ({ Component: () => <GlobalCard card={card} />, key: `global-${card.slug}` })),
+    ...collectionCards.map((card) => ({
+      Component: () => <CollectionCard card={card} />,
+      key: `collection-${card.slug}`,
+    })),
+    ...globalCards.map((card) => ({
+      Component: () => <GlobalCard card={card} />,
+      key: `global-${card.slug}`,
+    })),
   ]
 
   // ---- custom widgets (plugin option `dashboard.widgets`) -------------------
@@ -272,7 +299,9 @@ export async function Dashboard(props: DashboardViewServerProps) {
       <div className="pt-dash__grid">
         {cells.map(({ Component, key, span }) => (
           <div
-            className={['pt-dash__cell', span === 'full' && 'pt-dash__cell--full'].filter(Boolean).join(' ')}
+            className={['pt-dash__cell', span === 'full' && 'pt-dash__cell--full']
+              .filter(Boolean)
+              .join(' ')}
             key={key}
           >
             <Component />
@@ -282,7 +311,10 @@ export async function Dashboard(props: DashboardViewServerProps) {
       {customWidgets.length > 0 ? (
         <div className="pt-dash__widgets">
           {customWidgets.map((widget, index) => (
-            <div className={`pt-dash__widget pt-dash__widget--${widget.width}`} key={`pt-widget-${index}`}>
+            <div
+              className={`pt-dash__widget pt-dash__widget--${widget.width}`}
+              key={`pt-widget-${index}`}
+            >
               {RenderServerComponent({
                 Component: widget.component,
                 importMap: payload.importMap,

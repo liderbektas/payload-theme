@@ -1,5 +1,9 @@
 # payload-theme
 
+[![CI](https://github.com/liderbektas/payload-theme/actions/workflows/ci.yml/badge.svg)](https://github.com/liderbektas/payload-theme/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/payload-theme)](https://www.npmjs.com/package/payload-theme)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 **A premium, single-accent theme for the Payload CMS admin panel — installed in 2 lines.**
 
 Pick one accent color and the whole panel repaints itself: a split-screen login, a dashboard with live counts, 30-day sparklines and **your own custom widgets**, a ⌘K command palette, an icon sidebar with your logo on top and a shadcn-style **user menu** at the bottom — all wrapped in a shadcn-style **inset layout**: a quiet zinc canvas with the sidebar sitting directly on it, and every view floating in one rounded white content card. The sticky header carries a **theme customizer** (accent, radius, color mode, content layout — live, persisted), a light/dark toggle and a compact user menu. No forked components, no config surgery — just a plugin and a CSS import.
@@ -243,9 +247,24 @@ payloadTheme({
 
 The important ones: `--pt-accent-50` … `--pt-accent-950`, `--pt-accent`, `--pt-accent-hover`, `--pt-accent-active`, `--pt-accent-subtle`, `--pt-accent-contrast`, `--pt-accent-ring`, plus the radius tokens `--pt-radius-ctl`, `--pt-radius-card`, `--pt-radius-item`.
 
+## Try it locally in 60 seconds
+
+The repo ships a full demo app — seeded posts, media library, tags, widgets:
+
+```bash
+git clone https://github.com/liderbektas/payload-theme
+cd payload-theme && pnpm install && pnpm build
+cp dev/.env.example dev/.env
+pnpm seed && pnpm dev
+```
+
+Open [http://localhost:3000/admin](http://localhost:3000/admin) and log in with
+`dev@local.test` / `test1234`. Play with the header's theme customizer —
+accent, radius, color mode and layout all apply live.
+
 ## Requirements
 
-- Payload **3.x**
+- Payload **3.x** (peer range `^3.0.0`; developed and e2e-tested against **3.85**)
 - Next.js **15+**, React **19**
 
 ## Troubleshooting
@@ -280,4 +299,10 @@ pnpm build          # build the plugin
 pnpm seed           # seed the playground with demo content
 pnpm dev            # start the playground at http://localhost:3000/admin
 pnpm test           # unit + integration tests
+pnpm lint           # eslint across the repo
+pnpm --filter dev test:e2e     # Playwright against the real admin panel
+pnpm --filter dev test:visual  # screenshot regression suite
 ```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide (project layout,
+checks, style rules, releasing) and [CHANGELOG.md](CHANGELOG.md) for history.

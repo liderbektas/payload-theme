@@ -54,7 +54,12 @@ const NavItemLink: React.FC<{ exact?: boolean; item: NavItem; pathname: string }
 
   const content = (
     <React.Fragment>
-      <DynamicIcon aria-hidden="true" className="pt-nav__icon" name={iconName as IconName} strokeWidth={1.9} />
+      <DynamicIcon
+        aria-hidden="true"
+        className="pt-nav__icon"
+        name={iconName as IconName}
+        strokeWidth={1.9}
+      />
       <span className="pt-nav__label">{label}</span>
     </React.Fragment>
   )
@@ -94,7 +99,12 @@ const NavSearch: React.FC = () => {
       onClick={() => window.dispatchEvent(new CustomEvent('pt:open-palette'))}
       type="button"
     >
-      <DynamicIcon aria-hidden="true" className="pt-nav__search-icon" name="search" strokeWidth={2} />
+      <DynamicIcon
+        aria-hidden="true"
+        className="pt-nav__search-icon"
+        name="search"
+        strokeWidth={2}
+      />
       <span className="pt-nav__search-label">Search</span>
       <kbd className="pt-nav__search-kbd" suppressHydrationWarning>
         {shortcut}
@@ -131,7 +141,10 @@ export const Nav: React.FC = () => {
   } = config
 
   // ---- build nav groups (mirrors @payloadcms/ui's groupNavItems) ----------
-  const defaultCollectionsGroup: NavGroupData = { entities: [], label: i18n.t('general:collections') }
+  const defaultCollectionsGroup: NavGroupData = {
+    entities: [],
+    label: i18n.t('general:collections'),
+  }
   const defaultGlobalsGroup: NavGroupData = { entities: [], label: i18n.t('general:globals') }
   const groups: NavGroupData[] = [defaultCollectionsGroup, defaultGlobalsGroup]
 
@@ -160,7 +173,8 @@ export const Nav: React.FC = () => {
 
   for (const collection of collections) {
     const { slug } = collection
-    if (!isEntityVisible({ collectionSlug: slug }) || !permissions?.collections?.[slug]?.read) continue
+    if (!isEntityVisible({ collectionSlug: slug }) || !permissions?.collections?.[slug]?.read)
+      continue
     addEntity({
       defaultGroup: defaultCollectionsGroup,
       group: collection.admin?.group,
@@ -221,13 +235,12 @@ export const Nav: React.FC = () => {
           {logoIsImage ? (
             logoIsPair ? (
               <React.Fragment>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {}
                 <img alt="" className="pt-nav__logo-img pt-nav__logo-img--light" src={logo.light} />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {}
                 <img alt="" className="pt-nav__logo-img pt-nav__logo-img--dark" src={logo.dark} />
               </React.Fragment>
             ) : (
-              // eslint-disable-next-line @next/next/no-img-element
               <img alt="" className="pt-nav__logo-img" src={logo.light} />
             )
           ) : (

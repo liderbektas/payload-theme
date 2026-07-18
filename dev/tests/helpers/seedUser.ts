@@ -45,3 +45,20 @@ export async function cleanupTestUser(): Promise<void> {
     },
   })
 }
+
+/**
+ * Empties a collection — used by tests that need a deterministic empty state
+ * regardless of what the demo seed (or a previous run) left behind.
+ */
+export async function clearCollection(slug: 'media' | 'posts' | 'tags'): Promise<void> {
+  const payload = await getPayload({ config })
+
+  await payload.delete({
+    collection: slug,
+    where: {
+      id: {
+        exists: true,
+      },
+    },
+  })
+}

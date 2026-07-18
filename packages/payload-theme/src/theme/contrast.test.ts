@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest'
 
-import { relativeLuminance, contrastRatio, pickContrastText, pickContrastTextForHex } from './contrast'
+import {
+  relativeLuminance,
+  contrastRatio,
+  pickContrastText,
+  pickContrastTextForHex,
+} from './contrast'
 
 describe('relativeLuminance', () => {
   it('is 1 for white and 0 for black', () => {

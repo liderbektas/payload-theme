@@ -54,7 +54,9 @@ export const ListQuickActions: React.FC<{ children?: React.ReactNode }> = ({ chi
 
       const href = row.querySelector('a[href*="/collections/"]')?.getAttribute('href') ?? ''
       const match =
-        href && !href.includes('/trash/') ? /\/collections\/([^/]+)\/([^/?#]+)\/?$/.exec(href) : null
+        href && !href.includes('/trash/')
+          ? /\/collections\/([^/]+)\/([^/?#]+)\/?$/.exec(href)
+          : null
       if (!match) return td // spacer keeps the column aligned
 
       const [, slug, encodedID] = match

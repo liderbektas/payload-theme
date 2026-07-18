@@ -116,7 +116,8 @@ export const CommandPalette: React.FC = () => {
 
     for (const collection of config.collections ?? []) {
       const slug = collection.slug
-      if (!isEntityVisible({ collectionSlug: slug }) || !permissions?.collections?.[slug]?.read) continue
+      if (!isEntityVisible({ collectionSlug: slug }) || !permissions?.collections?.[slug]?.read)
+        continue
 
       const label = getTranslation(collection.labels?.plural as StaticLabel, i18n)
       const iconName = resolveIconName(themeConfig, slug)
@@ -179,8 +180,21 @@ export const CommandPalette: React.FC = () => {
     })
 
     return { searchableCollections: searchable, staticItems: items }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config, themeConfig, i18n, adminRoute, apiRoute, serverURL, colorScheme, go, setTheme, close, permissions, isEntityVisible, user])
+  }, [
+    config,
+    themeConfig,
+    i18n,
+    adminRoute,
+    apiRoute,
+    serverURL,
+    colorScheme,
+    go,
+    setTheme,
+    close,
+    permissions,
+    isEntityVisible,
+    user,
+  ])
 
   // ---- open/close wiring ------------------------------------------------------
   React.useEffect(() => {
@@ -255,7 +269,12 @@ export const CommandPalette: React.FC = () => {
                 id: `doc-${target.slug}-${String(doc.id)}`,
                 label: title,
                 perform: () =>
-                  go(formatAdminURL({ adminRoute, path: `${target.editPathPrefix}/${String(doc.id)}` })),
+                  go(
+                    formatAdminURL({
+                      adminRoute,
+                      path: `${target.editPathPrefix}/${String(doc.id)}`,
+                    }),
+                  ),
               }
             })
           }),
@@ -324,9 +343,19 @@ export const CommandPalette: React.FC = () => {
   return createPortal(
     <div className="pt-palette" role="presentation">
       <div aria-hidden="true" className="pt-palette__backdrop" onClick={close} />
-      <div aria-label="Command palette" aria-modal="true" className="pt-palette__panel" role="dialog">
+      <div
+        aria-label="Command palette"
+        aria-modal="true"
+        className="pt-palette__panel"
+        role="dialog"
+      >
         <div className="pt-palette__search">
-          <DynamicIcon aria-hidden="true" className="pt-palette__search-icon" name="search" strokeWidth={2} />
+          <DynamicIcon
+            aria-hidden="true"
+            className="pt-palette__search-icon"
+            name="search"
+            strokeWidth={2}
+          />
           <input
             aria-label="Search"
             className="pt-palette__input"
@@ -364,7 +393,11 @@ export const CommandPalette: React.FC = () => {
                   type="button"
                 >
                   <span aria-hidden="true" className="pt-palette__item-icon">
-                    <DynamicIcon aria-hidden="true" name={item.iconName as IconName} strokeWidth={1.9} />
+                    <DynamicIcon
+                      aria-hidden="true"
+                      name={item.iconName as IconName}
+                      strokeWidth={1.9}
+                    />
                   </span>
                   <span className="pt-palette__item-label">{item.label}</span>
                   {item.hint ? <span className="pt-palette__item-hint">{item.hint}</span> : null}

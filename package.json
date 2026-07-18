@@ -9,13 +9,23 @@
     "dev": "pnpm --filter dev dev",
     "seed": "pnpm --filter dev seed",
     "build": "pnpm --filter payload-theme build",
-    "test": "pnpm --filter dev test:int && pnpm --filter payload-theme test"
+    "test": "pnpm --filter dev test:int && pnpm --filter payload-theme test",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check \"packages/payload-theme/src/**/*.{ts,tsx}\""
   },
   "engines": {
     "node": "^18.20.2 || >=20.9.0",
     "pnpm": "^9 || ^10 || ^11"
   },
   "devDependencies": {
-    "typescript": "5.7.3"
+    "@eslint/js": "^10.0.1",
+    "@next/eslint-plugin-next": "^16.2.10",
+    "eslint": "^9.39.4",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.7.0",
+    "prettier": "^3.9.5",
+    "typescript": "5.7.3",
+    "typescript-eslint": "^8.64.0"
   }
 }

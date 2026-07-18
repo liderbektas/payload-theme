@@ -15,10 +15,17 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  /* One worker everywhere: the suites (re)seed the shared sqlite dev
+   * database, so parallel test files would race each other's data. */
+  workers: 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
+  expect: {
+    /* small anti-flake tolerance for the visual-regression screenshots */
+    toHaveScreenshot: { maxDiffPixelRatio: 0.02 },
+  },
+  /* visual baselines live next to the specs, one folder per platform */
+  snapshotPathTemplate: '{testDir}/__screenshots__/{platform}/{arg}{ext}',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */

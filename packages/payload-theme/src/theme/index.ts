@@ -45,7 +45,10 @@ export interface Theme {
  * inverted for dark; dark simply reads primaries off the brighter rungs so the
  * accent stays legible on a dark surface.
  */
-export const TOKEN_STEPS: Record<'light' | 'dark', Record<keyof Omit<AccentTokens, 'accentContrast'>, ScaleStep>> = {
+export const TOKEN_STEPS: Record<
+  'light' | 'dark',
+  Record<keyof Omit<AccentTokens, 'accentContrast'>, ScaleStep>
+> = {
   light: { accent: 600, accentHover: 700, accentActive: 800, accentSubtle: 50, accentRing: 500 },
   dark: { accent: 400, accentHover: 300, accentActive: 200, accentSubtle: 900, accentRing: 400 },
 }
@@ -88,7 +91,12 @@ export {
   type RGB,
   type OKLCH,
 } from './oklch'
-export { relativeLuminance, contrastRatio, pickContrastText, pickContrastTextForHex } from './contrast'
+export {
+  relativeLuminance,
+  contrastRatio,
+  pickContrastText,
+  pickContrastTextForHex,
+} from './contrast'
 export { generateScale, generateScaleOklch, SCALE_STEPS, type Scale, type ScaleStep } from './scale'
 export { isValidHex, normalizeHex } from './validate'
 export { themeToCss, type ThemeCssOptions } from './css'

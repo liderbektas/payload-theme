@@ -1,10 +1,14 @@
 # payload-theme
 
+[![CI](https://github.com/liderbektas/payload-theme/actions/workflows/ci.yml/badge.svg)](https://github.com/liderbektas/payload-theme/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/payload-theme)](https://www.npmjs.com/package/payload-theme)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 **A premium, single-accent theme for the Payload CMS admin panel — installed in 2 lines.**
 
 Pick one accent color and the whole panel repaints itself: a split-screen login, a dashboard with live counts, 30-day sparklines and **your own custom widgets**, a ⌘K command palette, an icon sidebar with your logo on top and a shadcn-style **user menu** at the bottom — all wrapped in a shadcn-style **inset layout**: a quiet zinc canvas with the sidebar sitting directly on it, and every view floating in one rounded white content card. The sticky header carries a **theme customizer** (accent, radius, color mode, content layout — live, persisted), a light/dark toggle and a compact user menu. No forked components, no config surgery — just a plugin and a CSS import.
 
-![Dashboard](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/dashboard.png)
+![Dashboard](docs/dashboard.png)
 
 ---
 
@@ -49,7 +53,7 @@ Restart your dev server, open the admin panel — that's it. 🎉
 
 The login becomes a split card: a permanently-dark brand panel whose glow is painted from **your accent color**, and the form beside it. The heading and tagline are yours to change (`login.heading` / `login.tagline`). The logo above the email field — Payload's by default, as in the screenshot — is **fully customizable**: set the `logo` option and your own artwork appears both here and at the top of the sidebar, sized by `logoHeight`, with separate light/dark variants supported.
 
-![Login](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/login.png)
+![Login](docs/login.png)
 
 ### A dashboard that's actually a dashboard
 
@@ -70,37 +74,37 @@ The palette button opens a small panel where anyone can restyle the panel at run
 
 Everything persists in the browser; **Reset to Default** returns to your `payloadTheme({ ... })` config.
 
-![Theme customizer](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/customizer.png)
+![Theme customizer](docs/customizer.png)
 
 ### ⌘K command palette
 
 Press `⌘K` / `Ctrl+K` (or click the search pill in the sidebar) to jump anywhere: navigate to any collection or global, **search documents across collections** as you type, switch light/dark mode, or log out. Zero extra dependencies — it ships inside the theme.
 
-![Command palette](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/command-palette.png)
+![Command palette](docs/command-palette.png)
 
 ### List views with real polish
 
 Tables become clean cards under a **single-row toolbar**: search, the Columns/Filters pills (with their own glyphs) and the solid **＋ Create New** button all share one line — secondary actions like Media's Bulk Upload dock next to it as quiet outline buttons. Status and boolean values render as **always-round neutral badges** (radius-setting-agnostic), rows get soft neutral hovers, and empty collections show an illustrated empty state instead of a blank page.
 
-![List view](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/list-view.png)
+![List view](docs/list-view.png)
 
 ### Edit views: a real form layout, not a field pile
 
 The edit form lives on one card with a **two-column field grid**: compact fields (text, number, email, select, date, checkbox, radio, relationship) pair up side by side — *Title | Slug* on one line — while wide surfaces (textareas, rich text, uploads, arrays, blocks, groups) keep the full row; custom fields safely default to full width, and everything stacks again below 1024px. Inputs follow the shadcn language (thin borders, accent focus ring), checkboxes render as toggles, top-level groups sit in muted inset panels and the doc sidebar is its own card. Up top, **Edit / Versions / API** is a segmented control, the status chip and timestamps read as one quiet meta line, and the sticky action bar — with **icons on every action**: publish, save draft, duplicate, delete, and friends — blurs the content scrolling underneath it.
 
-![Edit view](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/edit-view.png)
+![Edit view](docs/edit-view.png)
 
 ### Blocks & arrays as a card system
 
 Structured content stops looking like stock Payload. Every block/array row is a real **card**: a numbered accent chip anchors it, the block type reads as the row title, the optional custom label is a ghost inline editor, and the kebab/chevron are standardized bordered chips. The row being edited announces itself with a soft accent ring. Adding rows is one consistent gesture everywhere — a full-width **dashed "add card" bar** that lights up in the accent on hover, for arrays and blocks alike. Collapse All / Show All get their own glyphs, and the block-picker drawer shows shadcn-style cards.
 
-![Blocks as cards](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/blocks.png)
+![Blocks as cards](docs/blocks.png)
 
 ### Dark mode, for free
 
 Every surface, badge, card and glow is token-driven, so the whole theme flips with Payload's dark mode — dashboard, palette and login included.
 
-![Dashboard dark](https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/dashboard-dark.png)
+![Dashboard dark](docs/dashboard-dark.png)
 
 ---
 
@@ -243,9 +247,24 @@ payloadTheme({
 
 The important ones: `--pt-accent-50` … `--pt-accent-950`, `--pt-accent`, `--pt-accent-hover`, `--pt-accent-active`, `--pt-accent-subtle`, `--pt-accent-contrast`, `--pt-accent-ring`, plus the radius tokens `--pt-radius-ctl`, `--pt-radius-card`, `--pt-radius-item`.
 
+## Try it locally in 60 seconds
+
+The repo ships a full demo app — seeded posts, media library, tags, widgets:
+
+```bash
+git clone https://github.com/liderbektas/payload-theme
+cd payload-theme && pnpm install && pnpm build
+cp dev/.env.example dev/.env
+pnpm seed && pnpm dev
+```
+
+Open [http://localhost:3000/admin](http://localhost:3000/admin) and log in with
+`dev@local.test` / `test1234`. Play with the header's theme customizer —
+accent, radius, color mode and layout all apply live.
+
 ## Requirements
 
-- Payload **3.x**
+- Payload **3.x** (peer range `^3.0.0`; developed and e2e-tested against **3.85**)
 - Next.js **15+**, React **19**
 
 ## Troubleshooting
@@ -263,3 +282,27 @@ The important ones: `--pt-accent-50` … `--pt-accent-950`, `--pt-accent`, `--pt
 MIT © [Lider Bektaş](https://github.com/liderbektas)
 
 Found a bug or want a feature? [Issues and PRs welcome](https://github.com/liderbektas/payload-theme/issues).
+
+---
+
+## Development (this monorepo)
+
+```
+packages/payload-theme   the plugin (published to npm)
+dev                      a Payload 3 playground app that consumes it
+docs                     README screenshots
+```
+
+```bash
+pnpm install
+pnpm build          # build the plugin
+pnpm seed           # seed the playground with demo content
+pnpm dev            # start the playground at http://localhost:3000/admin
+pnpm test           # unit + integration tests
+pnpm lint           # eslint across the repo
+pnpm --filter dev test:e2e     # Playwright against the real admin panel
+pnpm --filter dev test:visual  # screenshot regression suite
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide (project layout,
+checks, style rules, releasing) and [CHANGELOG.md](CHANGELOG.md) for history.

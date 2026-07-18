@@ -37,7 +37,9 @@ describe('resolveOptions — dashboard.widgets', () => {
   })
 
   it('rejects invalid widget entries with a clear error', () => {
-    expect(() => resolveOptions({ dashboard: { widgets: ['' as string] } })).toThrow(/dashboard\.widgets\[0\]/)
+    expect(() => resolveOptions({ dashboard: { widgets: ['' as string] } })).toThrow(
+      /dashboard\.widgets\[0\]/,
+    )
     expect(() =>
       resolveOptions({ dashboard: { widgets: [{ component: 42 as unknown as string }] } }),
     ).toThrow(/dashboard\.widgets\[0\]\.component/)
@@ -46,8 +48,8 @@ describe('resolveOptions — dashboard.widgets', () => {
         dashboard: { widgets: [{ component: '/x#X', width: 'huge' as 'full' }] },
       }),
     ).toThrow(/width/)
-    expect(() =>
-      resolveOptions({ dashboard: { widgets: {} as unknown as [] } }),
-    ).toThrow(/must be an array/)
+    expect(() => resolveOptions({ dashboard: { widgets: {} as unknown as [] } })).toThrow(
+      /must be an array/,
+    )
   })
 })

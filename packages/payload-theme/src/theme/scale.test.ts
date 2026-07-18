@@ -8,7 +8,11 @@ const PURPLE = hexToOklch('#7c3aed')!
 describe('generateScale', () => {
   it('produces all 11 steps as valid hex', () => {
     const scale = generateScale(PURPLE)
-    expect(Object.keys(scale).map(Number).sort((a, b) => a - b)).toEqual([...SCALE_STEPS])
+    expect(
+      Object.keys(scale)
+        .map(Number)
+        .sort((a, b) => a - b),
+    ).toEqual([...SCALE_STEPS])
     for (const step of SCALE_STEPS) {
       expect(scale[step]).toMatch(/^#[0-9a-f]{6}$/)
     }

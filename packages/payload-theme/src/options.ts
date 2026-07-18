@@ -221,7 +221,10 @@ function normalizeAsset(
   if (value === undefined) return undefined
   if (typeof value === 'string') return { dark: value, light: value }
   assert(
-    value && typeof value === 'object' && typeof value.light === 'string' && typeof value.dark === 'string',
+    value &&
+      typeof value === 'object' &&
+      typeof value.light === 'string' &&
+      typeof value.dark === 'string',
     `${name} must be a URL string or an object like { light: '/logo.svg', dark: '/logo-dark.svg' }.`,
   )
   return { dark: value.dark, light: value.light }
@@ -239,10 +242,16 @@ export function resolveOptions(options: PayloadThemeOptions): {
   normalizeHex(accent)
 
   const preset = options.preset ?? DEFAULTS.preset
-  assert(PRESETS.includes(preset), `Invalid preset: '${preset}'. Expected one of ${PRESETS.join(', ')}.`)
+  assert(
+    PRESETS.includes(preset),
+    `Invalid preset: '${preset}'. Expected one of ${PRESETS.join(', ')}.`,
+  )
 
   const radius = options.radius ?? DEFAULTS.radius
-  assert(RADII.includes(radius), `Invalid radius: '${radius}'. Expected one of ${RADII.join(', ')}.`)
+  assert(
+    RADII.includes(radius),
+    `Invalid radius: '${radius}'. Expected one of ${RADII.join(', ')}.`,
+  )
 
   const icons = options.nav?.icons ?? {}
   assert(
@@ -259,8 +268,14 @@ export function resolveOptions(options: PayloadThemeOptions): {
 
   const loginHeading = options.login?.heading
   const loginTagline = options.login?.tagline
-  assert(loginHeading === undefined || typeof loginHeading === 'string', 'login.heading must be a string.')
-  assert(loginTagline === undefined || typeof loginTagline === 'string', 'login.tagline must be a string.')
+  assert(
+    loginHeading === undefined || typeof loginHeading === 'string',
+    'login.heading must be a string.',
+  )
+  assert(
+    loginTagline === undefined || typeof loginTagline === 'string',
+    'login.tagline must be a string.',
+  )
 
   // Radius tokens first, then logoHeight, then the user's raw overrides —
   // later keys win, so cssVariables stays the ultimate escape hatch.

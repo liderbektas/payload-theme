@@ -24,7 +24,9 @@ describe('normalizeHex', () => {
   })
 
   it('throws a descriptive error for a bad string, echoing the input', () => {
-    expect(() => normalizeHex('mor')).toThrow("Invalid accent color: 'mor'. Expected hex like #7c3aed")
+    expect(() => normalizeHex('mor')).toThrow(
+      "Invalid accent color: 'mor'. Expected hex like #7c3aed",
+    )
   })
 
   it('uses the provided label in the message', () => {

@@ -44,7 +44,10 @@ const withBoolCells = (fields: Field[]): Field[] =>
       return { ...field, fields: withBoolCells(field.fields) }
     }
     if (field.type === 'tabs') {
-      return { ...field, tabs: field.tabs.map((tab) => ({ ...tab, fields: withBoolCells(tab.fields) })) }
+      return {
+        ...field,
+        tabs: field.tabs.map((tab) => ({ ...tab, fields: withBoolCells(tab.fields) })),
+      }
     }
     return field
   })
@@ -61,10 +64,7 @@ const transformCollection = (collection: CollectionConfig): CollectionConfig => 
       ...transformed.admin,
       components: {
         ...transformed.admin?.components,
-        beforeListTable: [
-          ...(transformed.admin?.components?.beforeListTable ?? []),
-          MEDIA_TOGGLE,
-        ],
+        beforeListTable: [...(transformed.admin?.components?.beforeListTable ?? []), MEDIA_TOGGLE],
       },
     }
   }

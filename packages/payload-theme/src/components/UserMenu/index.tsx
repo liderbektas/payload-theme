@@ -76,7 +76,10 @@ export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant
       .join('')
       .toUpperCase() || '?'
 
-  const accountHref = formatAdminURL({ adminRoute, path: config.admin?.routes?.account ?? '/account' })
+  const accountHref = formatAdminURL({
+    adminRoute,
+    path: config.admin?.routes?.account ?? '/account',
+  })
   const logoutHref = formatAdminURL({ adminRoute, path: config.admin?.routes?.logout ?? '/logout' })
 
   // Same mechanism as Payload's own header Localizer: set the `locale` query
@@ -129,7 +132,9 @@ export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant
                     type="button"
                   >
                     <span aria-hidden="true" className={cls('-menu-check')}>
-                      {isActive ? <DynamicIcon aria-hidden="true" name="check" strokeWidth={2.2} /> : null}
+                      {isActive ? (
+                        <DynamicIcon aria-hidden="true" name="check" strokeWidth={2.2} />
+                      ) : null}
                     </span>
                     {getTranslation(localeOption.label, i18n)}
                   </button>
@@ -164,7 +169,12 @@ export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant
           <span className={cls('-name')}>{name}</span>
           {email ? <span className={cls('-email')}>{email}</span> : null}
         </span>
-        <DynamicIcon aria-hidden="true" className={cls('-chevron')} name="chevrons-up-down" strokeWidth={2} />
+        <DynamicIcon
+          aria-hidden="true"
+          className={cls('-chevron')}
+          name="chevrons-up-down"
+          strokeWidth={2}
+        />
       </button>
     </div>
   )
