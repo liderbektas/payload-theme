@@ -210,6 +210,13 @@ const Customizer: React.FC = () => {
     setHexDraft('')
   }
 
+  // The panel-configured accent leads the swatch row; the curated presets
+  // follow (minus a duplicate of the configured color).
+  const swatches = React.useMemo(() => {
+    const rest = PRESET_ACCENTS.filter((hex) => hex.toLowerCase() !== configAccent.toLowerCase())
+    return [configAccent, ...rest].slice(0, PRESET_ACCENTS.length)
+  }, [configAccent])
+
   return (
     <div className="pt-custom" ref={rootRef}>
       <button
@@ -228,7 +235,7 @@ const Customizer: React.FC = () => {
           <div className="pt-custom__section">
             <div className="pt-custom__label">Accent</div>
             <div className="pt-custom__swatches">
-              {PRESET_ACCENTS.map((hex) => (
+              {swatches.map((hex) => (
                 <button
                   aria-label={`Accent ${hex}`}
                   aria-pressed={activeAccent.toLowerCase() === hex.toLowerCase()}

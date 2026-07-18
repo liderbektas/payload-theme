@@ -58,6 +58,15 @@
     /* inputs get the slightly darker border shadcn gives form controls */
     --pt-input-border: var(--theme-elevation-250);
 
+    /* Semantic status colors for the theme's own accents (bool tick chips,
+     * toast icons, dashboard trend deltas). Payload's --theme-success-* scale
+     * is BLUE (it doubles as its info color), so anything painted with it
+     * reads as accent noise — these are real greens/ambers instead, tuned
+     * per scheme below. */
+    --pt-ok: #16a34a;
+    --pt-ok-text: #15803d;
+    --pt-warn: #d97706;
+
     /* shadcn shadow steps */
     --pt-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --pt-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.08);
@@ -72,6 +81,11 @@
   html[data-theme='dark'] {
     /* zinc-900: the dark gray field (reference dark sidebar) */
     --theme-bg: #18181b;
+
+    /* brighter status hues so the dots register on near-black */
+    --pt-ok: #22c55e;
+    --pt-ok-text: #4ade80;
+    --pt-warn: #f59e0b;
 
     /* Shift the bottom of the dark elevation ladder one rung darker so the
      * content card lands on zinc-950 (the reference dark background) and the
@@ -402,13 +416,46 @@
     color: var(--theme-text);
   }
 
-  /* "X selected" bulk bar action links = accent */
-  .list-selection__button {
-    color: var(--pt-accent);
-    text-decoration-color: color-mix(in srgb, var(--pt-accent) 40%, transparent);
+  /* ---- bulk selection bar: muted count + chip actions ----
+   * Payload renders "1 selected — Select all (10) — Edit Publish … Delete"
+   * as underlined text links; here every action becomes a small outline
+   * chip and the em-dash separators go away (chips separate themselves). */
+  .list-selection {
+    gap: 10px;
+    font-size: 13px;
+    color: var(--theme-elevation-500);
   }
-  .list-selection__button:hover {
-    color: var(--pt-accent-hover);
+  .list-selection > span:not(:first-child) {
+    display: none; /* the "—" separators */
+  }
+  .list-selection__actions {
+    align-items: center;
+    gap: 6px;
+  }
+  .list-selection__button {
+    padding: 4px 11px;
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: 999px;
+    color: var(--theme-elevation-600);
+    font-size: 12.5px;
+    font-weight: 500;
+    text-decoration: none;
+    box-shadow: var(--pt-shadow-xs);
+    transition:
+      background-color 0.12s ease,
+      border-color 0.12s ease,
+      color 0.12s ease;
+  }
+  html[data-theme='dark'] .list-selection__button {
+    background: var(--theme-elevation-50);
+  }
+  .list-selection__button:hover,
+  .list-selection__button:focus-visible {
+    background: color-mix(in srgb, var(--theme-elevation-500) 8%, transparent);
+    border-color: var(--theme-elevation-300);
+    color: var(--theme-text);
+    text-decoration: none;
   }
 }
 
@@ -518,7 +565,8 @@
     font-weight: 500;
   }
 
-  /* boolean cell as a neutral pill */
+  /* boolean cell fallback (fields that kept Payload's stock CheckboxCell —
+   * the plugin normally swaps in the BoolCell chip below) */
   .bool-cell {
     display: inline-flex;
     padding: 3px 10px;
@@ -527,6 +575,39 @@
     color: var(--theme-elevation-600);
     font-family: var(--font-body);
     font-size: 0.82em;
+  }
+}
+
+/* ==================================================================== *
+ * LIST BADGES — boolean icon chips
+ *
+ * The BoolCell component (swapped in for every checkbox column by the
+ * plugin) renders `.pt-bool`: a small round chip carrying only an icon —
+ * green tick for true, muted X for false. Status/select badges stay the
+ * neutral chip everywhere (no dots, no semantic colors — one calm voice).
+ * ==================================================================== */
+@layer payload {
+  .pt-bool {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+
+    svg {
+      flex-shrink: 0;
+      width: 12px;
+      height: 12px;
+    }
+  }
+  .pt-bool--true {
+    background: color-mix(in srgb, var(--pt-ok) 14%, transparent);
+    color: var(--pt-ok-text);
+  }
+  .pt-bool--false {
+    background: var(--theme-elevation-100);
+    color: var(--theme-elevation-400);
   }
 }
 
@@ -1068,14 +1149,14 @@
 
   .pt-dash__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     /* every card ends up the exact same size — rows share the tallest
-     * card's height, and a minimum keeps spark-less cards from squatting */
+     * card's height, and a minimum keeps sparse cards from squatting */
     grid-auto-rows: 1fr;
     gap: 16px;
   }
   .pt-dash__cell {
-    min-height: 150px;
+    min-height: 148px;
   }
 
   .pt-dash__cell {
@@ -1091,7 +1172,8 @@
    * Head row: accent icon chip + label side by side. Body: big count + muted
    * caption. In dark mode the card lifts to elevation-50 (the content
    * surface and elevation-0 are the same near-black, which made cards read
-   * muddy). */
+   * muddy). Hover: a soft 2px lift with a deeper shadow — enough motion to
+   * feel alive, gated behind prefers-reduced-motion. */
   .pt-dash__card {
     position: relative;
     display: flex;
@@ -1105,19 +1187,28 @@
     box-shadow: var(--pt-shadow-xs);
     transition:
       border-color 0.15s ease,
-      box-shadow 0.15s ease;
+      box-shadow 0.15s ease,
+      transform 0.15s ease;
   }
   html[data-theme='dark'] .pt-dash__card {
     background-color: var(--theme-elevation-50);
   }
   .pt-dash__card:hover {
     border-color: var(--theme-elevation-300);
-    box-shadow: var(--pt-shadow-sm);
+    box-shadow: var(--pt-shadow-md);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .pt-dash__card:hover {
+      transform: translateY(-2px);
+    }
   }
 
+  /* head row: muted label LEFT, round neutral icon chip RIGHT — the
+   * reference stat-card grammar */
   .pt-dash__card-head {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 10px;
     min-width: 0;
   }
@@ -1126,21 +1217,21 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: var(--pt-radius-item);
-    background: var(--pt-accent-subtle);
-    color: var(--pt-accent);
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    background: var(--theme-elevation-100);
+    color: var(--theme-elevation-600);
 
     svg {
-      width: 16px;
-      height: 16px;
+      width: 17px;
+      height: 17px;
     }
   }
   .pt-dash__card-label {
-    font-size: 0.86rem;
+    font-size: 0.9rem;
     font-weight: 500;
-    color: var(--theme-elevation-600);
+    color: var(--theme-elevation-500);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1149,21 +1240,30 @@
   .pt-dash__card-body {
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: 6px;
     min-width: 0;
   }
   .pt-dash__card-count {
-    font-size: 1.9rem;
-    font-weight: 650;
-    line-height: 1.1;
-    letter-spacing: -0.025em;
+    font-size: 2.1rem;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
     font-variant-numeric: tabular-nums;
     color: var(--theme-text);
   }
   .pt-dash__card-caption {
-    font-size: 0.76rem;
-    font-weight: 500;
+    font-size: 0.8rem;
+    font-weight: 450;
     color: var(--theme-elevation-500);
+  }
+  /* sparkline strip pinned to the bottom of stat cards (cards share one
+   * height, so the strip anchors to the bottom edge on every card) */
+  .pt-dash__spark {
+    display: block;
+    width: 100%;
+    height: 34px;
+    margin-top: auto;
+    color: var(--pt-accent);
   }
   /* Globals have no count — the entity name itself is the big line. */
   .pt-dash__card-title {
@@ -1189,31 +1289,38 @@
     outline-offset: 2px;
   }
 
-  /* '+' quick action sits above the stretched link. */
+  /* '+' quick action sits above the stretched link, exactly covering the
+   * icon chip — invisible at rest, it fades in over the icon on hover so the
+   * resting card matches the reference stat-card exactly. */
   .pt-dash__card-create {
     position: absolute;
-    top: 14px;
-    right: 13px;
+    top: 18px;
+    right: 18px;
     z-index: 2;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 26px;
-    height: 26px;
-    border-radius: var(--pt-radius-item);
-    color: var(--theme-elevation-500);
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    background: var(--pt-accent);
+    color: var(--pt-accent-contrast);
+    opacity: 0;
     transition:
-      background-color 0.15s ease,
-      color 0.15s ease;
+      opacity 0.15s ease,
+      background-color 0.15s ease;
 
     svg {
-      width: 15px;
-      height: 15px;
+      width: 16px;
+      height: 16px;
     }
   }
+  .pt-dash__card:hover .pt-dash__card-create,
+  .pt-dash__card-create:focus-visible {
+    opacity: 1;
+  }
   .pt-dash__card-create:hover {
-    color: var(--pt-accent-contrast);
-    background: var(--pt-accent);
+    background: var(--pt-accent-hover);
   }
   .pt-dash__card-create:focus-visible {
     outline: 2px solid var(--pt-accent);
@@ -2041,8 +2148,14 @@
     background: var(--theme-elevation-50);
   }
   .confirmation-modal__content h1 {
+    margin-bottom: 6px;
     font-size: 1.3rem;
     letter-spacing: -0.015em;
+  }
+  /* the title and its supporting line read as ONE block */
+  .confirmation-modal__content p {
+    margin-top: 0;
+    color: var(--theme-elevation-500);
   }
 
   /* ---- status meta (doc controls / versions): quiet chip ---- */
@@ -2112,6 +2225,12 @@
     border-color: var(--pt-accent);
     background: var(--pt-accent-subtle);
   }
+  /* a gentle breathing ring while a file hovers over the zone */
+  @media (prefers-reduced-motion: no-preference) {
+    .dropzone.dragging {
+      animation: pt-drop-pulse 1.3s ease-in-out infinite;
+    }
+  }
   .file-field__orText,
   .file-field__dragAndDropText {
     color: var(--theme-elevation-500);
@@ -2166,6 +2285,101 @@
     border-radius: var(--pt-radius-item);
     object-fit: cover;
   }
+
+  /* ---- upload rows in the table: a proper thumbnail chip + filename ----
+   * Payload's FileCell already renders thumbnail + name. The size-critical
+   * rules live UNLAYERED at the end of this file — Payload's Thumbnail
+   * stylesheet ships unlayered (like NoListResults) and would beat any
+   * @layer rule; only the layout-safe bits stay here. */
+  .table td .file {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .table td .file__filename {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+}
+
+/* ==================================================================== *
+ * LIST — persistent row actions
+ *
+ * The edit + delete pair pinned to the table's right edge on EVERY row
+ * (rendered into Payload's table markup by ListQuickActions). The column
+ * hugs its content, the header cell stays empty, and delete is a two-step
+ * control — first click arms it into a red "Delete?" chip, second click
+ * commits.
+ * ==================================================================== */
+@layer payload {
+  .table th.pt-actions-cell {
+    width: 1%;
+  }
+  .table td.pt-actions-cell {
+    width: 1%;
+    white-space: nowrap;
+    text-align: end;
+    padding-inline-end: 12px;
+  }
+  .table td.pt-actions-cell .pt-actions__btn + .pt-actions__btn {
+    margin-inline-start: 2px;
+  }
+
+  .pt-actions__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    border-radius: var(--pt-radius-item);
+    color: var(--theme-elevation-400);
+    font-family: var(--font-body);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color 0.1s ease,
+      color 0.1s ease;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+  a.pt-actions__btn:hover,
+  a.pt-actions__btn:focus-visible {
+    text-decoration: none;
+  }
+  .pt-actions__btn:hover,
+  .pt-actions__btn:focus-visible {
+    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+    color: var(--theme-text);
+  }
+  .pt-actions__btn:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .pt-actions__btn--danger:hover,
+  .pt-actions__btn--danger:focus-visible {
+    background: color-mix(in srgb, var(--theme-error-500) 12%, transparent);
+    color: var(--theme-error-600);
+  }
+  .pt-actions__btn--armed,
+  .pt-actions__btn--armed:hover,
+  .pt-actions__btn--armed:focus-visible {
+    width: auto;
+    padding: 0 9px;
+    background: color-mix(in srgb, var(--theme-error-500) 12%, transparent);
+    color: var(--theme-error-600);
+    font-size: 11.5px;
+    font-weight: 600;
+  }
 }
 
 /* ==================================================================== *
@@ -2176,11 +2390,56 @@
  * theme contract) — we only modernize radius, shadow and typography.
  * ==================================================================== */
 @layer payload {
-  /* ---- toasts (sonner): softer card ---- */
+  /* ---- toasts (sonner): the shadcn sonner card ----
+   * One quiet white card for every type; the semantic color lives ONLY in
+   * the icon (sonner stamps data-type on each toast), so a burst of toasts
+   * doesn't turn the corner of the screen into a traffic light. */
   .payload-toast-container .payload-toast-item {
-    border-radius: var(--pt-radius-card);
+    align-items: flex-start;
+    gap: 10px;
+    padding: 13px 15px;
+    background: var(--theme-elevation-0);
     border: 1px solid var(--theme-border-color);
-    box-shadow: var(--pt-shadow-md);
+    border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-lg);
+    color: var(--theme-text);
+    font-family: var(--font-body);
+  }
+  html[data-theme='dark'] .payload-toast-container .payload-toast-item {
+    background: var(--theme-elevation-50);
+  }
+  .payload-toast-container .payload-toast-item .toast-title {
+    font-size: 13px;
+    font-weight: 550;
+    line-height: 1.45;
+  }
+  .payload-toast-container .payload-toast-item .toast-icon {
+    color: var(--theme-elevation-500);
+  }
+  .payload-toast-container .payload-toast-item[data-type='success'] .toast-icon {
+    color: var(--pt-ok);
+  }
+  .payload-toast-container .payload-toast-item[data-type='error'] .toast-icon {
+    color: var(--theme-error-500);
+  }
+  .payload-toast-container .payload-toast-item[data-type='warning'] .toast-icon {
+    color: var(--pt-warn);
+  }
+
+  /* ---- skeletons (ShimmerEffect placeholders): calm zinc blocks with a
+   * soft sweep — list views, lazy drawers and thumbnails all inherit it ---- */
+  .shimmer-effect {
+    background-color: var(--theme-elevation-100);
+    border-radius: var(--pt-radius-item);
+    overflow: hidden;
+  }
+  .shimmer-effect__shine {
+    background-image: linear-gradient(
+      90deg,
+      transparent 8%,
+      color-mix(in srgb, var(--theme-elevation-0) 65%, transparent) 18%,
+      transparent 33%
+    );
   }
 
   /* ---- tooltips: rounded bubble ---- */
@@ -2692,6 +2951,15 @@
         transparent 60%
       );
   }
+  /* a very slow breathing drift on the glow — CSS-only, so the login panel
+   * moves in a screen recording without a single script. The layer scales
+   * past its box while drifting so no edge is ever exposed; the hero clips. */
+  @media (prefers-reduced-motion: no-preference) {
+    .pt-login-hero__glow {
+      animation: pt-glow-drift 16s ease-in-out infinite alternate;
+      will-change: transform, opacity;
+    }
+  }
 
   .pt-login-hero__grid {
     position: absolute;
@@ -2828,21 +3096,6 @@
   }
   html[data-theme='dark'] .pt-nav__search-kbd {
     background: var(--theme-elevation-100);
-  }
-}
-
-/* ==================================================================== *
- * DASHBOARD V2 — sparklines
- * ==================================================================== */
-@layer payload {
-  /* ---- sparkline strip pinned to the bottom of stat cards (cards share
-   * one height, so the strip anchors to the bottom edge on every card) ---- */
-  .pt-dash__spark {
-    display: block;
-    width: 100%;
-    height: 34px;
-    margin-top: auto;
-    color: var(--pt-accent);
   }
 }
 
@@ -3170,6 +3423,27 @@
   }
 }
 
+@keyframes pt-drop-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--pt-accent-ring) 22%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--pt-accent-ring) 8%, transparent);
+  }
+}
+
+@keyframes pt-glow-drift {
+  from {
+    opacity: 0.9;
+    transform: translate3d(-2%, -1.5%, 0) scale(1.06);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(2%, 2%, 0) scale(1.18);
+  }
+}
+
 /* ==================================================================== *
  * STRUCTURED FIELDS — blocks, arrays, collapsibles (card system v2)
  *
@@ -3419,7 +3693,13 @@
     overflow: hidden;
     transition:
       border-color 0.12s ease,
-      box-shadow 0.12s ease;
+      box-shadow 0.12s ease,
+      transform 0.12s ease;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .thumbnail-card:hover {
+      transform: translateY(-1px);
+    }
   }
   html[data-theme='dark'] .thumbnail-card {
     background: var(--theme-elevation-100);
@@ -3495,12 +3775,18 @@
       grid-column: span 1;
     }
 
-    /* toggles align with the text baseline of a neighbouring input */
+    /* toggles line up with the neighbouring input's box, not the cell
+     * center: the neighbour stacks label (~30px incl. margin) above a 40px
+     * control, so start-aligning with a label-height offset centers the
+     * 20px switch on the input row */
     .template-default__wrap
       > .collection-edit
       :is(.document-fields__fields.render-fields, .document-fields__fields .render-fields)
       > .field-type.checkbox {
-      align-self: center;
+      align-self: start;
+      /* measured: label row + this offset puts the 20px switch's center
+       * exactly on the neighbouring 40px input's center line */
+      padding-top: 35px;
     }
 
     /* Lexical renders its own nested field UIs — keep those stacked */
@@ -3739,6 +4025,245 @@
   }
 }
 
+/* ==================================================================== *
+ * MEDIA LIBRARY — grid view
+ *
+ * Upload collections get a grid/table switch (MediaListToggle, rendered by
+ * the plugin above the list table). While it says "grid", the list table is
+ * relaid as a card grid — pure CSS on Payload's own table markup, keyed off
+ * `:has(.pt-media-toggle[data-view='grid'])`, so sorting, selection,
+ * pagination and bulk actions keep working untouched:
+ *   · each row becomes a card — full-bleed thumbnail, filename, small meta
+ *   · the select checkbox floats over the artwork (visible on hover/checked;
+ *     a checked card gets an accent ring instead of the row wash)
+ *   · updatedAt surfaces as a dark glass chip over the image on hover
+ *   · every other column stays hidden but remains in the DOM
+ * ==================================================================== */
+@layer payload {
+  /* ---- the toggle itself: a compact segmented control, right-aligned ---- */
+  .pt-media-toggle {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    width: max-content;
+    margin-inline-start: auto;
+    margin-block: 2px 12px;
+    padding: 3px;
+    background: var(--theme-elevation-100);
+    border-radius: var(--pt-radius-ctl);
+  }
+  .pt-media-toggle__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    border-radius: calc(var(--pt-radius-ctl) - 2px);
+    color: var(--theme-elevation-500);
+    cursor: pointer;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+  .pt-media-toggle__btn:hover {
+    color: var(--theme-text);
+  }
+  .pt-media-toggle__btn--active {
+    background: var(--theme-elevation-0);
+    color: var(--theme-text);
+    box-shadow: var(--pt-shadow-xs);
+  }
+  html[data-theme='dark'] .pt-media-toggle__btn--active {
+    background: var(--theme-elevation-200);
+  }
+
+  /* ---- grid mode ---- */
+  .collection-list:has(.pt-media-toggle[data-view='grid']) {
+    /* the table card frame goes away — the grid brings its own cards */
+    .table {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      overflow: visible;
+    }
+    .table > table {
+      display: block;
+      width: 100%;
+    }
+    .table thead {
+      display: none;
+    }
+    .table tbody {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 14px;
+    }
+
+    /* row -> card */
+    .table tbody tr {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      column-gap: 8px;
+      background: var(--theme-elevation-0);
+      border: 1px solid var(--theme-border-color);
+      border-radius: var(--pt-radius-card);
+      overflow: hidden;
+      box-shadow: var(--pt-shadow-xs);
+      transition:
+        transform 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+    }
+    .table tbody tr:hover {
+      background: var(--theme-elevation-0);
+      border-color: var(--theme-elevation-300);
+      box-shadow: var(--pt-shadow-md);
+      transform: translateY(-2px);
+    }
+    /* checked card: accent ring, not the row wash */
+    .table tbody tr:has(.checkbox-input--checked),
+    .table tbody tr:has(.checkbox-input--checked):hover {
+      background: var(--theme-elevation-0);
+      border-color: color-mix(in srgb, var(--pt-accent) 55%, var(--theme-border-color));
+      box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--pt-accent) 30%, transparent),
+        var(--pt-shadow-xs);
+    }
+
+    /* hide every cell by default; opt the composed ones back in */
+    .table tbody td {
+      display: none;
+      border: 0;
+      padding: 0;
+    }
+
+    /* thumbnail + filename */
+    .table td.cell-filename {
+      display: block;
+      order: 1;
+      flex: 1 1 100%;
+      min-width: 0;
+    }
+    .table td.cell-filename > a,
+    .table td.cell-filename > span {
+      display: block;
+      min-width: 0;
+      text-decoration: none;
+    }
+    .table td.cell-filename .file {
+      display: block;
+    }
+    /* (the full-bleed thumbnail sizing lives UNLAYERED at the end of the
+     * file — Payload's Thumbnail stylesheet is unlayered and wins over any
+     * @layer rule) */
+    .table td.cell-filename .file__filename {
+      display: block;
+      margin: 0; /* Payload indents the filename next to the chip — not here */
+      padding: 10px 12px 3px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 12.5px;
+      font-weight: 550;
+      color: var(--theme-text);
+    }
+
+    /* small meta line under the filename (alt text, size, mime — whichever
+     * of those columns are enabled) */
+    .table td.cell-alt,
+    .table td.cell-filesize,
+    .table td.cell-mimeType {
+      display: block;
+      flex: 0 1 auto;
+      min-width: 0;
+      padding: 0 0 10px 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--theme-elevation-500);
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .table td.cell-alt {
+      order: 2;
+      max-width: 100%;
+    }
+    .table td.cell-filesize {
+      order: 3;
+    }
+    .table td.cell-mimeType {
+      order: 4;
+      padding-inline-end: 12px;
+    }
+
+    /* select checkbox floats over the artwork */
+    .table td.cell-_select {
+      display: flex;
+      position: absolute;
+      top: 10px;
+      inset-inline-start: 10px;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 0.12s ease;
+    }
+    .table tbody tr:hover td.cell-_select,
+    .table tbody tr:has(.checkbox-input--checked) td.cell-_select,
+    .table tbody tr:focus-within td.cell-_select {
+      opacity: 1;
+    }
+    .table td.cell-_select .checkbox-input__input {
+      background: var(--theme-elevation-0);
+      box-shadow: var(--pt-shadow-sm);
+    }
+    .table td.cell-_select .checkbox-input--checked .checkbox-input__input {
+      background: var(--pt-accent);
+    }
+
+    /* updatedAt: dark glass chip over the image, revealed on hover */
+    .table td.cell-updatedAt {
+      display: flex;
+      position: absolute;
+      top: 10px;
+      inset-inline-end: 10px;
+      z-index: 2;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgb(9 9 11 / 0.6);
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+      color: #fff;
+      font-size: 10.5px;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.12s ease;
+      pointer-events: none;
+    }
+    .table tbody tr:hover td.cell-updatedAt {
+      opacity: 1;
+    }
+  }
+  html[data-theme='dark'] .collection-list:has(.pt-media-toggle[data-view='grid']) .table tbody tr,
+  html[data-theme='dark']
+    .collection-list:has(.pt-media-toggle[data-view='grid'])
+    .table
+    tbody
+    tr:hover {
+    background: var(--theme-elevation-50);
+  }
+}
+
 /* UNLAYERED on purpose: Payload's NoListResults stylesheet ships without a
  * cascade layer (align-items: flex-start), and unlayered CSS beats every
  * @layer rule — so the centering must be unlayered too. The class is DOUBLED
@@ -3779,4 +4304,75 @@ html[data-theme='dark'] .no-results.no-results {
 .no-results.no-results .no-results__actions {
   justify-content: center;
   margin-top: 14px;
+}
+
+/* UNLAYERED on purpose: Payload's Thumbnail stylesheet (`.thumbnail`,
+ * `.thumbnail--size-small`, its inner img) ships without a cascade layer —
+ * same story as NoListResults — so thumbnail SIZING must be unlayered to win.
+ * Higher specificity than Payload's own rules keeps these stable across
+ * client-navigation chunk-injection order. */
+
+/* table rows: the 34px bordered avatar chip
+ * (Payload caps .file__thumbnail with max-width — reset both maxes so the
+ * declared size is the real size in every view) */
+.table td .file .thumbnail {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  max-width: none;
+  max-height: none;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--pt-radius-item);
+  background: var(--theme-elevation-100);
+  overflow: hidden;
+}
+.table td .file .thumbnail img {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  object-fit: cover;
+}
+
+/* media grid cards: full-bleed cover artwork with a soft hover zoom */
+.collection-list:has(.pt-media-toggle[data-view='grid']) .table td.cell-filename .file .thumbnail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  aspect-ratio: 4 / 3;
+  border: 0;
+  border-radius: 0;
+  background: var(--theme-elevation-100);
+  overflow: hidden;
+}
+.collection-list:has(.pt-media-toggle[data-view='grid'])
+  .table
+  td.cell-filename
+  .file
+  .thumbnail
+  img {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  border-radius: 0;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .collection-list:has(.pt-media-toggle[data-view='grid'])
+    .table
+    tbody
+    tr:hover
+    td.cell-filename
+    .file
+    .thumbnail
+    img {
+    transform: scale(1.04);
+  }
 }

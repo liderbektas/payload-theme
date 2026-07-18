@@ -92,10 +92,10 @@ const CollectionCard: React.FC<{ card: CollectionCardData }> = ({ card }) => {
   return (
     <article className="pt-dash__card">
       <div className="pt-dash__card-head">
+        <span className="pt-dash__card-label">{label}</span>
         <span aria-hidden="true" className="pt-dash__card-icon">
           <DynamicIcon aria-hidden="true" name={iconName as IconName} strokeWidth={1.9} />
         </span>
-        <span className="pt-dash__card-label">{label}</span>
       </div>
       <div className="pt-dash__card-body">
         <span className="pt-dash__card-count">{count === null ? '—' : <CountUp value={count} />}</span>
@@ -122,10 +122,10 @@ const GlobalCard: React.FC<{ card: GlobalCardData }> = ({ card }) => {
   return (
     <article className="pt-dash__card pt-dash__card--global">
       <div className="pt-dash__card-head">
+        <span className="pt-dash__card-label">Global</span>
         <span aria-hidden="true" className="pt-dash__card-icon">
           <DynamicIcon aria-hidden="true" name={iconName as IconName} strokeWidth={1.9} />
         </span>
-        <span className="pt-dash__card-label">Global</span>
       </div>
       <div className="pt-dash__card-body">
         <span className="pt-dash__card-title">{label}</span>

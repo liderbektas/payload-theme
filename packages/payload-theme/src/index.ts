@@ -17,10 +17,59 @@
  * })
  */
 
-import type { Config } from 'payload'
+import type { CollectionConfig, Config, Field } from 'payload'
 
 import { resolveOptions, type PayloadThemeOptions } from './options'
 import { buildTheme, themeToCss } from './theme'
+
+const BOOL_CELL = 'payload-theme/client#BoolCell'
+const MEDIA_TOGGLE = 'payload-theme/client#MediaListToggle'
+
+/**
+ * Retarget checkbox list cells to the theme's BoolCell (icon + Yes/No chip
+ * instead of raw `true`/`false`). Recurses only into the container types whose
+ * sub-fields surface as top-level list columns (row, collapsible, tabs);
+ * fields with their own Cell component are left alone.
+ */
+const withBoolCells = (fields: Field[]): Field[] =>
+  fields.map((field) => {
+    if (field.type === 'checkbox') {
+      if (field.admin?.components?.Cell) return field
+      return {
+        ...field,
+        admin: { ...field.admin, components: { ...field.admin?.components, Cell: BOOL_CELL } },
+      }
+    }
+    if (field.type === 'row' || field.type === 'collapsible') {
+      return { ...field, fields: withBoolCells(field.fields) }
+    }
+    if (field.type === 'tabs') {
+      return { ...field, tabs: field.tabs.map((tab) => ({ ...tab, fields: withBoolCells(tab.fields) })) }
+    }
+    return field
+  })
+
+/**
+ * Per-collection transforms: BoolCell for checkbox columns everywhere, plus
+ * the grid/table view toggle above every upload collection's list (the
+ * stylesheet turns the list into a media grid while the toggle says "grid").
+ */
+const transformCollection = (collection: CollectionConfig): CollectionConfig => {
+  const transformed: CollectionConfig = { ...collection, fields: withBoolCells(collection.fields) }
+  if (collection.upload) {
+    transformed.admin = {
+      ...transformed.admin,
+      components: {
+        ...transformed.admin?.components,
+        beforeListTable: [
+          ...(transformed.admin?.components?.beforeListTable ?? []),
+          MEDIA_TOGGLE,
+        ],
+      },
+    }
+  }
+  return transformed
+}
 
 /**
  * The plugin factory. Returns a Payload config transform that:
@@ -43,6 +92,9 @@ export const payloadTheme =
     config.admin = config.admin ?? {}
     config.admin.custom = { ...config.admin.custom, payloadTheme: resolved }
 
+    // List-view upgrades: boolean chips + the media grid toggle.
+    config.collections = (config.collections ?? []).map(transformCollection)
+
     // Widgets are referenced by import-map path (like every Payload component).
     // `admin.custom` isn't crawled by `generate:importmap`, so declare each one
     // in `admin.dependencies` — the generator's explicit escape hatch.
@@ -64,7 +116,12 @@ export const payloadTheme =
 
     const components = { ...config.admin.components }
     components.Nav = 'payload-theme/client#Nav'
-    components.providers = [...(components.providers ?? []), 'payload-theme/client#ThemeProvider']
+    components.providers = [
+      ...(components.providers ?? []),
+      'payload-theme/client#ThemeProvider',
+      // one global instance powers the row-hover edit/duplicate/delete cluster
+      'payload-theme/client#ListQuickActions',
+    ]
     // Header right side: theme customizer (accent/radius/layout), light-dark
     // toggle and the compact user menu.
     components.actions = [...(components.actions ?? []), 'payload-theme/client#HeaderActions']
