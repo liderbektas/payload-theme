@@ -55,12 +55,17 @@ jobs:
         run: pnpm build
 
       - name: Install Playwright browser
-        run: pnpm --filter dev exec playwright install --with-deps chromium
+        working-directory: dev
+        run: pnpm exec playwright install --with-deps chromium
 
+      # Run from dev/ (not via --filter from the root): the root pnpm process
+      # exports its config to child processes, and the nested `pnpm dev` that
+      # Playwright's webServer spawns then chokes on a phantom .pnpmfile path.
       # The visual-regression spec self-skips on CI (baselines are
       # per-platform); the functional specs run against the real dev server.
       - name: Run e2e tests
-        run: pnpm --filter dev test:e2e
+        working-directory: dev
+        run: pnpm test:e2e
 
       - name: Upload Playwright report
         if: failure()
