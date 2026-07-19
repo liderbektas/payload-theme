@@ -4,6 +4,29 @@ All notable changes to `payload-theme` are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.7.0] — 2026-07-19
+
+### Added
+
+- **Blocks & arrays — unified list:** rows render as one bordered list card
+  with hairline dividers instead of separate floating cards; muted tabular
+  row numbers, ghost kebab/chevron actions, and a neutral **per-block-type
+  icon tile**. Ships glyphs for `content`, `cta` and `hero`; any block slug
+  opts in via the `--pt-block-ico` custom property on its pill class.
+- README rebuilt as a product page (light/dark hero pair, full themed tour)
+  with absolute image URLs so the gallery renders on npmjs.com as well.
+
+### Changed
+
+- **Dark mode surfaces:** nested surfaces now get *lighter* as they stack —
+  top-level group panels (e.g. Seo) are a raised `elevation-100` surface
+  instead of a near-black well, and every field box inside a lifted surface
+  (inputs, textareas, selects, upload cards) sits flat and transparent with
+  its border doing the work, focus included.
+- Sidebar footer (user block) docks at the sidebar's bottom edge — stock's
+  ~40px `--nav-padding-block-end` reduced to 10px.
+- npm metadata: sharper description and expanded keywords.
+
 ## [0.6.0] — 2026-07-19
 
 ### Added
