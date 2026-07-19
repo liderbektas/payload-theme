@@ -12,7 +12,7 @@ One accent color in, a complete shadcn-style redesign out: dashboard with sparkl
 [![Payload 3](https://img.shields.io/badge/Payload-3.x-000000)](https://payloadcms.com)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/liderbektas/payload-theme/blob/main/LICENSE)
 
-[**Quickstart**](#installation) · [**Tour**](#the-tour) · [**Try the demo**](#-try-it-in-60-seconds) · [**Options**](#options) · [**Deploy a live demo**](https://github.com/liderbektas/payload-theme/blob/main/DEPLOY.md)
+[**Quickstart**](#installation) · [**Tour**](#the-tour) · [**Try the demo**](#-try-it-in-60-seconds) · [**Options**](#options)
 
 <br/>
 
@@ -166,7 +166,7 @@ Open [http://localhost:3000/admin](http://localhost:3000/admin) and log in:
 | `dev@local.test` | `test1234` | Admin |
 | `editor@local.test` | `test1234` | Editor |
 
-Want a **public, read-only live demo** of your own? The dev app has a built-in `DEMO_MODE` (browse everything, writes blocked at the access layer) and a Dockerfile — see [DEPLOY.md](https://github.com/liderbektas/payload-theme/blob/main/DEPLOY.md) for the one-click Railway walkthrough.
+Play with the header's theme customizer — accent, radius, color mode and layout all apply live.
 
 ---
 

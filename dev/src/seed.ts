@@ -82,11 +82,9 @@ const run = async (): Promise<void> => {
     payload.logger.info(`  ${ADMIN_EMAIL} already exists — skipping`)
   }
 
-  // 1b. Companion users so the Users list has more than one row: a second
-  // editor, and the read-only demo account the public live demo logs in with.
+  // 1b. A second editor so the Users list has more than one row.
   const companionUsers = [
     { email: 'editor@local.test', password: 'test1234', role: 'editor' as const },
-    { email: 'demo@demo.test', password: 'demo1234', role: 'admin' as const },
   ]
   for (const spec of companionUsers) {
     const existing = await payload.find({

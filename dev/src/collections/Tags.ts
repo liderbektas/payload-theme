@@ -1,7 +1,5 @@
 import type { CollectionConfig } from 'payload'
 
-import { demoSafeWrites } from '../access'
-
 export const Tags: CollectionConfig = {
   slug: 'tags',
   admin: {
@@ -12,7 +10,6 @@ export const Tags: CollectionConfig = {
   },
   access: {
     read: () => true,
-    ...demoSafeWrites,
   },
   fields: [
     {

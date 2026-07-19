@@ -1,7 +1,5 @@
 import type { GlobalConfig } from 'payload'
 
-import { canWrite } from '../access'
-
 export const Settings: GlobalConfig = {
   slug: 'settings',
   admin: {
@@ -10,7 +8,6 @@ export const Settings: GlobalConfig = {
   },
   access: {
     read: () => true,
-    update: canWrite,
   },
   fields: [
     {

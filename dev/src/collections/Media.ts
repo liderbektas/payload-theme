@@ -1,7 +1,5 @@
 import type { CollectionConfig } from 'payload'
 
-import { demoSafeWrites } from '../access'
-
 export const Media: CollectionConfig = {
   slug: 'media',
   admin: {
@@ -9,7 +7,6 @@ export const Media: CollectionConfig = {
   },
   access: {
     read: () => true,
-    ...demoSafeWrites,
   },
   fields: [
     {

@@ -1,6 +1,5 @@
 import type { CollectionConfig } from 'payload'
 
-import { demoSafeWrites } from '../access'
 import { CallToActionBlock } from '../blocks/CallToActionBlock'
 import { ContentBlock } from '../blocks/ContentBlock'
 import { GalleryBlock } from '../blocks/GalleryBlock'
@@ -19,7 +18,6 @@ export const Pages: CollectionConfig = {
   },
   access: {
     read: () => true,
-    ...demoSafeWrites,
   },
   versions: {
     drafts: {

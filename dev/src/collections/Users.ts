@@ -1,7 +1,5 @@
 import type { CollectionConfig } from 'payload'
 
-import { demoSafeWrites } from '../access'
-
 export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
@@ -10,9 +8,6 @@ export const Users: CollectionConfig = {
     group: 'Admin',
   },
   auth: true,
-  access: {
-    ...demoSafeWrites,
-  },
   fields: [
     // Email added by default
     {

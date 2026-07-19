@@ -1,6 +1,5 @@
 import type { CollectionConfig } from 'payload'
 
-import { demoSafeWrites } from '../access'
 import { CallToActionBlock } from '../blocks/CallToActionBlock'
 import { ContentBlock } from '../blocks/ContentBlock'
 
@@ -16,7 +15,6 @@ export const Posts: CollectionConfig = {
   },
   access: {
     read: () => true,
-    ...demoSafeWrites,
   },
   // Drafts + versions: both the version history and the Draft/Publish flow are theming targets.
   versions: {
