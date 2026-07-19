@@ -52,7 +52,7 @@ export default buildConfig({
   }),
   plugins: [
     payloadTheme({
-      accent: '#4f4ece',
+      accent: '#0d9488',
       nav: {
         icons: {
           media: 'image',

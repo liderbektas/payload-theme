@@ -7,8 +7,8 @@
 One accent color in, a complete shadcn-style redesign out: dashboard with sparklines, ⌘K command palette, grouped icon sidebar, split-screen login, a live theme customizer — light *and* dark.
 
 [![CI](https://github.com/liderbektas/payload-theme/actions/workflows/ci.yml/badge.svg)](https://github.com/liderbektas/payload-theme/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/payload-theme?color=4f4ece)](https://www.npmjs.com/package/payload-theme)
-[![npm downloads](https://img.shields.io/npm/dm/payload-theme?color=4f4ece)](https://www.npmjs.com/package/payload-theme)
+[![npm](https://img.shields.io/npm/v/payload-theme?color=0d9488)](https://www.npmjs.com/package/payload-theme)
+[![npm downloads](https://img.shields.io/npm/dm/payload-theme?color=0d9488)](https://www.npmjs.com/package/payload-theme)
 [![Payload 3](https://img.shields.io/badge/Payload-3.x-000000)](https://payloadcms.com)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/liderbektas/payload-theme/blob/main/LICENSE)
 
@@ -50,7 +50,7 @@ import { payloadTheme } from 'payload-theme'
 
 export default buildConfig({
   plugins: [
-    payloadTheme({ accent: '#4f4ece' }),
+    payloadTheme({ accent: '#0d9488' }),
   ],
 })
 ```
