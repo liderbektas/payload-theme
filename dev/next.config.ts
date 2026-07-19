@@ -7,6 +7,8 @@ const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 
 const nextConfig: NextConfig = {
+  // Keep the floating dev-tools badge out of docs screenshots and the demo.
+  devIndicators: false,
   images: {
     localPatterns: [
       {

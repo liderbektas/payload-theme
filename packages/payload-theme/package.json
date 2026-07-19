@@ -1,7 +1,7 @@
 {
   "name": "payload-theme",
   "version": "0.6.0",
-  "description": "Single-accent theme plugin that redesigns the Payload CMS admin panel.",
+  "description": "A shadcn-style theme for the Payload CMS admin panel — dashboard with sparklines, ⌘K command palette, grouped icon sidebar, live theme customizer, dark mode. One accent color, two lines of setup.",
   "license": "MIT",
   "author": "Lider Bektaş <liderbektas200@gmail.com>",
   "homepage": "https://github.com/liderbektas/payload-theme#readme",
@@ -16,11 +16,24 @@
   "keywords": [
     "payload",
     "payloadcms",
+    "payload-cms",
     "payload-plugin",
+    "payload-theme",
     "admin",
+    "admin-panel",
+    "admin-theme",
+    "admin-ui",
+    "admin-dashboard",
     "theme",
+    "shadcn",
+    "dark-mode",
+    "command-palette",
     "ui",
-    "dashboard"
+    "dashboard",
+    "cms",
+    "nextjs",
+    "white-label",
+    "branding"
   ],
   "type": "module",
   "sideEffects": [

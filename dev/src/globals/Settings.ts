@@ -1,12 +1,16 @@
 import type { GlobalConfig } from 'payload'
 
+import { canWrite } from '../access'
+
 export const Settings: GlobalConfig = {
   slug: 'settings',
   admin: {
     description: 'Global, site-wide settings edited from a single screen.',
+    group: 'Admin',
   },
   access: {
     read: () => true,
+    update: canWrite,
   },
   fields: [
     {

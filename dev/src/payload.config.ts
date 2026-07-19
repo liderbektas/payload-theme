@@ -7,7 +7,9 @@ import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
 import { Media } from './collections/Media'
+import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
+import { Projects } from './collections/Projects'
 import { Tags } from './collections/Tags'
 import { Users } from './collections/Users'
 import { Settings } from './globals/Settings'
@@ -35,7 +37,7 @@ export default buildConfig({
   //     { code: 'tr', label: 'Türkçe' },
   //   ],
   // },
-  collections: [Posts, Tags, Media, Users],
+  collections: [Posts, Pages, Projects, Tags, Media, Users],
   globals: [Settings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
@@ -54,7 +56,9 @@ export default buildConfig({
       nav: {
         icons: {
           media: 'image',
+          pages: 'file-text',
           posts: 'newspaper',
+          projects: 'briefcase',
           settings: 'settings',
           tags: 'tag',
           users: 'users',

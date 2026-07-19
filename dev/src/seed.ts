@@ -39,11 +39,18 @@ const lexical = (paragraphs: string[]) => ({
   },
 })
 
-// Solid-color PNG placeholder (1200x630) so Media docs have real, sharp-processed files.
-const placeholderPng = (background: string): Promise<Buffer> =>
-  sharp({
-    create: { width: 1200, height: 630, channels: 3, background },
-  })
+// Gradient PNG placeholder (1200x630) so Media docs have real, sharp-processed
+// files that also make the media grid and upload cards look good in shots.
+const placeholderPng = (from: string, to: string): Promise<Buffer> =>
+  sharp(
+    Buffer.from(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">` +
+        `<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">` +
+        `<stop offset="0" stop-color="${from}"/><stop offset="1" stop-color="${to}"/>` +
+        `</linearGradient></defs>` +
+        `<rect width="1200" height="630" fill="url(#g)"/></svg>`,
+    ),
+  )
     .png()
     .toBuffer()
 
@@ -75,9 +82,27 @@ const run = async (): Promise<void> => {
     payload.logger.info(`  ${ADMIN_EMAIL} already exists — skipping`)
   }
 
+  // 1b. Companion users so the Users list has more than one row: a second
+  // editor, and the read-only demo account the public live demo logs in with.
+  const companionUsers = [
+    { email: 'editor@local.test', password: 'test1234', role: 'editor' as const },
+    { email: 'demo@demo.test', password: 'demo1234', role: 'admin' as const },
+  ]
+  for (const spec of companionUsers) {
+    const existing = await payload.find({
+      collection: 'users',
+      where: { email: { equals: spec.email } },
+      limit: 1,
+    })
+    if (existing.docs.length === 0) {
+      await payload.create({ collection: 'users', data: spec })
+      payload.logger.info(`  created ${spec.email} / ${spec.password}`)
+    }
+  }
+
   // 2. Reset content collections for a clean, repeatable seed.
-  payload.logger.info('Seed: clearing posts / media / tags…')
-  for (const collection of ['posts', 'media', 'tags'] as const) {
+  payload.logger.info('Seed: clearing projects / pages / posts / media / tags…')
+  for (const collection of ['projects', 'pages', 'posts', 'media', 'tags'] as const) {
     await payload.delete({ collection, where: { id: { exists: true } } })
   }
 
@@ -98,15 +123,19 @@ const run = async (): Promise<void> => {
   // 4. Media placeholders.
   payload.logger.info('Seed: creating media placeholders…')
   const mediaSpecs = [
-    { color: '#4f46e5', alt: 'Indigo placeholder cover' },
-    { color: '#059669', alt: 'Emerald placeholder cover' },
-    { color: '#db2777', alt: 'Pink placeholder cover' },
-    { color: '#d97706', alt: 'Amber placeholder cover' },
+    { from: '#4f46e5', to: '#7c3aed', alt: 'Indigo-violet gradient cover' },
+    { from: '#059669', to: '#0891b2', alt: 'Emerald-cyan gradient cover' },
+    { from: '#db2777', to: '#e11d48', alt: 'Pink-rose gradient cover' },
+    { from: '#d97706', to: '#dc2626', alt: 'Amber-red gradient cover' },
+    { from: '#0ea5e9', to: '#6366f1', alt: 'Sky-indigo gradient cover' },
+    { from: '#8b5cf6', to: '#d946ef', alt: 'Violet-fuchsia gradient cover' },
+    { from: '#14b8a6', to: '#84cc16', alt: 'Teal-lime gradient cover' },
+    { from: '#f59e0b', to: '#f43f5e', alt: 'Amber-rose gradient cover' },
   ]
   const media: Media[] = []
   for (let i = 0; i < mediaSpecs.length; i++) {
     const spec = mediaSpecs[i]
-    const data = await placeholderPng(spec.color)
+    const data = await placeholderPng(spec.from, spec.to)
     media.push(
       await payload.create({
         collection: 'media',
@@ -293,6 +322,236 @@ const run = async (): Promise<void> => {
     })
   }
 
+  // 6b. Pages — block-built documents that show off the themed blocks list
+  // (per-type icons, unified row list) and the Add Layout drawer.
+  payload.logger.info('Seed: creating pages…')
+  const heroBlock = (heading: string, tagline: string, cover: number) => ({
+    blockType: 'hero' as const,
+    heading,
+    tagline,
+    ctaLabel: 'Get started',
+    ctaUrl: '/contact',
+    image: mediaId(cover),
+  })
+  const contentBlock = (paragraphs: string[]) => ({
+    blockType: 'content' as const,
+    richText: lexical(paragraphs),
+  })
+  const statsBlock = () => ({
+    blockType: 'stats' as const,
+    items: [
+      { label: 'Projects shipped', value: '120+' },
+      { label: 'Avg. NPS', value: '68' },
+      { label: 'Team members', value: '14' },
+      { label: 'Years running', value: '9' },
+    ],
+  })
+  const galleryBlock = (start: number) => ({
+    blockType: 'gallery' as const,
+    items: [
+      { image: mediaId(start), caption: 'Launch day' },
+      { image: mediaId(start + 1), caption: 'Design review' },
+      { image: mediaId(start + 2), caption: 'The team' },
+    ],
+  })
+  const quoteBlock = (quote: string, author: string, authorRole: string) => ({
+    blockType: 'quote' as const,
+    quote,
+    author,
+    authorRole,
+  })
+  const ctaBlock = (heading: string) => ({
+    blockType: 'cta' as const,
+    heading,
+    label: 'Talk to us',
+    url: '/contact',
+  })
+
+  const pageSpecs = [
+    {
+      title: 'Home',
+      slug: 'home',
+      status: 'published' as const,
+      summary: 'The agency front page — hero, numbers, work and a closing call to action.',
+      layout: [
+        heroBlock('We design admin panels people enjoy', 'A studio for CMS-driven products.', 0),
+        statsBlock(),
+        contentBlock([
+          'We build editorial tools, dashboards and design systems for content teams.',
+        ]),
+        galleryBlock(4),
+        quoteBlock(
+          'The panel stopped feeling like a database UI and started feeling like our product.',
+          'Maya Chen',
+          'Head of Content, Northwind',
+        ),
+        ctaBlock('Ready to reskin your admin?'),
+      ],
+    },
+    {
+      title: 'About',
+      slug: 'about',
+      status: 'published' as const,
+      summary: 'Who we are and how we work.',
+      layout: [
+        heroBlock('A small team with strong opinions', 'Nine years of CMS craft.', 5),
+        contentBlock([
+          'We believe the admin panel is a product surface, not an afterthought.',
+          'Every engagement starts with the people who write, edit and publish.',
+        ]),
+        quoteBlock('Editors first, pixels second.', 'Studio motto', ''),
+      ],
+    },
+    {
+      title: 'Services',
+      slug: 'services',
+      status: 'published' as const,
+      summary: 'What we do, from audits to full builds.',
+      layout: [
+        heroBlock('Services', 'Audits, theming, custom fields and full builds.', 6),
+        statsBlock(),
+        ctaBlock('Get a quote this week'),
+      ],
+    },
+    {
+      title: 'Contact',
+      slug: 'contact',
+      status: 'draft' as const,
+      summary: 'How to reach the studio.',
+      layout: [
+        heroBlock('Say hello', 'We reply within one business day.', 7),
+        contentBlock(['Email hello@example.com or use the form below.']),
+      ],
+    },
+  ]
+  const createdPages = []
+  for (let i = 0; i < pageSpecs.length; i++) {
+    const spec = pageSpecs[i]
+    const isDraft = spec.status === 'draft'
+    createdPages.push(
+      await payload.create({
+        collection: 'pages',
+        draft: isDraft,
+        data: {
+          createdAt: daysAgo([2, 6, 13, 19][i % 4]),
+          _status: isDraft ? 'draft' : 'published',
+          ...spec,
+        },
+      }),
+    )
+  }
+
+  // 6c. Projects — the field-type showcase collection (tabs, radio, number,
+  // email, date, code, JSON, multi-select, relationships).
+  payload.logger.info('Seed: creating projects…')
+  const projectSpecs = [
+    {
+      name: 'Northwind Editorial Platform',
+      client: 'Northwind Media',
+      stage: 'delivered' as const,
+      budget: 84000,
+      launchDate: '2026-04-14',
+      services: ['design', 'development'] as const,
+      retainer: true,
+      cover: 0,
+      contactEmail: 'maya@northwind.example',
+      repoUrl: 'https://github.com/northwind/editorial',
+      deployCommand: 'pnpm build && railway up --service editorial',
+      integrations: { analytics: 'plausible', search: 'typesense', cdn: 'cloudflare' },
+    },
+    {
+      name: 'Atlas Commerce Admin',
+      client: 'Atlas Goods',
+      stage: 'in-progress' as const,
+      budget: 126000,
+      launchDate: '2026-09-01',
+      services: ['development', 'consulting'] as const,
+      retainer: false,
+      cover: 4,
+      contactEmail: 'ops@atlasgoods.example',
+      repoUrl: 'https://github.com/atlas/commerce-admin',
+      deployCommand: 'vercel deploy --prod',
+      integrations: { payments: 'stripe', shipping: 'shippo' },
+    },
+    {
+      name: 'Lighthouse Docs Redesign',
+      client: 'Lighthouse Labs',
+      stage: 'discovery' as const,
+      budget: 32000,
+      launchDate: null,
+      services: ['design', 'branding'] as const,
+      retainer: false,
+      cover: 5,
+      contactEmail: 'team@lighthouse.example',
+      repoUrl: '',
+      deployCommand: '',
+      integrations: null,
+    },
+    {
+      name: 'Fieldnotes Mobile CMS',
+      client: 'Fieldnotes',
+      stage: 'in-progress' as const,
+      budget: 58000,
+      launchDate: '2026-08-10',
+      services: ['development'] as const,
+      retainer: true,
+      cover: 6,
+      contactEmail: 'dev@fieldnotes.example',
+      repoUrl: 'https://github.com/fieldnotes/cms',
+      deployCommand: 'fly deploy',
+      integrations: { push: 'onesignal' },
+    },
+    {
+      name: 'Harbor Brand System',
+      client: 'Harbor Hotels',
+      stage: 'on-hold' as const,
+      budget: 45000,
+      launchDate: null,
+      services: ['branding', 'seo'] as const,
+      retainer: false,
+      cover: 7,
+      contactEmail: 'marketing@harbor.example',
+      repoUrl: '',
+      deployCommand: '',
+      integrations: null,
+    },
+    {
+      name: 'Quartz Analytics Portal',
+      client: 'Quartz BI',
+      stage: 'delivered' as const,
+      budget: 97000,
+      launchDate: '2026-02-27',
+      services: ['design', 'development', 'consulting'] as const,
+      retainer: true,
+      cover: 1,
+      contactEmail: 'hello@quartz.example',
+      repoUrl: 'https://github.com/quartz/portal',
+      deployCommand: 'pnpm build && pnpm deploy:portal',
+      integrations: { warehouse: 'bigquery', charts: 'custom' },
+    },
+  ]
+  const createdProjects = []
+  for (let i = 0; i < projectSpecs.length; i++) {
+    const spec = projectSpecs[i]
+    createdProjects.push(
+      await payload.create({
+        collection: 'projects',
+        data: {
+          createdAt: daysAgo([1, 5, 8, 14, 22, 27][i % 6]),
+          ...spec,
+          cover: mediaId(spec.cover),
+          services: [...spec.services],
+          brief: lexical([
+            `${spec.name} for ${spec.client} — scope, constraints and the definition of done.`,
+          ]),
+          relatedPosts: createdPosts[i % createdPosts.length]
+            ? [createdPosts[i % createdPosts.length].id]
+            : [],
+        },
+      }),
+    )
+  }
+
   // 7. Settings global.
   payload.logger.info('Seed: updating settings global…')
   await payload.updateGlobal({
@@ -309,7 +568,8 @@ const run = async (): Promise<void> => {
   })
 
   payload.logger.info(
-    `Seed complete: ${tags.length} tags, ${media.length} media, ${createdPosts.length} posts.`,
+    `Seed complete: ${tags.length} tags, ${media.length} media, ${createdPosts.length} posts, ` +
+      `${createdPages.length} pages, ${createdProjects.length} projects.`,
   )
   process.exit(0)
 }

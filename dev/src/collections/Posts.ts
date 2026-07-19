@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
+import { demoSafeWrites } from '../access'
 import { CallToActionBlock } from '../blocks/CallToActionBlock'
 import { ContentBlock } from '../blocks/ContentBlock'
 
@@ -9,11 +10,13 @@ export const Posts: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'featured', 'publishedAt', 'updatedAt'],
     description: 'Blog posts — exercises every major Payload field type so each admin view can be themed.',
+    group: 'Content',
     // Exercises the preview (external-link) button in the doc toolbar.
     preview: () => 'http://localhost:3000',
   },
   access: {
     read: () => true,
+    ...demoSafeWrites,
   },
   // Drafts + versions: both the version history and the Draft/Publish flow are theming targets.
   versions: {

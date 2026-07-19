@@ -1,16 +1,40 @@
+<div align="center">
+
 # payload-theme
 
+**Make your Payload admin panel look like a $50k custom build — in 2 lines.**
+
+One accent color in, a complete shadcn-style redesign out: dashboard with sparklines, ⌘K command palette, grouped icon sidebar, split-screen login, a live theme customizer — light *and* dark.
+
 [![CI](https://github.com/liderbektas/payload-theme/actions/workflows/ci.yml/badge.svg)](https://github.com/liderbektas/payload-theme/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/payload-theme)](https://www.npmjs.com/package/payload-theme)
-[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![npm](https://img.shields.io/npm/v/payload-theme?color=4f4ece)](https://www.npmjs.com/package/payload-theme)
+[![npm downloads](https://img.shields.io/npm/dm/payload-theme?color=4f4ece)](https://www.npmjs.com/package/payload-theme)
+[![Payload 3](https://img.shields.io/badge/Payload-3.x-000000)](https://payloadcms.com)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/liderbektas/payload-theme/blob/main/LICENSE)
 
-**A premium, single-accent theme for the Payload CMS admin panel — installed in 2 lines.**
+[**Quickstart**](#installation) · [**Tour**](#the-tour) · [**Try the demo**](#-try-it-in-60-seconds) · [**Options**](#options) · [**Deploy a live demo**](https://github.com/liderbektas/payload-theme/blob/main/DEPLOY.md)
 
-Pick one accent color and the whole panel repaints itself: a split-screen login, a dashboard with live counts, 30-day sparklines and **your own custom widgets**, a ⌘K command palette, an icon sidebar with your logo on top and a shadcn-style **user menu** at the bottom — all wrapped in a shadcn-style **inset layout**: a quiet zinc canvas with the sidebar sitting directly on it, and every view floating in one rounded white content card. The sticky header carries a **theme customizer** (accent, radius, color mode, content layout — live, persisted), a light/dark toggle and a compact user menu. No forked components, no config surgery — just a plugin and a CSS import.
+<br/>
 
-![Dashboard](docs/dashboard.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/dashboard-dark.png">
+  <img alt="payload-theme dashboard" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/dashboard.png" width="100%">
+</picture>
+
+<sub>The same panel, one plugin later. Every pixel above ships in this package.</sub>
+
+</div>
 
 ---
+
+## Why
+
+Payload is the best headless CMS in the Node ecosystem — and its admin panel looks like a database UI. Clients notice. Editors notice. **payload-theme** turns the stock panel into something people screenshot, without forking a single component:
+
+- 🎨 **One accent color drives everything** — an 11-step OKLCH scale recolors buttons, focus rings, nav, sparklines, the login glow. Automatic WCAG contrast included.
+- 🧱 **No forked components, no config surgery** — a plugin entry and a CSS import. Remove both lines and you're back to stock.
+- 🌗 **Dark mode designed, not inverted** — every surface sits on a zinc ladder; dark gets its own remapped scale.
+- ⚡ **Zero runtime cost** — color math runs once at startup and lands as CSS custom properties. SSR-safe, no FOUC.
 
 ## Installation
 
@@ -19,7 +43,7 @@ pnpm add payload-theme
 # or: npm i payload-theme / yarn add payload-theme
 ```
 
-**Line 1** — add the plugin to your `payload.config.ts`:
+**Line 1** — add the plugin to `payload.config.ts`:
 
 ```ts
 import { payloadTheme } from 'payload-theme'
@@ -37,74 +61,112 @@ export default buildConfig({
 @import 'payload-theme/styles.css';
 ```
 
-Then regenerate the import map so Payload can find the theme's components:
+Then regenerate the import map and restart:
 
 ```bash
 npx payload generate:importmap
 ```
 
-Restart your dev server, open the admin panel — that's it. 🎉
+Open the admin panel. That's the whole migration. 🎉
 
 ---
 
-## Tour
+## The tour
 
 ### A login screen people screenshot
 
-The login becomes a split card: a permanently-dark brand panel whose glow is painted from **your accent color**, and the form beside it. The heading and tagline are yours to change (`login.heading` / `login.tagline`). The logo above the email field — Payload's by default, as in the screenshot — is **fully customizable**: set the `logo` option and your own artwork appears both here and at the top of the sidebar, sized by `logoHeight`, with separate light/dark variants supported.
+A split card: a permanently-dark brand panel whose glow is painted from **your accent**, your logo, your copy (`login.heading` / `login.tagline`) — and the form beside it.
 
-![Login](docs/login.png)
+<img alt="Login" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/login.png" width="100%">
 
 ### A dashboard that's actually a dashboard
 
-The default dashboard is replaced with a widget grid: one stat card per collection with an animated document count and a **30-day creation sparkline**, plus cards for your globals. Everything is server-rendered through Payload's local API — access control applies, no loading flash. Want more? Add your own widgets below it — see [Dashboard widgets](#dashboard-widgets).
+The default dashboard becomes a widget grid: one stat card per collection with an animated count and a **30-day creation sparkline**, cards for your globals, and — if you want — **your own React widgets** below it ([docs](#dashboard-widgets)). Server-rendered through Payload's local API: access control applies, no loading flash.
 
-### A sidebar user menu — pinned, always
+<img alt="Dashboard" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/dashboard.png" width="100%">
 
-Payload's account button and content-locale switcher move into a shadcn-style user block **pinned to the bottom of the sidebar** — avatar, name and email, opening a popup with **Account**, the **locale switcher** (only when `localization` is configured) and **Log out**. When collections overflow, only the menu list scrolls; logo, search and the user block stay put. The same menu also sits in the header, next to the light/dark toggle.
+### A sidebar that reads like a product
 
-### A live theme customizer in the header
-
-The palette button opens a small panel where anyone can restyle the panel at runtime — no rebuild, no config edit:
-
-- **Accent** — 10 curated presets plus a free hex field with a live preview dot; the choice overrides the plugin's `accent` and recolors the entire panel through the same OKLCH engine.
-- **Radius** — the whole `'none' → 'full'` scale.
-- **Color mode** — light/dark, stored in the same preference Payload's Account page uses (a sun/moon toggle sits right next to the palette for one-click switching).
-- **Content layout** — centered (~1280px) or full width.
-
-Everything persists in the browser; **Reset to Default** returns to your `payloadTheme({ ... })` config.
-
-![Theme customizer](docs/customizer.png)
+Your logo on top, a ⌘K search pill, **grouped collections with lucide icons** (`admin.group` + `nav.icons`), an accent pill on the active item, and a shadcn-style **user block pinned to the bottom** — avatar, name, email, and a popup with Account, the locale switcher and Log out. When collections overflow, only the menu scrolls; logo, search and the user block stay put.
 
 ### ⌘K command palette
 
-Press `⌘K` / `Ctrl+K` (or click the search pill in the sidebar) to jump anywhere: navigate to any collection or global, **search documents across collections** as you type, switch light/dark mode, or log out. Zero extra dependencies — it ships inside the theme.
+Press `⌘K` / `Ctrl+K` anywhere: jump to any collection or global, **search documents across collections as you type**, switch light/dark, or log out. Ships inside the theme — zero extra dependencies.
 
-![Command palette](docs/command-palette.png)
+<img alt="Command palette" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/command-palette.png" width="100%">
 
-### List views with real polish
+### A live theme customizer in the header
 
-Tables become clean cards under a **single-row toolbar**: search, the Columns/Filters pills (with their own glyphs) and the solid **＋ Create New** button all share one line — secondary actions like Media's Bulk Upload dock next to it as quiet outline buttons. Status and boolean values render as **always-round neutral badges** (radius-setting-agnostic), rows get soft neutral hovers, and empty collections show an illustrated empty state instead of a blank page.
+The palette button opens a panel where anyone can restyle the panel at runtime — no rebuild, no deploy:
 
-![List view](docs/list-view.png)
+- **Accent** — 10 curated presets + a free hex field, recoloring the entire panel live through the same OKLCH engine
+- **Radius** — the whole `'none' → 'full'` scale
+- **Color mode** — light/dark, stored in the same preference Payload's Account page uses
+- **Content layout** — centered (~1280px) or full width
+
+Everything persists in the browser; **Reset to Default** returns to your config.
+
+<img alt="Theme customizer" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/customizer.png" width="100%">
+
+### Blocks that read like a page outline
+
+Structured content stops looking like stock Payload. Block and array rows render as **one unified list** — hairline-divided entries with a muted row number, a **per-block-type icon**, the block title, and quiet ghost actions. The theme ships icons for common slugs (`content`, `cta`, `hero`); any project block opts in with one CSS custom property:
+
+```scss
+.blocks-field__block-pill-gallery {
+  --pt-block-ico: url("data:image/svg+xml,..."); /* any 24×24 stroke SVG */
+}
+```
+
+Adding rows is one consistent gesture everywhere — a full-width dashed bar that lights up in the accent on hover. The block-picker drawer shows shadcn-style cards.
+
+<img alt="Blocks list with per-type icons" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/blocks.png" width="100%">
 
 ### Edit views: a real form layout, not a field pile
 
-The edit form lives on one card with a **two-column field grid**: compact fields (text, number, email, select, date, checkbox, radio, relationship) pair up side by side — *Title | Slug* on one line — while wide surfaces (textareas, rich text, uploads, arrays, blocks, groups) keep the full row; custom fields safely default to full width, and everything stacks again below 1024px. Inputs follow the shadcn language (thin borders, accent focus ring), checkboxes render as toggles, top-level groups sit in muted inset panels and the doc sidebar is its own card. Up top, **Edit / Versions / API** is a segmented control, the status chip and timestamps read as one quiet meta line, and the sticky action bar — with **icons on every action**: publish, save draft, duplicate, delete, and friends — blurs the content scrolling underneath it.
+One content card with a **two-column field grid**: compact fields pair up (*Title | Slug*), wide surfaces keep the full row, everything stacks below 1024px. Inputs follow the shadcn language (thin borders, accent focus ring), checkboxes render as toggles, top-level groups sit in raised panels, and the sticky action bar — icons on every action — blurs the content scrolling underneath.
 
-![Edit view](docs/edit-view.png)
+<img alt="Edit view" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/edit-view.png" width="100%">
 
-### Blocks & arrays as a card system
+Tabs, radio groups, JSON, code editors, date pickers, multi-selects, relationship fields — all themed:
 
-Structured content stops looking like stock Payload. Every block/array row is a real **card**: a numbered accent chip anchors it, the block type reads as the row title, the optional custom label is a ghost inline editor, and the kebab/chevron are standardized bordered chips. The row being edited announces itself with a soft accent ring. Adding rows is one consistent gesture everywhere — a full-width **dashed "add card" bar** that lights up in the accent on hover, for arrays and blocks alike. Collapse All / Show All get their own glyphs, and the block-picker drawer shows shadcn-style cards.
+<img alt="Tabs and field types" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/projects.png" width="100%">
 
-![Blocks as cards](docs/blocks.png)
+### List views & a real media library
+
+Tables become clean cards under a single-row toolbar — search, Columns/Filters pills and a solid **＋ Create New** on one line. Status and boolean values render as always-round neutral badges, and empty collections get an illustrated empty state.
+
+<img alt="List view" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/list-view.png" width="100%">
+
+<img alt="Media grid" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/media-grid.png" width="100%">
 
 ### Dark mode, for free
 
-Every surface, badge, card and glow is token-driven, so the whole theme flips with Payload's dark mode — dashboard, palette and login included.
+Every surface, badge, card and glow is token-driven. Nested surfaces get *lighter* as they stack (never darker "wells"), fields inside raised panels sit flat with their borders doing the work, and the accent is remapped so it stays vivid on dark.
 
-![Dashboard dark](docs/dashboard-dark.png)
+<img alt="Dark edit view" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/edit-view-dark.png" width="100%">
+
+---
+
+## 🚀 Try it in 60 seconds
+
+The repo ships a **full demo panel** — six collections, every field type, block-built pages, a seeded media library:
+
+```bash
+git clone https://github.com/liderbektas/payload-theme
+cd payload-theme && pnpm install && pnpm build
+cp dev/.env.example dev/.env
+pnpm seed && pnpm dev
+```
+
+Open [http://localhost:3000/admin](http://localhost:3000/admin) and log in:
+
+| User | Password | Role |
+| --- | --- | --- |
+| `dev@local.test` | `test1234` | Admin |
+| `editor@local.test` | `test1234` | Editor |
+
+Want a **public, read-only live demo** of your own? The dev app has a built-in `DEMO_MODE` (browse everything, writes blocked at the access layer) and a Dockerfile — see [DEPLOY.md](https://github.com/liderbektas/payload-theme/blob/main/DEPLOY.md) for the one-click Railway walkthrough.
 
 ---
 
@@ -119,13 +181,10 @@ payloadTheme({
   accent: '#e30613',
 
   // Corner rounding for the WHOLE panel: 'none' | 'sm' | 'md' | 'lg' | 'full'.
-  // 'md' (default) = the shadcn geometry (8px controls, 12px cards);
-  // 'full' = pill buttons/inputs; 'none' squares everything off.
   radius: 'md',
 
   // Your logo — top of the sidebar AND above the login form.
   // A URL, or { light, dark } to swap artwork per color scheme.
-  // Leave it out and Payload's own logo is the placeholder.
   logo: { light: '/logo.svg', dark: '/logo-dark.svg' },
 
   // Rendered height of the logo: a number in px, or any CSS length.
@@ -152,7 +211,6 @@ payloadTheme({
   },
 
   // Your own React components below the built-in dashboard content.
-  // See "Dashboard widgets" below.
   dashboard: {
     widgets: [
       '/components/widgets/StatisticsWidget#StatisticsWidget',
@@ -171,18 +229,18 @@ payloadTheme({
 | --- | --- | --- | --- |
 | `accent` | `string` (hex) | `#4f4ece` | Generates a full 50–950 color scale in OKLCH and colors every interactive element with it. |
 | `radius` | `'none' \| 'sm' \| 'md' \| 'lg' \| 'full'` | `'md'` | Global corner rounding — buttons, inputs, badges, cards, tables, popovers and menu items all follow it. |
-| `logo` | `string \| { light, dark }` | Payload logo | Image URL(s) shown at the top of the sidebar and above the login form. Pass a pair for per-scheme artwork. |
-| `logoHeight` | `number \| string` | `26` | Rendered logo height — a number is px (`32`), a string is any CSS length (`'2.5rem'`). |
+| `logo` | `string \| { light, dark }` | Payload logo | Image URL(s) shown at the top of the sidebar and above the login form. |
+| `logoHeight` | `number \| string` | `26` | Rendered logo height — a number is px, a string is any CSS length. |
 | `icon` | `string \| { light, dark }` | — | Small mark, used as a login-logo fallback. |
 | `login.heading` | `string` | `'Welcome back'` | Big heading on the login brand panel. |
 | `login.tagline` | `string` | `'Sign in to manage your content.'` | Supporting line under the heading. |
-| `nav.icons` | `Record<slug, iconName>` | folder icon | Maps collections/globals to [lucide](https://lucide.dev) icons, used in the sidebar, dashboard cards and palette. |
-| `dashboard.widgets` | `DashboardWidget[]` | `[]` | Custom components rendered below the built-in dashboard content. Empty → the dashboard is unchanged. |
+| `nav.icons` | `Record<slug, iconName>` | folder icon | Maps collections/globals to [lucide](https://lucide.dev) icons — sidebar, dashboard cards and palette. |
+| `dashboard.widgets` | `DashboardWidget[]` | `[]` | Custom components rendered below the built-in dashboard content. |
 | `cssVariables` | `Record<string, string>` | — | Escape hatch: override any raw `--pt-*` token directly. |
 
 ## Dashboard widgets
 
-The built-in dashboard (collection cards, globals) always renders as-is — widgets are an *additional* area below it. Point each entry at a React component using Payload's standard import-map path convention, the same way you'd register any custom component:
+The built-in dashboard always renders as-is — widgets are an *additional* area below it. Point each entry at a React component using Payload's standard import-map path convention:
 
 ```ts
 payloadTheme({
@@ -190,17 +248,14 @@ payloadTheme({
     widgets: [
       // string form — 'half' width by default
       '/components/widgets/StatisticsWidget#StatisticsWidget',
-
-      // object form — control the grid width: 'full' | 'half' | 'third'
+      // object form — 'full' | 'half' | 'third'
       { component: '/components/widgets/LastLoginWidget#LastLoginWidget', width: 'third' },
     ],
   },
 })
 ```
 
-Widgets land in a 12-column grid under the dashboard (`full` = whole row, `half` = ½, `third` = ⅓; everything stacks on mobile). A widget is *your* component — the theme adds layout only, no forced card chrome. Reuse the theme's card classes (`pt-dash__card`, `pt-dash__card-head`, `pt-dash__card-label`, `pt-dash__card-body`, `pt-dash__card-count`, `pt-dash__card-caption`) if you want it to look like the built-in stat cards.
-
-**Server components** receive the live Payload context as props — query anything through the local API:
+**Server components** receive the live Payload context as props:
 
 ```tsx
 import type { DashboardWidgetServerProps } from 'payload-theme'
@@ -216,25 +271,25 @@ export const StatisticsWidget: React.FC<DashboardWidgetServerProps> = async ({ p
 }
 ```
 
-**Client components** (`'use client'`) receive no props — use Payload's hooks (`useAuth`, `useConfig`, `useTranslation`, …) or fetch from the REST API.
+**Client components** (`'use client'`) receive no props — use Payload's hooks or the REST API. The plugin registers every widget in `admin.dependencies`, so `payload generate:importmap` picks them up automatically.
 
-The plugin registers every widget in `admin.dependencies`, so `payload generate:importmap` picks them up automatically.
+Reuse the theme's card classes (`pt-dash__card`, `pt-dash__card-head`, `pt-dash__card-label`, `pt-dash__card-body`, `pt-dash__card-count`, `pt-dash__card-caption`) if you want your widget to match the built-in stat cards.
 
 ## Under the hood
 
-- **One accent, everywhere** — your hex becomes an 11-step OKLCH scale. Buttons, focus rings, the active nav pill, selected table rows, pagination, tabs, links, sparklines: all recolored consistently.
-- **Smart dark mode** — the scale is re-mapped for dark (brighter accent step, never a naive inversion), so your color stays vivid on dark surfaces.
-- **Automatic contrast** — text on the accent picks black or white by WCAG relative luminance. Yellow accent → black text, purple accent → white text. You never think about it.
-- **Toggles, not checkboxes** — checkboxes are restyled into switches with pure CSS; form behavior and accessibility are untouched.
-- **Zero runtime dependencies for color math** — the scale is computed once at startup and injected as CSS custom properties. No FOUC, SSR-safe.
-- **Non-destructive** — everything ships in `@layer payload`, overriding Payload's defaults without specificity wars. Validation, form state and keyboard focus keep working.
-- **Zinc foundation** — Payload's neutral scale is retargeted to the zinc palette (light *and* dark), so every elevation, border and muted text lands on the same shadcn gray ladder.
-- **Icons via CSS masks** — action-button glyphs are `currentColor` masks, so they recolor with every state, accent and scheme; no markup changes, no icon fonts.
-- **Runtime restyling** — the header customizer recomputes the accent scale client-side with the same engine the server uses, persists to `localStorage`, and never touches your config.
+- **One accent, everywhere** — your hex becomes an 11-step OKLCH scale; every interactive element recolors consistently.
+- **Smart dark mode** — the scale is re-mapped for dark (brighter accent step, never a naive inversion).
+- **Automatic contrast** — text on the accent picks black or white by WCAG relative luminance.
+- **Toggles, not checkboxes** — pure CSS; form behavior and accessibility untouched.
+- **Zero runtime color math** — computed once at startup, injected as CSS custom properties. No FOUC, SSR-safe.
+- **Non-destructive** — everything ships in `@layer payload`, overriding Payload's defaults without specificity wars or `!important`.
+- **Zinc foundation** — Payload's neutral scale is retargeted to the shadcn zinc ladder, light *and* dark.
+- **Icons via CSS masks** — glyphs are `currentColor` masks; they recolor with every state, accent and scheme.
+- **Runtime restyling** — the customizer recomputes the accent scale client-side with the same engine the server uses.
 
 ## Fine-tuning with CSS variables
 
-Need to nudge something the options don't cover? Every token is a plain CSS custom property:
+Every token is a plain CSS custom property:
 
 ```ts
 payloadTheme({
@@ -245,22 +300,7 @@ payloadTheme({
 })
 ```
 
-The important ones: `--pt-accent-50` … `--pt-accent-950`, `--pt-accent`, `--pt-accent-hover`, `--pt-accent-active`, `--pt-accent-subtle`, `--pt-accent-contrast`, `--pt-accent-ring`, plus the radius tokens `--pt-radius-ctl`, `--pt-radius-card`, `--pt-radius-item`.
-
-## Try it locally in 60 seconds
-
-The repo ships a full demo app — seeded posts, media library, tags, widgets:
-
-```bash
-git clone https://github.com/liderbektas/payload-theme
-cd payload-theme && pnpm install && pnpm build
-cp dev/.env.example dev/.env
-pnpm seed && pnpm dev
-```
-
-Open [http://localhost:3000/admin](http://localhost:3000/admin) and log in with
-`dev@local.test` / `test1234`. Play with the header's theme customizer —
-accent, radius, color mode and layout all apply live.
+The important ones: `--pt-accent-50` … `--pt-accent-950`, `--pt-accent`, `--pt-accent-hover`, `--pt-accent-active`, `--pt-accent-subtle`, `--pt-accent-contrast`, `--pt-accent-ring`, plus the radius tokens `--pt-radius-ctl`, `--pt-radius-card`, `--pt-radius-item`, and the per-block icon hook `--pt-block-ico`.
 
 ## Requirements
 
@@ -271,11 +311,11 @@ accent, radius, color mode and layout all apply live.
 
 **"Component not found in import map"** — run `npx payload generate:importmap` after installing, then restart the dev server.
 
-**Styles not applying** — make sure `@import 'payload-theme/styles.css';` is in `src/app/(payload)/custom.scss` (the file Payload already loads into the admin panel).
+**Styles not applying** — make sure `@import 'payload-theme/styles.css';` is in `src/app/(payload)/custom.scss`.
 
 **Theme changes not showing in dev** — Turbopack caches aggressively; delete your app's `.next` folder and restart.
 
-**`Invalid accent color: '…'`** — the accent must be a hex string like `#7c3aed`. Named colors aren't supported (yet!).
+**`Invalid accent color: '…'`** — the accent must be a hex string like `#7c3aed`.
 
 ## License
 
@@ -304,5 +344,4 @@ pnpm --filter dev test:e2e     # Playwright against the real admin panel
 pnpm --filter dev test:visual  # screenshot regression suite
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide (project layout,
-checks, style rules, releasing) and [CHANGELOG.md](CHANGELOG.md) for history.
+See [CONTRIBUTING.md](https://github.com/liderbektas/payload-theme/blob/main/CONTRIBUTING.md) for the full guide and [CHANGELOG.md](https://github.com/liderbektas/payload-theme/blob/main/CHANGELOG.md) for history.

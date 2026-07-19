@@ -1,12 +1,18 @@
 import type { CollectionConfig } from 'payload'
 
+import { demoSafeWrites } from '../access'
+
 export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['email', 'role'],
+    group: 'Admin',
   },
   auth: true,
+  access: {
+    ...demoSafeWrites,
+  },
   fields: [
     // Email added by default
     {
