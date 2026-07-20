@@ -4,7 +4,7 @@
 
 **Make your Payload admin panel look like a $50k custom build — in 2 lines.**
 
-One accent color in, a complete shadcn-style redesign out: dashboard with sparklines, ⌘K command palette, grouped icon sidebar, split-screen login, a live theme customizer — light *and* dark.
+One accent color in, a complete shadcn-style redesign out: dashboard with sparklines and 30-day trends, ⌘K command palette with recents, grouped icon sidebar, split-screen login, sticky document outlines, and a live theme customizer with one-click presets, five typefaces and a copy-paste config generator — light *and* dark.
 
 [![CI](https://github.com/liderbektas/payload-theme/actions/workflows/ci.yml/badge.svg)](https://github.com/liderbektas/payload-theme/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/payload-theme?color=0d9488)](https://www.npmjs.com/package/payload-theme)
@@ -35,6 +35,7 @@ Payload is the best headless CMS in the Node ecosystem — and its admin panel l
 - 🧱 **No forked components, no config surgery** — a plugin entry and a CSS import. Remove both lines and you're back to stock.
 - 🌗 **Dark mode designed, not inverted** — every surface sits on a zinc ladder; dark gets its own remapped scale.
 - ⚡ **Zero runtime cost** — color math runs once at startup and lands as CSS custom properties. SSR-safe, no FOUC.
+- 📱 **A real phone experience** — a sliding drawer over a blurred scrim, wrapping bulk actions, aligned cards. Editors approve from the couch.
 
 ## Installation
 
@@ -81,17 +82,17 @@ A split card: a permanently-dark brand panel whose glow is painted from **your a
 
 ### A dashboard that's actually a dashboard
 
-The default dashboard becomes a widget grid: one stat card per collection with an animated count and a **30-day creation sparkline**, cards for your globals, and — if you want — **your own React widgets** below it ([docs](#dashboard-widgets)). Server-rendered through Payload's local API: access control applies, no loading flash.
+The default dashboard becomes a widget grid: one stat card per collection with an animated count, a **30-day creation sparkline** and a **trend chip** (`+12%`, `-8%` — this month's created docs vs the month before), cards for your globals, and — if you want — **your own React widgets** below it ([docs](#dashboard-widgets)). Server-rendered through Payload's local API: access control applies, no loading flash.
 
 <img alt="Dashboard" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/dashboard.png" width="100%">
 
 ### A sidebar that reads like a product
 
-Your logo on top, a ⌘K search pill, **grouped collections with lucide icons** (`admin.group` + `nav.icons`), an accent pill on the active item, and a shadcn-style **user block pinned to the bottom** — avatar, name, email, and a popup with Account, the locale switcher and Log out. When collections overflow, only the menu scrolls; logo, search and the user block stay put.
+Your logo on top, a ⌘K search pill, **grouped collections with lucide icons** (`admin.group` + `nav.icons`), an accent pill on the active item, and a shadcn-style **user block pinned to the bottom** — avatar, name, email, and a popup with Account, the locale switcher and Log out. When collections overflow, only the menu scrolls; logo, search and the user block stay put. On desktop, a **panel toggle at the header's left** collapses the whole sidebar with a smooth grid animation — full-width content one click away.
 
 ### ⌘K command palette
 
-Press `⌘K` / `Ctrl+K` anywhere: jump to any collection or global, **search documents across collections as you type**, switch light/dark, or log out. Ships inside the theme — zero extra dependencies.
+Press `⌘K` / `Ctrl+K` anywhere: your **five most recent documents** wait at the top, jump to any collection or global, **search documents across collections as you type**, **create a new document in any collection**, switch light/dark, or log out. Ships inside the theme — zero extra dependencies. And press `?` anywhere for the keyboard-shortcuts cheatsheet.
 
 <img alt="Command palette" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/command-palette.png" width="100%">
 
@@ -99,14 +100,22 @@ Press `⌘K` / `Ctrl+K` anywhere: jump to any collection or global, **search doc
 
 The palette button opens a panel where anyone can restyle the panel at runtime — no rebuild, no deploy:
 
-- **Accent** — 10 curated presets + a free hex field, recoloring the entire panel live through the same OKLCH engine
+- **Presets** — six one-click full themes (Zinc, Ocean, Forest, Sunset, Berry, Swiss), each a coherent accent + radius + typeface identity
+- **Accent** — 10 curated swatches + a free hex field, recoloring the entire panel live through the same OKLCH engine
 - **Radius** — the whole `'none' → 'full'` scale
+- **Font** — Inter, Geist, Helvetica or the system stack, each button previewing its own face
 - **Color mode** — light/dark, stored in the same preference Payload's Account page uses
 - **Content layout** — centered (~1280px) or full width
 
-Everything persists in the browser; **Reset to Default** returns to your config.
+Everything persists in the browser; **Reset** returns to your config — and **Copy config** turns whatever is on screen into a ready-to-paste `payloadTheme({ ... })` snippet, so the customizer doubles as your config generator.
 
 <img alt="Theme customizer" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/customizer.png" width="100%">
+
+### A document outline that follows your scroll
+
+Long edit forms get a sticky **"On this page" rail** pinned to the right edge of wide viewports: quiet tick bars at rest, a labeled panel on hover. Entries are the form's top-level sections — groups, collapsibles, blocks, arrays, and **every tab of a tabs field**. Click to scroll (or switch tab); the active section tracks as you read. Renders only when a document has 3+ sections, and never on small screens.
+
+<img alt="Document outline" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/outline.png" width="100%">
 
 ### Blocks that read like a page outline
 
@@ -139,6 +148,16 @@ Tables become clean cards under a single-row toolbar — search, Columns/Filters
 <img alt="List view" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/list-view.png" width="100%">
 
 <img alt="Media grid" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/media-grid.png" width="100%">
+
+### Actually responsive — not just "it fits"
+
+On the phone the panel becomes a product of its own: the sidebar turns into a **~300px drawer sliding over a blurred scrim** (tap the scrim to close — no clumsy ✕), the toggler wears the same panel mark as desktop, bulk actions wrap into tidy chip rows, stat cards stack, and edit views keep the exact same card language.
+
+<p align="center">
+  <img alt="Mobile drawer" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/mobile-drawer.png" width="32%">
+  <img alt="Mobile list view" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/mobile-list.png" width="32%">
+  <img alt="Mobile edit view, dark" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/mobile-edit-dark.png" width="32%">
+</p>
 
 ### Dark mode, for free
 
@@ -182,6 +201,11 @@ payloadTheme({
 
   // Corner rounding for the WHOLE panel: 'none' | 'sm' | 'md' | 'lg' | 'full'.
   radius: 'md',
+
+  // Panel typeface: 'inter' | 'geist' (Google Fonts, loaded at runtime),
+  // 'helvetica' | 'system' (pure font stacks, no network) — or any custom
+  // CSS font-family stack (self-host the @font-face yourself).
+  font: 'inter',
 
   // Your logo — top of the sidebar AND above the login form.
   // A URL, or { light, dark } to swap artwork per color scheme.
@@ -229,6 +253,7 @@ payloadTheme({
 | --- | --- | --- | --- |
 | `accent` | `string` (hex) | `#4f4ece` | Generates a full 50–950 color scale in OKLCH and colors every interactive element with it. |
 | `radius` | `'none' \| 'sm' \| 'md' \| 'lg' \| 'full'` | `'md'` | Global corner rounding — buttons, inputs, badges, cards, tables, popovers and menu items all follow it. |
+| `font` | `'inter' \| 'geist' \| 'helvetica' \| 'system' \| string` | Payload's font | Panel typeface. `inter`/`geist` load from Google Fonts at runtime; `helvetica`/`system` are pure stacks; any other string is used as a custom font-family stack. |
 | `logo` | `string \| { light, dark }` | Payload logo | Image URL(s) shown at the top of the sidebar and above the login form. |
 | `logoHeight` | `number \| string` | `26` | Rendered logo height — a number is px, a string is any CSS length. |
 | `icon` | `string \| { light, dark }` | — | Small mark, used as a login-logo fallback. |

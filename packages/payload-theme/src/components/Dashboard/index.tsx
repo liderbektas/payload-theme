@@ -33,6 +33,8 @@ const SPARK_DOC_LIMIT = 400
 type CollectionCardData = {
   count: null | number
   createHref: null | string
+  /** 30-day creation trend vs the previous 30 days; null → no chip. */
+  delta: null | { label: string; trend: 'down' | 'flat' | 'up' }
   href: string
   iconName: string
   label: string
@@ -100,7 +102,7 @@ const Sparkline: React.FC<{ id: string; points: number[] }> = ({ id, points }) =
 }
 
 const CollectionCard: React.FC<{ card: CollectionCardData }> = ({ card }) => {
-  const { count, createHref, href, iconName, label, slug, spark } = card
+  const { count, createHref, delta, href, iconName, label, slug, spark } = card
 
   return (
     <article className="pt-dash__card">
@@ -111,8 +113,25 @@ const CollectionCard: React.FC<{ card: CollectionCardData }> = ({ card }) => {
         </span>
       </div>
       <div className="pt-dash__card-body">
-        <span className="pt-dash__card-count">
-          {count === null ? '—' : <CountUp value={count} />}
+        <span className="pt-dash__card-count-row">
+          <span className="pt-dash__card-count">
+            {count === null ? '—' : <CountUp value={count} />}
+          </span>
+          {delta ? (
+            <span
+              className="pt-dash__card-delta"
+              data-trend={delta.trend}
+              title="New documents, last 30 days vs the 30 before"
+            >
+              {delta.trend === 'up' ? (
+                <DynamicIcon aria-hidden="true" name="trending-up" strokeWidth={2} />
+              ) : null}
+              {delta.trend === 'down' ? (
+                <DynamicIcon aria-hidden="true" name="trending-down" strokeWidth={2} />
+              ) : null}
+              {delta.label}
+            </span>
+          ) : null}
         </span>
         <span className="pt-dash__card-caption">
           {count === 1 ? 'document' : 'documents'}
@@ -164,6 +183,21 @@ function sparkWindowStart(): Date {
   start.setHours(0, 0, 0, 0)
   start.setDate(start.getDate() - (SPARK_DAYS - 1))
   return start
+}
+
+/** Turn current/previous 30-day creation counts into a trend chip, or null.
+ * No baseline (empty previous window) → no chip: a percentage would be
+ * meaningless and a "New" label reads as noise on fresh installs. */
+function computeDelta(
+  current: number,
+  previous: number,
+): CollectionCardData['delta'] {
+  if (previous === 0) return null
+  const pct = Math.round(((current - previous) / previous) * 100)
+  if (pct === 0) return { label: '±0%', trend: 'flat' }
+  return pct > 0
+    ? { label: `+${pct}%`, trend: 'up' }
+    : { label: `${pct}%`, trend: 'down' }
 }
 
 /** Bucket createdAt timestamps into one count per day, oldest day first. */
@@ -223,6 +257,39 @@ export async function Dashboard(props: DashboardViewServerProps) {
       // keep the em-dash placeholder — a failed count must never break the page
     }
 
+    // ---- 30-day trend chip (only for timestamped collections) ----------------
+    // Two cheap counts: docs created in the sparkline window vs the 30 days
+    // before it. `payload.count` is exact (the sparkline scan is capped).
+    let delta: CollectionCardData['delta'] = null
+    if (collection.timestamps !== false) {
+      try {
+        const prevSince = new Date(since)
+        prevSince.setDate(prevSince.getDate() - SPARK_DAYS)
+        const [currentWindow, previousWindow] = await Promise.all([
+          payload.count({
+            collection: slug,
+            overrideAccess: false,
+            user,
+            where: { createdAt: { greater_than_equal: since.toISOString() } },
+          }),
+          payload.count({
+            collection: slug,
+            overrideAccess: false,
+            user,
+            where: {
+              and: [
+                { createdAt: { greater_than_equal: prevSince.toISOString() } },
+                { createdAt: { less_than: since.toISOString() } },
+              ],
+            },
+          }),
+        ])
+        delta = computeDelta(currentWindow.totalDocs, previousWindow.totalDocs)
+      } catch {
+        // no chip is fine — the card still renders
+      }
+    }
+
     // ---- sparkline (only for timestamped collections) -----------------------
     let spark: null | number[] = null
     if (collection.timestamps !== false) {
@@ -252,6 +319,7 @@ export async function Dashboard(props: DashboardViewServerProps) {
       createHref: permissions?.collections?.[slug]?.create
         ? formatAdminURL({ adminRoute, path: `/collections/${slug}/create` })
         : null,
+      delta,
       href,
       iconName,
       label,

@@ -8,10 +8,19 @@
 import type { I18n } from '@payloadcms/translations'
 import type { Locale, Payload, PayloadComponent, TypedUser } from 'payload'
 
-import { normalizeHex } from './theme'
+import { normalizeHex, resolveFont } from './theme'
 
 /** Surface/neutral palette, independent of the accent. */
 export type ThemePreset = 'minimal' | 'noir' | 'soft'
+
+/**
+ * Panel typeface. `'inter'` and `'geist'` load from Google Fonts at runtime;
+ * `'helvetica'` and `'system'` are pure font stacks (no network). Any other
+ * string is used verbatim as a CSS font-family stack — self-host the face
+ * with your own `@font-face` and pass the family here.
+ * @default 'default' (Payload's own font)
+ */
+export type ThemeFont = 'default' | 'geist' | 'helvetica' | 'inter' | 'system' | (string & {})
 
 /**
  * Global corner-rounding scale. Applied to every surface: `md` is the default
@@ -89,6 +98,8 @@ export interface PayloadThemeOptions {
   preset?: ThemePreset
   /** Global corner rounding. @default 'md' */
   radius?: ThemeRadius
+  /** Panel typeface — a built-in key or a custom CSS font-family stack. @default 'default' */
+  font?: ThemeFont
   /**
    * Sidebar logo, rendered as `<img>` at the top of the nav. A URL
    * (`'/logo.svg'`) or `{ light, dark }` URLs to swap artwork per color
@@ -129,6 +140,10 @@ export interface ResolvedThemeConfig {
   accent: string
   preset: ThemePreset
   radius: ThemeRadius
+  /** The configured font option as given ('default' when omitted). */
+  font: string
+  /** Webfont stylesheet URL when the font needs loading (inter/geist), else null. */
+  fontURL: null | string
   /** Normalized widget list; empty when the option is omitted. */
   dashboard: { widgets: ResolvedDashboardWidget[] }
   /** Normalized to a pair: a plain-string option is used for both schemes. */
@@ -163,6 +178,7 @@ const DEFAULTS = {
   accent: '#4f4ece',
   preset: 'soft' as ThemePreset,
   radius: 'md' as ThemeRadius,
+  font: 'default',
   fallbackIconName: 'folder',
 }
 
@@ -253,6 +269,13 @@ export function resolveOptions(options: PayloadThemeOptions): {
     `Invalid radius: '${radius}'. Expected one of ${RADII.join(', ')}.`,
   )
 
+  const font = options.font ?? DEFAULTS.font
+  assert(
+    typeof font === 'string' && font.trim() !== '',
+    `font must be a non-empty string — a built-in key ('inter', 'geist', 'helvetica', 'system') or a CSS font-family stack.`,
+  )
+  const resolvedFont = resolveFont(font)
+
   const icons = options.nav?.icons ?? {}
   assert(
     icons && typeof icons === 'object' && !Array.isArray(icons),
@@ -305,6 +328,8 @@ export function resolveOptions(options: PayloadThemeOptions): {
       accent: normalizeHex(accent),
       preset,
       radius,
+      font,
+      fontURL: resolvedFont.url,
       dashboard: { widgets },
       logo,
       icon,

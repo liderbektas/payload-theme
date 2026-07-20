@@ -1,6 +1,8 @@
 export { BoolCell } from '../components/BoolCell'
 export { CommandPalette } from '../components/CommandPalette'
+export { DocOutline } from '../components/DocOutline'
 export { HeaderActions } from '../components/HeaderActions'
+export { ShortcutsModal } from '../components/ShortcutsModal'
 export { ListQuickActions } from '../components/ListQuickActions'
 export { MediaListToggle } from '../components/MediaListToggle'
 export { Nav } from '../components/Nav'

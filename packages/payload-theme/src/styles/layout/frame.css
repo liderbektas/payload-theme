@@ -10,10 +10,19 @@
  * card, with the breadcrumb restored as its content.
  * ==================================================================== */
 @layer payload {
-  /* 1) Remove the desktop nav collapse toggle (the "<" chevron, top-left).
-   *    Mobile keeps its own toggler (.app-header__mobile-nav-toggler). */
+  /* 1) Hide Payload's own desktop nav toggler: it renders OUTSIDE the
+   *    content card, so it can never line up with the header row. The
+   *    theme ships its own collapse chip INSIDE the app header instead
+   *    (HeaderActions → .pt-nav-collapse, pinned to the header's left).
+   *    Mobile keeps its drawer toggler (.app-header__mobile-nav-toggler). */
   .template-default__nav-toggler-wrapper {
     display: none;
+  }
+  /* the collapse/expand itself animates the grid track */
+  @media (min-width: 1441px) and (prefers-reduced-motion: no-preference) {
+    .template-default--nav-animate {
+      transition: grid-template-columns 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    }
   }
 
   /* 2) The content card. Inside it, --theme-bg is remapped to the card

@@ -103,11 +103,12 @@
     padding: 24px 26px;
     margin: 30px 40px 0 0; /* top-align with the main card; keep a right gutter */
   }
-  /* ≤1024px Payload stacks the sidebar under the main card — the desktop
-   * right gutter would make it narrower than the card above it */
+  /* ≤1024px Payload stacks the sidebar under the main card. Its column
+   * sits OUTSIDE the content gutters (full-bleed), so mirror the gutter as
+   * inline margins — the card lines up exactly with the main card above. */
   @media (max-width: 1024px) {
     .template-default__wrap > .collection-edit .document-fields__sidebar-fields {
-      margin: 16px 0 0;
+      margin: 16px var(--gutter-h, 16px) 0;
     }
   }
   html[data-theme='dark']

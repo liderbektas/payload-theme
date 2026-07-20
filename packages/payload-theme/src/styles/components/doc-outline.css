@@ -1,0 +1,132 @@
+/* ==================================================================== *
+ * DOC OUTLINE — sticky "On this page" rail for long edit forms
+ *
+ * Rendered by the DocOutline component into a body portal. At rest it is a
+ * compact column of tick bars hugging the viewport's right edge (fits even
+ * when the edit view has a sidebar card); hovering or focusing it expands
+ * the labeled panel over the ticks. Hidden below 1500px — no spare room.
+ * ==================================================================== */
+@layer payload {
+  .pt-toc {
+    position: fixed;
+    top: 50%;
+    inset-inline-end: 10px;
+    z-index: 60;
+    display: none;
+    transform: translateY(-50%);
+  }
+  @media (min-width: 1500px) {
+    .pt-toc {
+      display: block;
+    }
+  }
+
+  /* ---- resting state: tick bars ---- */
+  .pt-toc__rail {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 7px;
+    padding: 10px 6px;
+    transition: opacity 0.15s ease;
+  }
+  .pt-toc__tick {
+    width: 14px;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--theme-elevation-200);
+    transition: background-color 0.15s ease;
+  }
+  .pt-toc__tick--active {
+    width: 20px;
+    background: var(--pt-accent);
+  }
+
+  /* ---- expanded state: labeled panel over the ticks ---- */
+  .pt-toc__panel {
+    position: absolute;
+    top: 50%;
+    inset-inline-end: 0;
+    transform: translateY(-50%);
+    width: 208px;
+    max-height: min(70vh, 480px);
+    overflow-y: auto;
+    padding: 10px;
+    background: var(--theme-elevation-0);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-card);
+    box-shadow: var(--pt-shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.15s ease,
+      visibility 0.15s ease;
+  }
+  html[data-theme='dark'] .pt-toc__panel {
+    background: var(--theme-elevation-50);
+  }
+  .pt-toc:hover .pt-toc__rail,
+  .pt-toc:focus-within .pt-toc__rail {
+    opacity: 0;
+  }
+  .pt-toc:hover .pt-toc__panel,
+  .pt-toc:focus-within .pt-toc__panel {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .pt-toc__panel-title {
+    padding: 2px 8px 6px;
+    color: var(--theme-elevation-500);
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .pt-toc__item {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 6px 8px 6px 16px;
+    background: transparent;
+    border: 0;
+    border-radius: var(--pt-radius-item);
+    color: var(--theme-elevation-600);
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 450;
+    text-align: start;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color 0.1s ease,
+      color 0.1s ease;
+  }
+  /* the left indicator bar every row carries; accent when active */
+  .pt-toc__item::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 6px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    border-radius: 999px;
+    background: var(--theme-elevation-150);
+    transition: background-color 0.1s ease;
+  }
+  .pt-toc__item:hover {
+    background: color-mix(in srgb, var(--theme-elevation-500) 8%, transparent);
+    color: var(--theme-text);
+  }
+  .pt-toc__item--active {
+    color: var(--theme-text);
+    font-weight: 550;
+  }
+  .pt-toc__item--active::before {
+    background: var(--pt-accent);
+  }
+  .pt-toc__item:focus-visible {
+    outline: 2px solid var(--pt-accent);
+    outline-offset: -2px;
+  }
+}

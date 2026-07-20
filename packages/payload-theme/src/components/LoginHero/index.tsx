@@ -39,6 +39,9 @@ export const LoginHero: React.FC<ServerProps> = ({ payload }) => {
       {theme?.css ? (
         <style data-payload-theme="accent-login" dangerouslySetInnerHTML={{ __html: theme.css }} />
       ) : null}
+      {theme?.fontURL ? (
+        <link data-payload-theme="font-login" href={theme.fontURL} rel="stylesheet" />
+      ) : null}
       <div aria-hidden="true" className="pt-login-hero">
         <div className="pt-login-hero__glow" />
         <div className="pt-login-hero__grid" />

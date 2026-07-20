@@ -86,6 +86,30 @@
     color: var(--theme-text);
     text-decoration: none;
   }
+
+  /* Mobile: Payload pins the selection bar to the viewport bottom as a
+   * `position: fixed; width: 100%` strip WITHOUT a `left`, so it inherits
+   * the content gutter's offset — overflowing the right edge — and its
+   * opaque background sits over the pagination row. Put it back IN FLOW
+   * under the page controls: container-wide, chips wrapping onto rows. */
+  @media (max-width: 768px) {
+    .collection-list__list-selection {
+      position: static;
+      width: 100%;
+      padding: 10px 0 0;
+      background: transparent;
+    }
+    .collection-list__list-selection .list-selection {
+      flex-wrap: wrap;
+      row-gap: 8px;
+      margin-left: 0;
+      margin-bottom: 0;
+    }
+    .list-selection__actions {
+      flex-wrap: wrap;
+      row-gap: 8px;
+    }
+  }
 }
 
 /* ==================================================================== *

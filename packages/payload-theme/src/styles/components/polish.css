@@ -21,6 +21,19 @@
     border-radius: 999px;
     justify-content: center;
   }
+
+  /* ---- press feedback: solid actions dip 1px under the pointer — the
+   * tactile half of the "expensive product" feel. Reduced-motion safe. ---- */
+  @media (prefers-reduced-motion: no-preference) {
+    .btn--style-primary:active,
+    .btn--style-pill:active,
+    .pt-custom__reset:active,
+    .pt-custom__copy:active,
+    .pt-header-btn:not(.pt-nav-collapse):active,
+    .pt-dash__card-create:active {
+      transform: translateY(1px);
+    }
+  }
 }
 
 /* UNLAYERED on purpose: sonner (toasts) ships unlayered CSS, which beats

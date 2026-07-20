@@ -4,7 +4,6 @@ import type { StaticLabel } from 'payload'
 
 import { getTranslation } from '@payloadcms/translations'
 import {
-  Hamburger,
   Link,
   useAuth,
   useConfig,
@@ -21,6 +20,8 @@ import React from 'react'
 import type { ResolvedThemeConfig } from '../../options'
 
 import { CommandPalette } from '../CommandPalette'
+import { DocOutline } from '../DocOutline'
+import { ShortcutsModal } from '../ShortcutsModal'
 import { UserMenu } from '../UserMenu'
 import { resolveIconName } from '../navIcons'
 
@@ -128,8 +129,17 @@ export const Nav: React.FC = () => {
     const onPaletteOpen = () => {
       if (window.matchMedia('(max-width: 1440px)').matches) setNavOpen(false)
     }
+    // Esc also closes the mobile drawer (it has no X — backdrop tap or Esc).
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && window.matchMedia('(max-width: 1440px)').matches)
+        setNavOpen(false)
+    }
     window.addEventListener('pt:palette-open', onPaletteOpen)
-    return () => window.removeEventListener('pt:palette-open', onPaletteOpen)
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      window.removeEventListener('pt:palette-open', onPaletteOpen)
+      window.removeEventListener('keydown', onKeyDown)
+    }
   }, [setNavOpen])
 
   const theme = config.admin?.custom?.payloadTheme as ResolvedThemeConfig | undefined
@@ -230,6 +240,14 @@ export const Nav: React.FC = () => {
 
   return (
     <aside className={asideClasses} inert={!navOpen}>
+      {/* Mobile-only scrim behind the drawer: blurred, tap to close. The
+       * drawer has no X — this IS the close affordance (plus navigation).
+       * Desktop hides it entirely via the stylesheet. */}
+      <div
+        aria-hidden="true"
+        className="pt-nav__backdrop"
+        onClick={() => setNavOpen(false)}
+      />
       <div className="nav__scroll" ref={navRef}>
         <Link aria-label="Dashboard" className="pt-nav__logo" href={adminRoute} prefetch={false}>
           {logoIsImage ? (
@@ -271,18 +289,8 @@ export const Nav: React.FC = () => {
        * entity-visibility/permissions contexts, which only exist below
        * Payload's own providers — and the Nav renders on every authed page. */}
       <CommandPalette />
-      <div className="nav__header">
-        <div className="nav__header-content">
-          <button
-            className="nav__mobile-close"
-            onClick={() => setNavOpen(false)}
-            tabIndex={!navOpen ? -1 : undefined}
-            type="button"
-          >
-            <Hamburger isActive />
-          </button>
-        </div>
-      </div>
+      <ShortcutsModal />
+      <DocOutline />
     </aside>
   )
 }

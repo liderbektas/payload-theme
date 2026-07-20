@@ -1,15 +1,18 @@
 /* ==================================================================== *
- * RESPONSIVE — mobile fixes + hamburger redesign
+ * RESPONSIVE — mobile drawer + toggler redesign
  *
- * 1) Hamburger becomes a chip with a custom two-bar mark (the boxed
- *    default reads dated); the nav's mobile close X becomes a matching
- *    chip pinned to the RIGHT edge.
- * 2) Small screens: Payload pulls the table full-bleed and moves the
- *    Columns/Filters pills inside the search bar — we undo the bleed
- *    (cards keep breathing room) and restack the search bar cleanly.
+ * 1) Toggler (app header, ≤1440px): a chip with lucide's panel-left-open
+ *    mark — the same affordance the reference kit uses.
+ * 2) Mobile nav = a real DRAWER: a ~300px panel sliding in from the left
+ *    over a blurred scrim. No X button — tapping the scrim (or Esc, or
+ *    navigating) closes it. Payload's stock mobile nav is a full-width
+ *    opacity fade; everything below re-shapes it inside ≤1440px only, so
+ *    the always-on desktop sidebar is untouched.
+ * 3) Small screens: undo Payload's full-bleed table and restack the
+ *    search bar's Columns/Filters pills.
  * ==================================================================== */
 @layer payload {
-  /* ---- hamburger (app header, mobile): chip + two-bar mark ---- */
+  /* ---- toggler (app header, mobile): chip + panel-left-open mark ---- */
   .app-header__mobile-nav-toggler {
     width: 40px;
     height: 40px;
@@ -32,56 +35,132 @@
   .app-header__mobile-nav-toggler .hamburger {
     position: relative;
     width: 20px;
-    height: 14px;
+    height: 20px;
     background: transparent; /* Payload paints the .hamburger box itself */
     border-radius: 0;
     box-shadow: none; /* the stock 1px ring is a box-shadow, not a border */
   }
-  .pt-nav .nav__mobile-close .hamburger {
-    background: transparent; /* same stock box behind the close X */
-    border-radius: 0;
-    box-shadow: none;
-    width: auto;
-    height: auto;
-  }
   .app-header__mobile-nav-toggler .hamburger > * {
-    display: none; /* replace the stock menu icon with our own bars */
-  }
-  .app-header__mobile-nav-toggler .hamburger::before,
-  .app-header__mobile-nav-toggler .hamburger::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    height: 2px;
-    border-radius: 2px;
-    background: var(--theme-elevation-800);
+    display: none; /* replace the stock menu icon with our own mark */
   }
   .app-header__mobile-nav-toggler .hamburger::before {
-    top: 2px;
-    width: 20px;
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--theme-elevation-800);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2'/%3E%3Cpath d='M9 3v18'/%3E%3Cpath d='m14 9 3 3-3 3'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2'/%3E%3Cpath d='M9 3v18'/%3E%3Cpath d='m14 9 3 3-3 3'/%3E%3C/svg%3E") center / contain no-repeat;
   }
-  .app-header__mobile-nav-toggler .hamburger::after {
-    bottom: 2px;
-    width: 13px;
+  /* Payload dims the toggler while the nav is open; the scrim already
+   * communicates state, so keep the chip steady. */
+  .app-header__mobile-nav-toggler.nav-toggler--is-open {
+    opacity: 1;
   }
 
-  /* ---- nav mobile close: chip, pinned right ---- */
-  .pt-nav .nav__header-content {
-    display: flex;
-    justify-content: flex-end;
+  /* ---- backdrop lives only in drawer mode ---- */
+  .pt-nav__backdrop {
+    display: none;
   }
-  .pt-nav .nav__mobile-close {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--pt-radius-ctl);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.12s ease;
-  }
-  .pt-nav .nav__mobile-close:hover,
-  .pt-nav .nav__mobile-close:focus-visible {
-    background: color-mix(in srgb, var(--theme-elevation-500) 10%, transparent);
+
+  /* ---- the drawer (≤1440px) ---- */
+  @media (max-width: 1440px) {
+    /* The drawer is an OVERLAY — the template grid must never reserve a
+     * nav column for it. Payload's stock rule pushes the content aside by
+     * var(--nav-width) (100vw on phones!) while the nav is open, which
+     * crushed every page to zero width. Pin the nav column to 0 in every
+     * hydrated state and drop the grid-column transition with it. */
+    .template-default--nav-hydrated,
+    .template-default--nav-hydrated.template-default--nav-open {
+      grid-template-columns: 0 minmax(0, 1fr);
+    }
+    /* The fixed-position nav leaves the grid flow, which would promote the
+     * content wrap into the (zero-width) nav track — pin it to track 2. */
+    .template-default--nav-hydrated .template-default__wrap {
+      grid-column: 2;
+    }
+    .template-default--nav-animate {
+      transition: none;
+    }
+    /* keep the content card's left gutter while the drawer is open —
+     * frame.css only adds it for the not-nav-open state, and only ≥769px
+     * (phones keep the full-bleed card) */
+    @media (min-width: 769px) {
+      .template-default--nav-open .template-default__wrap {
+        margin-inline-start: 8px;
+      }
+    }
+
+    /* The aside becomes a full-viewport overlay CONTAINER: transparent and
+     * click-through at rest; the scrim and panel inside carry the visuals.
+     * Payload's stock opacity fade is neutralized (opacity stays 1) — the
+     * panel transform + scrim fade below are the whole animation. */
+    .pt-nav {
+      position: fixed;
+      inset: 0;
+      z-index: 120; /* above the sticky app header, below palette/modals */
+      width: 100%;
+      height: 100dvh;
+      border-right: 0;
+      background: transparent;
+      opacity: 1;
+      overflow: visible;
+      pointer-events: none;
+    }
+    [dir='rtl'] .pt-nav {
+      border-left: 0;
+    }
+    .pt-nav.nav--nav-animate {
+      transition: none; /* Payload's opacity transition — not wanted */
+    }
+
+    /* scrim: blurred + dimmed, fades with the panel, tap to close */
+    .pt-nav .pt-nav__backdrop {
+      display: block;
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: rgb(5 6 10 / 0.4);
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .pt-nav.nav--nav-open .pt-nav__backdrop {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* panel: a ~300px sheet sliding in from the inline-start edge */
+    .pt-nav .nav__scroll {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      inset-inline-start: 0;
+      z-index: 1;
+      width: min(304px, 86vw);
+      --nav-padding-block-start: 20px; /* no X header row to clear anymore */
+      background: var(--theme-bg);
+      border-inline-end: 1px solid var(--theme-border-color);
+      box-shadow: var(--pt-shadow-lg);
+      pointer-events: auto;
+      transform: translateX(-100%);
+    }
+    [dir='rtl'] .pt-nav .nav__scroll {
+      transform: translateX(100%);
+    }
+    .pt-nav.nav--nav-open .nav__scroll {
+      transform: translateX(0);
+    }
+
+    /* one smooth curve for both layers, honoring reduced motion */
+    @media (prefers-reduced-motion: no-preference) {
+      .pt-nav .nav__scroll {
+        transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+      }
+      .pt-nav .pt-nav__backdrop {
+        transition: opacity 0.28s ease;
+      }
+    }
   }
 }
 

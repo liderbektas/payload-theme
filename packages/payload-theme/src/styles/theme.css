@@ -46,6 +46,7 @@
 @import './components/login-hero.css';
 @import './components/nav-search.css';
 @import './components/command-palette.css';
+@import './components/doc-outline.css';
 @import './components/list-empty.css';
 @import './base/motion.css';
 @import './components/structured-fields.css';

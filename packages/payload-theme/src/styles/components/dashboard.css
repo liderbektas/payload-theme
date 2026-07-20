@@ -105,6 +105,12 @@
     gap: 6px;
     min-width: 0;
   }
+  .pt-dash__card-count-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    min-width: 0;
+  }
   .pt-dash__card-count {
     font-size: 2.1rem;
     font-weight: 700;
@@ -112,6 +118,43 @@
     letter-spacing: -0.03em;
     font-variant-numeric: tabular-nums;
     color: var(--theme-text);
+  }
+
+  /* 30-day trend chip next to the count — quiet rounded pill, softly tinted
+   * by direction (success up / error down / neutral flat). Always-round like
+   * every status badge in the theme. */
+  .pt-dash__card-delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 550;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.01em;
+    background: var(--theme-elevation-100);
+    color: var(--theme-elevation-600);
+    transform: translateY(-3px); /* optically centers against the big count */
+
+    svg {
+      width: 12px;
+      height: 12px;
+    }
+  }
+  .pt-dash__card-delta[data-trend='up'] {
+    background: color-mix(in srgb, var(--theme-success-500) 12%, transparent);
+    color: var(--theme-success-600);
+  }
+  .pt-dash__card-delta[data-trend='down'] {
+    background: color-mix(in srgb, var(--theme-error-500) 10%, transparent);
+    color: var(--theme-error-600);
+  }
+  html[data-theme='dark'] .pt-dash__card-delta[data-trend='up'] {
+    color: var(--theme-success-400);
+  }
+  html[data-theme='dark'] .pt-dash__card-delta[data-trend='down'] {
+    color: var(--theme-error-400);
   }
   .pt-dash__card-caption {
     font-size: 0.8rem;

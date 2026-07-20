@@ -100,3 +100,4 @@ export {
 export { generateScale, generateScaleOklch, SCALE_STEPS, type Scale, type ScaleStep } from './scale'
 export { isValidHex, normalizeHex } from './validate'
 export { themeToCss, type ThemeCssOptions } from './css'
+export { FONT_KEYS, FONT_PRESETS, resolveFont, type ThemeFontKey } from './fonts'

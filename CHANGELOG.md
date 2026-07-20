@@ -4,6 +4,54 @@ All notable changes to `payload-theme` are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.8.0] — 2026-07-21
+
+### Added
+
+- **Theme presets:** the header customizer opens with six one-click full
+  themes — Zinc, Ocean, Forest, Sunset, Berry, Swiss — each a coherent
+  accent + radius + typeface identity applied live.
+- **Copy config:** a customizer button that turns whatever is on screen
+  (accent, radius, font) into a ready-to-paste `payloadTheme({ ... })`
+  snippet — the customizer is now a config generator, not just a toy.
+- **`font` option + customizer Font row:** swap the panel typeface to
+  `'inter'`, `'geist'` (Google Fonts, loaded at runtime), `'helvetica'`,
+  `'system'` (pure stacks, no network) or any custom CSS font-family stack.
+  Each customizer font button previews itself in its own face.
+- **⌘K Recent group:** the last five documents you opened sit at the top of
+  the palette — tracked from the URL per browser, titles resolved through
+  the REST API on open (deleted/forbidden docs silently drop out).
+- **⌘K Create group:** "New \<Type\>" commands for every collection you may
+  create in — jump straight to a blank document from anywhere.
+- **Document outline:** long edit forms get a sticky "On this page" rail
+  pinned to the viewport's right edge (≥1500px) — tick bars at rest, a
+  labeled panel on hover. Entries are the form's top-level sections (groups,
+  collapsibles, blocks, arrays) and each tab of a tabs field; clicking
+  scrolls (or switches tab), the active section follows the scroll.
+- **Keyboard shortcuts modal:** press `?` anywhere for a cheatsheet card;
+  also reachable from the palette ("Keyboard shortcuts").
+- **Dashboard trend chips:** every stat card compares the last 30 days of
+  created docs against the 30 before and shows a quiet pill — `+12%`, `-8%`
+  or `±0%` — next to the count (no baseline → no chip).
+- Press feedback: solid buttons dip 1px while pressed (reduced-motion safe).
+
+### Changed
+
+- **Mobile nav is a real drawer** (≤1440px): a ~300px panel sliding in over
+  a blurred, dimmed scrim — no more full-width takeover. The X button is
+  gone; tapping the scrim, pressing Esc, or navigating closes it. The
+  header toggler now wears lucide's panel-left-open mark. Fixes the layout
+  crush where opening the stock nav squeezed every page to zero width.
+- **Desktop sidebar collapse** (>1440px): a panel toggle chip at the app
+  header's left edge collapses/expands the sidebar with an animated grid
+  transition — same panel-left mark as the mobile toggler, perfectly
+  aligned with the header's right-side chips in every scroll state.
+- **Mobile list & edit fixes** (≤768px): the bulk-selection bar leaves its
+  broken fixed-bottom position (it overflowed the right edge and covered
+  the pagination row) and flows under the page controls with wrapping
+  chips; stacked edit-view sidebar cards now align exactly with the main
+  fields card instead of running full-bleed.
+
 ## [0.7.0] — 2026-07-19
 
 ### Added

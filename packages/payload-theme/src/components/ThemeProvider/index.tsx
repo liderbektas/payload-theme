@@ -21,6 +21,9 @@ export const ThemeProvider: React.FC<{ children?: React.ReactNode }> = ({ childr
       {theme?.css ? (
         <style data-payload-theme="accent" dangerouslySetInnerHTML={{ __html: theme.css }} />
       ) : null}
+      {theme?.fontURL ? (
+        <link data-payload-theme="font" href={theme.fontURL} rel="stylesheet" />
+      ) : null}
       {children}
     </React.Fragment>
   )

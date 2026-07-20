@@ -15,14 +15,17 @@ import type { ResolvedThemeConfig } from '../../options'
 import { resolveIconName } from '../navIcons'
 
 /**
- * ⌘K / Ctrl+K command palette. Mounted once by the ThemeProvider (admin pages
+ * ⌘K / Ctrl+K command palette. Mounted once by the Nav (admin pages
  * only — it renders nothing until a user is logged in). Zero dependencies:
  * the list, keyboard loop and portal are hand-rolled so the package stays
  * lean.
  *
  * Sources:
+ * - recents: the last documents the user opened (tracked from the URL,
+ *   persisted per-browser; titles resolve through the REST API on open, so
+ *   deleted/forbidden docs silently drop out)
  * - static: navigate to any collection/global, "create new" for collections
- *   the user may create in, toggle color scheme, log out
+ *   the user may create in, toggle color scheme, keyboard shortcuts, log out
  * - async: document search across collections with a text `useAsTitle`,
  *   via Payload's REST API (cookies carry auth; access control applies)
  */
@@ -34,6 +37,45 @@ type PaletteItem = {
   id: string
   label: string
   perform: () => void
+}
+
+type RecentEntry = {
+  id: string
+  slug: string
+  title?: string
+  ts: number
+}
+
+const RECENTS_KEY = 'payload-theme-recents'
+const MAX_RECENTS = 8
+const SHOWN_RECENTS = 5
+
+function readRecents(): RecentEntry[] {
+  try {
+    const raw = window.localStorage.getItem(RECENTS_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw) as RecentEntry[]
+    if (!Array.isArray(parsed)) return []
+    return parsed
+      .filter(
+        (entry): entry is RecentEntry =>
+          !!entry &&
+          typeof entry === 'object' &&
+          typeof entry.slug === 'string' &&
+          typeof entry.id === 'string',
+      )
+      .slice(0, MAX_RECENTS)
+  } catch {
+    return []
+  }
+}
+
+function persistRecents(entries: RecentEntry[]): void {
+  try {
+    window.localStorage.setItem(RECENTS_KEY, JSON.stringify(entries.slice(0, MAX_RECENTS)))
+  } catch {
+    // storage unavailable — recents just don't persist
+  }
 }
 
 type SearchableCollection = {
@@ -67,6 +109,7 @@ export const CommandPalette: React.FC = () => {
   const [docResults, setDocResults] = React.useState<PaletteItem[]>([])
   const [searching, setSearching] = React.useState(false)
   const [isMac, setIsMac] = React.useState(true)
+  const [recents, setRecents] = React.useState<RecentEntry[]>([])
 
   const inputRef = React.useRef<HTMLInputElement>(null)
   const listRef = React.useRef<HTMLDivElement>(null)
@@ -78,7 +121,28 @@ export const CommandPalette: React.FC = () => {
 
   React.useEffect(() => {
     setIsMac(!/win|linux/i.test(typeof navigator === 'undefined' ? '' : navigator.platform))
+    setRecents(readRecents())
   }, [])
+
+  // Track visited document edit views → the palette's "Recent" group.
+  // Parsed straight off the URL so it costs nothing; titles resolve lazily
+  // when the palette opens.
+  React.useEffect(() => {
+    if (!user) return
+    const prefix = `${adminRoute === '/' ? '' : adminRoute}/collections/`
+    if (!pathname.startsWith(prefix)) return
+    const [slug, id] = pathname.slice(prefix.length).split('/')
+    if (!slug || !id || ['create', 'trash', 'versions'].includes(id)) return
+    setRecents((current) => {
+      const existing = current.find((entry) => entry.slug === slug && entry.id === id)
+      const next: RecentEntry[] = [
+        { id, slug, title: existing?.title, ts: Date.now() },
+        ...current.filter((entry) => !(entry.slug === slug && entry.id === id)),
+      ].slice(0, MAX_RECENTS)
+      persistRecents(next)
+      return next
+    })
+  }, [pathname, user, adminRoute])
 
   const close = React.useCallback(() => {
     setOpen(false)
@@ -98,6 +162,7 @@ export const CommandPalette: React.FC = () => {
   // ---- static items (rebuilt per render — config and permissions are stable) --
   const { searchableCollections, staticItems } = React.useMemo(() => {
     const items: PaletteItem[] = []
+    const createItems: PaletteItem[] = []
     const searchable: SearchableCollection[] = []
 
     // Unauthenticated views (login, forgot-password) render the provider tree
@@ -132,6 +197,17 @@ export const CommandPalette: React.FC = () => {
         perform: () => go(href),
       })
 
+      if (permissions?.collections?.[slug]?.create) {
+        createItems.push({
+          group: 'Create',
+          hint: 'New',
+          iconName,
+          id: `create-${slug}`,
+          label: `New ${getTranslation(collection.labels?.singular as StaticLabel, i18n)}`,
+          perform: () => go(formatAdminURL({ adminRoute, path: `/collections/${slug}/create` })),
+        })
+      }
+
       const titleField = collection.admin?.useAsTitle
       if (typeof titleField === 'string' && titleField !== 'id') {
         searchable.push({
@@ -158,6 +234,8 @@ export const CommandPalette: React.FC = () => {
       })
     }
 
+    items.push(...createItems)
+
     items.push({
       group: 'Actions',
       hint: 'Appearance',
@@ -167,6 +245,17 @@ export const CommandPalette: React.FC = () => {
       perform: () => {
         setTheme(colorScheme === 'dark' ? 'light' : 'dark')
         close()
+      },
+    })
+    items.push({
+      group: 'Actions',
+      hint: 'Help',
+      iconName: 'keyboard',
+      id: 'action-shortcuts',
+      label: 'Keyboard shortcuts',
+      perform: () => {
+        close()
+        window.dispatchEvent(new CustomEvent('pt:open-shortcuts'))
       },
     })
     items.push({
@@ -293,14 +382,111 @@ export const CommandPalette: React.FC = () => {
     }
   }, [open, query, searchableCollections, adminRoute, go])
 
+  // ---- recents: resolve missing titles when the palette opens -----------------
+  // One GET per unresolved entry through the REST API — access control applies,
+  // so deleted or forbidden documents drop out of the list instead of 404ing.
+  React.useEffect(() => {
+    if (!open || !user) return
+    const missing = recents.filter((entry) => !entry.title)
+    if (missing.length === 0) return
+
+    const bySlug = new Map(searchableCollections.map((target) => [target.slug, target]))
+    const controller = new AbortController()
+
+    void (async () => {
+      const results = await Promise.all(
+        missing.map(async (entry) => {
+          const target = bySlug.get(entry.slug)
+          // No text title field → label by id, nothing to fetch.
+          if (!target) return { entry, ok: true, title: `#${entry.id}` }
+          try {
+            const response = await fetch(`${target.apiPath}/${entry.id}?depth=0`, {
+              credentials: 'include',
+              signal: controller.signal,
+            })
+            if (!response.ok) return { entry, ok: false, title: '' }
+            const doc = (await response.json()) as Record<string, unknown>
+            const raw = doc[target.titleField]
+            const title = typeof raw === 'string' && raw.trim() ? raw : `#${entry.id}`
+            return { entry, ok: true, title }
+          } catch {
+            return null // aborted/offline — leave the entry untouched
+          }
+        }),
+      )
+      if (controller.signal.aborted) return
+      setRecents((current) => {
+        let changed = false
+        let next = current
+        for (const result of results) {
+          if (!result) continue
+          changed = true
+          next = result.ok
+            ? next.map((entry) =>
+                entry.slug === result.entry.slug && entry.id === result.entry.id
+                  ? { ...entry, title: result.title }
+                  : entry,
+              )
+            : next.filter(
+                (entry) => !(entry.slug === result.entry.slug && entry.id === result.entry.id),
+              )
+        }
+        if (!changed) return current
+        persistRecents(next)
+        return next
+      })
+    })()
+
+    return () => controller.abort()
+  }, [open, user, recents, searchableCollections])
+
+  // slug → label/icon for every collection (recents may span non-searchable ones)
+  const collectionMeta = React.useMemo(() => {
+    const map = new Map<string, { iconName: string; label: string }>()
+    for (const collection of config.collections ?? []) {
+      map.set(collection.slug, {
+        iconName: resolveIconName(themeConfig, collection.slug),
+        label: getTranslation(collection.labels?.plural as StaticLabel, i18n),
+      })
+    }
+    return map
+  }, [config, themeConfig, i18n])
+
+  const recentItems = React.useMemo(() => {
+    if (!user) return []
+    return recents
+      .filter((entry) => permissions?.collections?.[entry.slug]?.read)
+      .slice(0, SHOWN_RECENTS)
+      .map((entry): PaletteItem => {
+        const meta = collectionMeta.get(entry.slug)
+        return {
+          group: 'Recent',
+          hint: meta?.label ?? entry.slug,
+          iconName: meta?.iconName ?? 'file',
+          id: `recent-${entry.slug}-${entry.id}`,
+          label: entry.title ?? `#${entry.id}`,
+          perform: () =>
+            go(formatAdminURL({ adminRoute, path: `/collections/${entry.slug}/${entry.id}` })),
+        }
+      })
+  }, [recents, collectionMeta, user, permissions, adminRoute, go])
+
   // ---- filtering + grouping -----------------------------------------------------
   const trimmedQuery = query.trim()
   const visibleItems = React.useMemo(() => {
+    const filteredRecents = trimmedQuery
+      ? recentItems.filter((item) => matches(trimmedQuery, item.label))
+      : recentItems
+    // A searched doc that's already in Recent shows once (as the recent row).
+    const recentKeys = new Set(filteredRecents.map((item) => item.id.slice('recent-'.length)))
+    const dedupedDocs = docResults.filter(
+      (item) => !recentKeys.has(item.id.slice('doc-'.length)),
+    )
     const filteredStatic = trimmedQuery
       ? staticItems.filter((item) => matches(trimmedQuery, item.label))
       : staticItems
-    return [...docResults, ...filteredStatic]
-  }, [staticItems, docResults, trimmedQuery])
+    return [...filteredRecents, ...dedupedDocs, ...filteredStatic]
+  }, [staticItems, docResults, recentItems, trimmedQuery])
 
   React.useEffect(() => {
     setActiveIndex(0)

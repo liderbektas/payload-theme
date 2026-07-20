@@ -20,7 +20,7 @@
 import type { CollectionConfig, Config, Field } from 'payload'
 
 import { resolveOptions, type PayloadThemeOptions } from './options'
-import { buildTheme, themeToCss } from './theme'
+import { buildTheme, resolveFont, themeToCss } from './theme'
 
 const BOOL_CELL = 'payload-theme/client#BoolCell'
 const MEDIA_TOGGLE = 'payload-theme/client#MediaListToggle'
@@ -88,6 +88,14 @@ export const payloadTheme =
     // renders them into a <style> so a single hex recolors every rule.
     resolved.css = themeToCss(buildTheme(accent), { cssVariables })
 
+    // Font override rides along in the same injected <style>. Payload declares
+    // `--font-body` outside any cascade layer, so this override must be
+    // unlayered too — a layered declaration would always lose.
+    const fontStack = resolveFont(resolved.font).stack
+    if (fontStack) {
+      resolved.css += `\n:root { --font-body: ${fontStack}; }`
+    }
+
     const config: Config = { ...incoming }
     config.admin = config.admin ?? {}
     config.admin.custom = { ...config.admin.custom, payloadTheme: resolved }
@@ -150,6 +158,7 @@ export type {
   DashboardWidgetWidth,
   NavOptions,
   PayloadThemeOptions,
+  ThemeFont,
   ThemePreset,
   ThemeRadius,
 } from './options'

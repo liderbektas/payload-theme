@@ -44,6 +44,36 @@
     outline: none;
   }
 
+  /* ---- desktop sidebar collapse chip ----
+   * Rendered inside .pt-header-actions (right side) but pinned to the
+   * header row's LEFT edge — same row as the other chips, so it stays
+   * vertically aligned with them in every scroll state. The open chip
+   * shows aria-expanded styling like any popover trigger; suppress it. */
+  .pt-nav-collapse {
+    position: absolute;
+    inset-inline-start: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  /* Payload's actions wrapper is position:relative and would trap the
+   * absolutely-positioned chip on the right — release it so the chip
+   * anchors to the full-width .app-header__content row instead. */
+  .app-header__actions-wrapper {
+    position: static;
+  }
+  .pt-nav-collapse[aria-expanded='true']:not(:hover):not(:focus-visible) {
+    background: transparent;
+    color: var(--theme-elevation-600);
+  }
+  .pt-nav-collapse:active {
+    transform: translateY(calc(-50% + 1px));
+  }
+  @media (max-width: 1440px) {
+    .pt-nav-collapse {
+      display: none; /* the mobile drawer brings its own toggler */
+    }
+  }
+
   /* ---- customizer popover ---- */
   .pt-custom {
     position: relative;
@@ -54,6 +84,8 @@
     inset-inline-end: 0;
     z-index: 80;
     width: min(308px, calc(100vw - 32px));
+    max-height: calc(100vh - var(--app-header-height, 64px) - 32px);
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 14px;
@@ -82,6 +114,100 @@
     font-size: 12px;
     font-weight: 500;
     color: var(--theme-elevation-500);
+  }
+
+  /* preset tiles: one-click full themes (accent + radius + font) — a
+   * 3-per-row grid of quiet chips, each led by its accent dot; the active
+   * preset gets an accent ring like the swatches */
+  .pt-custom__presets {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .pt-custom__preset {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 7px 6px;
+    background: var(--theme-elevation-50);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-item);
+    color: var(--theme-elevation-600);
+    font-size: 11.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background-color 0.12s ease,
+      border-color 0.12s ease,
+      color 0.12s ease;
+  }
+  html[data-theme='dark'] .pt-custom__preset {
+    background: var(--theme-elevation-100);
+  }
+  .pt-custom__preset:hover {
+    background: var(--theme-elevation-100);
+    color: var(--theme-text);
+  }
+  html[data-theme='dark'] .pt-custom__preset:hover {
+    background: var(--theme-elevation-150);
+  }
+  .pt-custom__preset--active,
+  .pt-custom__preset--active:hover {
+    border-color: var(--pt-accent);
+    background: color-mix(in srgb, var(--pt-accent) 8%, transparent);
+    color: var(--theme-text);
+  }
+  .pt-custom__preset-dot {
+    flex-shrink: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.12);
+  }
+  html[data-theme='dark'] .pt-custom__preset-dot {
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18);
+  }
+
+  /* font tiles: each label renders in its own typeface — the button IS the
+   * preview */
+  .pt-custom__fonts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .pt-custom__font {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 6px;
+    background: var(--theme-elevation-50);
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-item);
+    color: var(--theme-elevation-600);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background-color 0.12s ease,
+      border-color 0.12s ease,
+      color 0.12s ease;
+  }
+  html[data-theme='dark'] .pt-custom__font {
+    background: var(--theme-elevation-100);
+  }
+  .pt-custom__font:hover {
+    background: var(--theme-elevation-100);
+    color: var(--theme-text);
+  }
+  html[data-theme='dark'] .pt-custom__font:hover {
+    background: var(--theme-elevation-150);
+  }
+  .pt-custom__font--active,
+  .pt-custom__font--active:hover {
+    border-color: var(--pt-accent);
+    background: color-mix(in srgb, var(--pt-accent) 8%, transparent);
+    color: var(--theme-text);
   }
 
   /* accent swatches: a tidy 5-per-row grid of rounded color tiles; the
@@ -241,13 +367,54 @@
     background: var(--theme-elevation-200);
   }
 
-  /* reset: the one solid (auto-inverting) action in the panel */
-  .pt-custom__reset {
+  /* footer: Copy config (outline) + Reset (solid) side by side */
+  .pt-custom__footer {
+    display: flex;
+    gap: 8px;
+  }
+
+  /* copy: outline twin of the reset button; flips to a check when copied */
+  .pt-custom__copy {
+    flex: 1 1 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--theme-border-color);
+    border-radius: var(--pt-radius-ctl);
+    background: transparent;
+    color: var(--theme-text);
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background-color 0.12s ease,
+      border-color 0.12s ease,
+      color 0.12s ease;
+
+    svg {
+      width: 13px;
+      height: 13px;
+    }
+  }
+  .pt-custom__copy:hover {
+    background: color-mix(in srgb, var(--theme-elevation-500) 8%, transparent);
+  }
+  .pt-custom__copy--done,
+  .pt-custom__copy--done:hover {
+    border-color: var(--pt-accent);
+    color: var(--pt-accent);
+    background: color-mix(in srgb, var(--pt-accent) 8%, transparent);
+  }
+
+  /* reset: the one solid (auto-inverting) action in the panel */
+  .pt-custom__reset {
+    flex: 1 1 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     padding: 8px 12px;
     border: 0;
     border-radius: var(--pt-radius-ctl);
