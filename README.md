@@ -2,7 +2,7 @@
 
 # payload-theme
 
-**Make your Payload admin panel look like a $50k custom build — in 2 lines.**
+**Make your Payload admin panel custom build — in 2 lines.**
 
 One accent color in, a complete shadcn-style redesign out: dashboard with sparklines and 30-day trends, ⌘K command palette with recents, grouped icon sidebar, split-screen login, sticky document outlines, and a live theme customizer with one-click presets, five typefaces and a copy-paste config generator — light *and* dark.
 
