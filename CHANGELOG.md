@@ -4,6 +4,14 @@ All notable changes to `payload-theme` are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.8.1] — 2026-07-21
+
+### Changed
+
+- **README hero:** the lead screenshot now shows the dashboard with the
+  sidebar expanded (light + dark), so the grouped icon nav, ⌘K search and
+  active-item accent are visible at first glance on npm and GitHub.
+
 ## [0.8.0] — 2026-07-21
 
 ### Added
