@@ -17,8 +17,8 @@ One accent color in, a complete shadcn-style redesign out: dashboard with sparkl
 <br/>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/dashboard-dark.png">
-  <img alt="payload-theme dashboard" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/dashboard.png" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/dashboard-nav-dark.png">
+  <img alt="payload-theme dashboard" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/dashboard-nav.png" width="100%">
 </picture>
 
 <sub>The same panel, one plugin later. Every pixel above ships in this package.</sub>
