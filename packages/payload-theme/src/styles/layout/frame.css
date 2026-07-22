@@ -44,6 +44,11 @@
     .template-default__wrap {
       margin-block: 8px;
       margin-inline: 0 8px;
+      /* Payload sizes the wrap at width:100% of its grid track — with the
+       * side margins that overflows by exactly the gutter, eating the right
+       * inset. `auto` lets the stretched grid item shrink to track minus
+       * margins, so left and right insets match. */
+      width: auto;
       min-height: calc(100dvh - 16px);
       border: 1px solid var(--theme-border-color);
       border-radius: var(--pt-radius-card);

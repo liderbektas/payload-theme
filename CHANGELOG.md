@@ -4,6 +4,27 @@ All notable changes to `payload-theme` are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.8.2] — 2026-07-22
+
+### Fixed
+
+- **Content card lost its right gutter:** Payload sizes the frame's content
+  card at `width: 100%` of its grid track, so the theme's 8px right margin
+  overflowed the viewport instead of insetting the card — the panel looked
+  padded on the left and flush on the right. The card now sizes to the track
+  minus its margins, so both gutters match at every nav state and width.
+
+### Changed
+
+- **Dashboard trend chips read "New" instead of disappearing:** a collection
+  with documents but no activity in the previous 30-day window now shows a
+  neutral "New" chip. Most real projects are younger than 60 days or import
+  their content at once, so the old "no baseline → no chip" rule hid the
+  trend row on exactly the installs that just got started. Only collections
+  with no activity in either window stay chip-less.
+- **README screenshots regenerated** against the current build, and the
+  tagline is the same line in both the repo and npm READMEs.
+
 ## [0.8.1] — 2026-07-21
 
 ### Changed

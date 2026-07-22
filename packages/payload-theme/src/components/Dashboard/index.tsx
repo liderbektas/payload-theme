@@ -34,7 +34,7 @@ type CollectionCardData = {
   count: null | number
   createHref: null | string
   /** 30-day creation trend vs the previous 30 days; null → no chip. */
-  delta: null | { label: string; trend: 'down' | 'flat' | 'up' }
+  delta: null | { label: string; trend: 'down' | 'flat' | 'new' | 'up' }
   href: string
   iconName: string
   label: string
@@ -121,7 +121,11 @@ const CollectionCard: React.FC<{ card: CollectionCardData }> = ({ card }) => {
             <span
               className="pt-dash__card-delta"
               data-trend={delta.trend}
-              title="New documents, last 30 days vs the 30 before"
+              title={
+                delta.trend === 'new'
+                  ? 'All documents were created in the last 30 days'
+                  : 'New documents, last 30 days vs the 30 before'
+              }
             >
               {delta.trend === 'up' ? (
                 <DynamicIcon aria-hidden="true" name="trending-up" strokeWidth={2} />
@@ -186,13 +190,15 @@ function sparkWindowStart(): Date {
 }
 
 /** Turn current/previous 30-day creation counts into a trend chip, or null.
- * No baseline (empty previous window) → no chip: a percentage would be
- * meaningless and a "New" label reads as noise on fresh installs. */
+ * No baseline (empty previous window) is the common case — most real projects
+ * are younger than 60 days, or import all their content at once — so it gets a
+ * neutral "New" chip instead of a meaningless percentage. Only a collection
+ * with no activity in either window stays chip-less. */
 function computeDelta(
   current: number,
   previous: number,
 ): CollectionCardData['delta'] {
-  if (previous === 0) return null
+  if (previous === 0) return current > 0 ? { label: 'New', trend: 'new' } : null
   const pct = Math.round(((current - previous) / previous) * 100)
   if (pct === 0) return { label: '±0%', trend: 'flat' }
   return pct > 0

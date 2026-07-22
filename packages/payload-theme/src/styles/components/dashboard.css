@@ -121,8 +121,8 @@
   }
 
   /* 30-day trend chip next to the count — quiet rounded pill, softly tinted
-   * by direction (success up / error down / neutral flat). Always-round like
-   * every status badge in the theme. */
+   * by direction (success up / error down / neutral flat and "New"). Always-
+   * round like every status badge in the theme. */
   .pt-dash__card-delta {
     display: inline-flex;
     align-items: center;

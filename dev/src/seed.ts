@@ -54,7 +54,9 @@ const placeholderPng = (from: string, to: string): Promise<Buffer> =>
     .png()
     .toBuffer()
 
-// Spread doc creation over the last 30 days so dashboard sparklines have shape.
+// Spread doc creation over the last 60 days: the recent half gives the
+// dashboard sparklines their shape, the 31-60 day half gives the trend chips a
+// baseline to compare against (without one they all read "New").
 const daysAgo = (days: number): string => {
   const d = new Date()
   d.setHours(12, 0, 0, 0)
@@ -265,8 +267,9 @@ const run = async (): Promise<void> => {
       collection: 'posts',
       draft: isDraft,
       data: {
-        // Spread across the last month (newest first) for real sparkline shape.
-        createdAt: daysAgo([1, 3, 4, 7, 9, 12, 16, 21, 24, 28][i % 10]),
+        // One entry per seeded post (10) — a longer array would wrap and never
+        // reach the 31-60 day half. 6 recent vs 4 older → a "+50%" chip.
+        createdAt: daysAgo([1, 3, 4, 7, 9, 12, 34, 41, 47, 55][i % 10]),
         title: spec.title,
         // Payload's own draft state (drives the Draft/Published pill + versions UI).
         // Keep the two drafts unpublished; publish everything else.
@@ -431,7 +434,8 @@ const run = async (): Promise<void> => {
         collection: 'pages',
         draft: isDraft,
         data: {
-          createdAt: daysAgo([2, 6, 13, 19][i % 4]),
+          // 4 seeded pages, 2 recent vs 2 older → a "±0%" chip.
+          createdAt: daysAgo([2, 6, 38, 52][i % 4]),
           _status: isDraft ? 'draft' : 'published',
           ...spec,
         },
@@ -535,7 +539,8 @@ const run = async (): Promise<void> => {
       await payload.create({
         collection: 'projects',
         data: {
-          createdAt: daysAgo([1, 5, 8, 14, 22, 27][i % 6]),
+          // 6 seeded projects, 4 recent vs 2 older → a "+100%" chip.
+          createdAt: daysAgo([1, 5, 8, 14, 33, 44][i % 6]),
           ...spec,
           cover: mediaId(spec.cover),
           services: [...spec.services],
