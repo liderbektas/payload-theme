@@ -31,6 +31,11 @@ One accent color in, a complete shadcn-style redesign out: dashboard with sparkl
 
 Payload is the best headless CMS in the Node ecosystem — and its admin panel looks like a database UI. Clients notice. Editors notice. **payload-theme** turns the stock panel into something people screenshot, without forking a single component:
 
+<img alt="The same Payload dashboard before and after payload-theme" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/before-after.png" width="100%">
+
+<sub>Same panel, same data — the only difference is one plugin.</sub>
+
+
 - 🎨 **One accent color drives everything** — an 11-step OKLCH scale recolors buttons, focus rings, nav, sparklines, the login glow. Automatic WCAG contrast included.
 - 🧱 **No forked components, no config surgery** — a plugin entry and a CSS import. Remove both lines and you're back to stock.
 - 🌗 **Dark mode designed, not inverted** — every surface sits on a zinc ladder; dark gets its own remapped scale.
