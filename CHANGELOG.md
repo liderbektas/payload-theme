@@ -4,6 +4,19 @@ All notable changes to `payload-theme` are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.8.3] — 2026-07-24
+
+### Fixed
+
+- **Select menus clipped inside collapsibles, block and array rows:** Payload
+  renders the `react-select` dropdown inline (no portal, `z-index: 4`), so the
+  theme's `overflow: hidden` on `.collapsible` and the block/array list card —
+  there to clip the cards' rounded corners — also clipped any select menu that
+  opened inside them, hiding the lower options. The clip is now released with
+  `:has(.rs__menu)` only while a menu is open, so corner clipping is preserved
+  at rest and only the card holding the open menu is affected; the menu's
+  `z-index` is lifted to sit over the fields it overflows onto.
+
 ## [0.8.2] — 2026-07-22
 
 ### Fixed

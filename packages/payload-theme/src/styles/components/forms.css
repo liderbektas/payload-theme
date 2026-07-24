@@ -122,6 +122,10 @@
     border-radius: var(--pt-radius-card);
     box-shadow: var(--pt-shadow-md);
     overflow: hidden;
+    /* Payload renders this menu inline (no portal) and ships it at z-index 4;
+     * lift it so it sits over sibling fields when it overflows a card whose
+     * clip we release in structured-fields.css (`:has(.rs__menu)`). */
+    z-index: 20;
   }
   .rs__menu-list {
     padding: 4px;

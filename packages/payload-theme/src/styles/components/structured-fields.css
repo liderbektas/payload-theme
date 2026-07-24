@@ -15,6 +15,20 @@
     border-radius: var(--pt-radius-card);
     overflow: hidden;
   }
+
+  /* The `overflow: hidden` above (and on the block/array list card below) is
+   * what clips the rounded corners — but it also clips any `select`
+   * (react-select) menu that opens inside the card, because Payload renders
+   * the menu INLINE, not into a portal (its `.rs__menu` z-index is only 4).
+   * The menu only exists in the DOM while it's open, so `:has(.rs__menu)`
+   * lifts the clip ONLY while a select is open — corner clipping is preserved
+   * at rest — and only for the card that actually contains the open menu.
+   * (The menu's own z-index lift lives with its styling in forms.css.) */
+  .collapsible:has(.rs__menu),
+  .blocks-field__rows:has(.rs__menu),
+  .array-field__draggable-rows:has(.rs__menu) {
+    overflow: visible;
+  }
   .collapsible--style-default {
     border: 1px solid var(--theme-border-color);
     background: var(--theme-elevation-0);
