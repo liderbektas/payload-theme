@@ -2,6 +2,8 @@
 
 import React from 'react'
 
+import { useThemeTranslation } from '../../translations/useThemeTranslation'
+
 const STORAGE_KEY = 'payload-theme-media-view'
 
 type MediaView = 'grid' | 'table'
@@ -15,6 +17,7 @@ type MediaView = 'grid' | 'table'
  * already applied in the server-rendered HTML (grid is the default).
  */
 export const MediaListToggle: React.FC = () => {
+  const { t } = useThemeTranslation()
   const [view, setView] = React.useState<MediaView>('grid')
 
   // localStorage is read after mount so server and client render the same
@@ -45,7 +48,7 @@ export const MediaListToggle: React.FC = () => {
   return (
     <div className="pt-media-toggle" data-view={view} role="group">
       <button
-        aria-label="Grid view"
+        aria-label={t('payloadTheme:gridView')}
         aria-pressed={view === 'grid'}
         className={buttonClass('grid')}
         onClick={() => select('grid')}
@@ -67,7 +70,7 @@ export const MediaListToggle: React.FC = () => {
         </svg>
       </button>
       <button
-        aria-label="List view"
+        aria-label={t('payloadTheme:listView')}
         aria-pressed={view === 'table'}
         className={buttonClass('table')}
         onClick={() => select('table')}

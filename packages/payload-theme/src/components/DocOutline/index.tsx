@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation'
 import React from 'react'
 import { createPortal } from 'react-dom'
 
+import { useThemeTranslation } from '../../translations/useThemeTranslation'
+
 /**
  * Sticky document outline for long edit forms — a compact rail of bars pinned
  * to the viewport's right edge that expands into a labeled table of contents
@@ -54,6 +56,7 @@ const SCROLL_OFFSET = 110 // clears the sticky app header + doc controls bar
 
 export const DocOutline: React.FC = () => {
   const { config } = useConfig()
+  const { t } = useThemeTranslation()
   const pathname = usePathname()
   const [sections, setSections] = React.useState<Section[]>([])
   const [activeId, setActiveId] = React.useState<null | string>(null)
@@ -197,7 +200,7 @@ export const DocOutline: React.FC = () => {
   }
 
   return createPortal(
-    <nav aria-label="Document outline" className="pt-toc">
+    <nav aria-label={t('payloadTheme:documentOutline')} className="pt-toc">
       <div className="pt-toc__rail" aria-hidden="true">
         {sections.map((section) => (
           <span
@@ -209,7 +212,7 @@ export const DocOutline: React.FC = () => {
         ))}
       </div>
       <div className="pt-toc__panel">
-        <div className="pt-toc__panel-title">On this page</div>
+        <div className="pt-toc__panel-title">{t('payloadTheme:onThisPage')}</div>
         {sections.map((section) => (
           <button
             className={['pt-toc__item', section.id === activeId && 'pt-toc__item--active']

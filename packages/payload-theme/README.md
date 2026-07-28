@@ -4,7 +4,7 @@
 
 **Make your Payload admin panel look custom-built — in 2 lines.**
 
-One accent color in, a complete shadcn-style redesign out: dashboard with sparklines and 30-day trends, ⌘K command palette with recents, grouped icon sidebar, split-screen login, sticky document outlines, and a live theme customizer with one-click presets, five typefaces and a copy-paste config generator — light *and* dark.
+One accent color in, a complete shadcn-style redesign out: dashboard with sparklines and 30-day trends, ⌘K command palette with recents, grouped icon sidebar, split-screen login, sticky document outlines, and a live theme customizer with one-click presets, five typefaces and a copy-paste config generator — light *and* dark, in eight languages.
 
 [![CI](https://github.com/liderbektas/payload-theme/actions/workflows/ci.yml/badge.svg)](https://github.com/liderbektas/payload-theme/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/payload-theme?color=0d9488)](https://www.npmjs.com/package/payload-theme)
@@ -41,6 +41,7 @@ Payload is the best headless CMS in the Node ecosystem — and its admin panel l
 - 🌗 **Dark mode designed, not inverted** — every surface sits on a zinc ladder; dark gets its own remapped scale.
 - ⚡ **Zero runtime cost** — color math runs once at startup and lands as CSS custom properties. SSR-safe, no FOUC.
 - 📱 **A real phone experience** — a sliding drawer over a blurred scrim, wrapping bulk actions, aligned cards. Editors approve from the couch.
+- 🌍 **Not half-English** — every string the theme adds is translated in eight languages and follows the panel language your editors picked.
 
 ## Installation
 
@@ -105,7 +106,7 @@ Press `⌘K` / `Ctrl+K` anywhere: your **five most recent documents** wait at th
 
 The palette button opens a panel where anyone can restyle the panel at runtime — no rebuild, no deploy:
 
-- **Presets** — six one-click full themes (Zinc, Ocean, Forest, Sunset, Berry, Swiss), each a coherent accent + radius + typeface identity
+- **Presets** — six one-click full themes (Zinc, Ocean, Forest, Sunset, Berry, Swiss), each a coherent accent + radius + typeface identity. The same six are config values, so a look you like here is `preset: 'ocean'` in your `payload.config.ts` — and **Copy config** writes exactly that one line when the panel matches a preset
 - **Accent** — 10 curated swatches + a free hex field, recoloring the entire panel live through the same OKLCH engine
 - **Radius** — the whole `'none' → 'full'` scale
 - **Font** — Inter, Geist, Helvetica or the system stack, each button previewing its own face
@@ -115,6 +116,25 @@ The palette button opens a panel where anyone can restyle the panel at runtime �
 Everything persists in the browser; **Reset** returns to your config — and **Copy config** turns whatever is on screen into a ready-to-paste `payloadTheme({ ... })` snippet, so the customizer doubles as your config generator.
 
 <img alt="Theme customizer" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/customizer.png" width="100%">
+
+### It speaks your panel's language
+
+If your panel isn't in English, the theme isn't either. Every string it adds — the sidebar's search pill, the palette and its groups, the dashboard captions and trend tooltips, "On this page", the customizer's own labels, the login copy — ships translated in **English, German, French, Spanish, Italian, Dutch, Portuguese and Turkish**, and follows whatever language the user picked on their Account page.
+
+Nothing to configure: the plugin merges a `payloadTheme:*` namespace into `config.i18n.translations` for every language Payload accepts. A language without a translation yet falls back to English rather than leaking raw keys, and anything you declare under that namespace yourself wins — which is also the supported way to reword the theme without touching a component:
+
+```ts
+i18n: {
+  supportedLanguages: { de, en },
+  translations: {
+    de: { payloadTheme: { onThisPage: 'Inhaltsverzeichnis' } },
+  },
+},
+```
+
+> Payload's admin panel is English-only until you list languages in `i18n.supportedLanguages` — that's a Payload default, not a theme one. The theme simply follows whatever you set there.
+
+Missing your language? It's [one file](https://github.com/liderbektas/payload-theme/tree/main/packages/payload-theme/src/translations) — copy `en.ts`, translate the values, add one line to `index.ts`. PRs very welcome.
 
 ### A document outline that follows your scroll
 
@@ -190,7 +210,7 @@ Open [http://localhost:3000/admin](http://localhost:3000/admin) and log in:
 | `dev@local.test` | `test1234` | Admin |
 | `editor@local.test` | `test1234` | Editor |
 
-Play with the header's theme customizer — accent, radius, color mode and layout all apply live.
+Play with the header's theme customizer — accent, radius, color mode and layout all apply live. The panel ships with four languages enabled, so the Account page's language switcher shows the theme following along.
 
 ---
 
@@ -200,6 +220,12 @@ Everything is optional. This is the full surface:
 
 ```ts
 payloadTheme({
+  // A whole look in one word — accent + radius + typeface together:
+  // 'zinc' | 'ocean' | 'forest' | 'sunset' | 'berry' | 'swiss'.
+  // The same six the header customizer offers. Anything you also set
+  // explicitly below wins over the preset.
+  preset: 'ocean',
+
   // The one color that drives everything: buttons, active nav pill,
   // focus rings, selected rows, sparklines, the login glow... Any hex works.
   accent: '#e30613',
@@ -256,6 +282,7 @@ payloadTheme({
 
 | Option | Type | Default | What it does |
 | --- | --- | --- | --- |
+| `preset` | `'zinc' \| 'ocean' \| 'forest' \| 'sunset' \| 'berry' \| 'swiss'` | — | Sets `accent`, `radius` and `font` together as one coherent identity. Each option you pass explicitly overrides its part. |
 | `accent` | `string` (hex) | `#4f4ece` | Generates a full 50–950 color scale in OKLCH and colors every interactive element with it. |
 | `radius` | `'none' \| 'sm' \| 'md' \| 'lg' \| 'full'` | `'md'` | Global corner rounding — buttons, inputs, badges, cards, tables, popovers and menu items all follow it. |
 | `font` | `'inter' \| 'geist' \| 'helvetica' \| 'system' \| string` | Payload's font | Panel typeface. `inter`/`geist` load from Google Fonts at runtime; `helvetica`/`system` are pure stacks; any other string is used as a custom font-family stack. |
@@ -331,6 +358,50 @@ payloadTheme({
 ```
 
 The important ones: `--pt-accent-50` … `--pt-accent-950`, `--pt-accent`, `--pt-accent-hover`, `--pt-accent-active`, `--pt-accent-subtle`, `--pt-accent-contrast`, `--pt-accent-ring`, plus the radius tokens `--pt-radius-ctl`, `--pt-radius-card`, `--pt-radius-item`, and the per-block icon hook `--pt-block-ico`.
+
+## What it touches
+
+No component is forked and no file of yours is rewritten: the plugin adds keys to your Payload config and restyles the markup Payload already renders. This is the complete surface — worth a read before you layer your own customizations on top, and the first place to look when a Payload upgrade changes something.
+
+**Config keys the plugin sets** ([`src/index.ts`](https://github.com/liderbektas/payload-theme/blob/main/packages/payload-theme/src/index.ts)):
+
+| Key | Effect | What it is |
+| --- | --- | --- |
+| `admin.components.Nav` | **replaces** | The grouped icon sidebar, ⌘K pill and user block. |
+| `admin.components.views.dashboard.Component` | **replaces** | The stat-card dashboard. |
+| `admin.components.providers` | adds 2 | `ThemeProvider` (injects the `--pt-*` tokens) and `ListQuickActions` (row-hover edit/delete). |
+| `admin.components.actions` | adds 1 | `HeaderActions` — customizer, light/dark toggle, user menu. |
+| `admin.components.beforeLogin` | adds 1 | `LoginHero` — the brand panel. The split login layout only applies when it renders. |
+| `admin.custom.payloadTheme` | adds 1 | The resolved theme config the client components read. |
+| `admin.dependencies` | adds 1 per widget | So `generate:importmap` finds your `dashboard.widgets`. |
+| `i18n.translations` | adds 1 namespace per language | The theme's own `payloadTheme:*` strings. Your keys are preserved and win; `supportedLanguages` and `fallbackLanguage` are untouched. |
+| `admin.components.beforeListTable` *(upload collections)* | adds 1 | The grid/table toggle above media lists. |
+| checkbox fields' `admin.components.Cell` | adds, only when unset | Boolean columns render as Yes/No chips instead of `true`/`false`. |
+
+The two **replacements** are the only conflicts. If your project already sets a custom `Nav` or its own dashboard view, the theme overwrites it — plugins run in array order, so re-assign yours in a small transform *after* `payloadTheme()` and it wins:
+
+```ts
+plugins: [
+  payloadTheme({ accent: '#0d9488' }),
+  (config) => ({
+    ...config,
+    admin: { ...config.admin, components: { ...config.admin?.components, Nav: '/components/MyNav#MyNav' } },
+  }),
+]
+```
+
+Everything else is additive and order-preserving: your components stay, the theme's are appended after them.
+
+Nothing else is read or written. Collections, fields, hooks, access control, endpoints and your data are untouched, and removing the plugin entry plus the CSS import returns you to a stock panel with no migration.
+
+**Styles.** The whole stylesheet lives in `@layer payload`, which Payload pre-declares *after* its own `payload-default` layer — so the theme wins without `!important` and your own unlayered CSS still beats the theme. The exceptions are a handful of rules that must be unlayered because the Payload/third-party stylesheets they override are (empty-list results, thumbnail sizing, react-datepicker, toasts); they are isolated in one file, [`styles/overrides/unlayered.css`](https://github.com/liderbektas/payload-theme/blob/main/packages/payload-theme/src/styles/overrides/unlayered.css).
+
+**On a Payload upgrade.** Two kinds of coupling can drift:
+
+- **Class names.** The stylesheet targets Payload's own BEM classes (`.document-fields__fields`, `.blocks-field__rows`, `.collection-list .table`, …). If Payload renames one, the affected rules simply stop applying — stock styling shows through in that one spot. Nothing throws, nothing breaks functionally.
+- **Rendered DOM.** Three enhancements work off the rendered markup rather than a schema: the row actions column (injected into list tables), the document outline (scans the edit form), and the media grid (a CSS reflow of the upload list table). All three fail soft — no column, no rail, a plain table — rather than erroring.
+
+Everything else rides on public API (`@payloadcms/ui` hooks, the local API, REST routes from `config.routes`), so a breaking change there surfaces at build time instead of silently. The package is developed against the Payload version listed under [Requirements](#requirements) and each release is verified with a screenshot-regression suite across the whole panel; if a newer Payload shifts something before an update ships, [open an issue](https://github.com/liderbektas/payload-theme/issues) — a class-name fix is usually a one-line patch. Maintainers: the full coupling map and upgrade checklist live in [CONTRIBUTING.md](https://github.com/liderbektas/payload-theme/blob/main/CONTRIBUTING.md#keeping-up-with-payload).
 
 ## Requirements
 

@@ -8,10 +8,17 @@
 import type { I18n } from '@payloadcms/translations'
 import type { Locale, Payload, PayloadComponent, TypedUser } from 'payload'
 
+import type { ThemeFontKey } from './theme'
+
 import { normalizeHex, resolveFont } from './theme'
 
-/** Surface/neutral palette, independent of the accent. */
-export type ThemePreset = 'minimal' | 'noir' | 'soft'
+/**
+ * A one-word starting point: each preset is a coherent accent + radius +
+ * typeface identity, the same six the header customizer offers. Any option you
+ * also pass explicitly wins over the preset, so `preset` is a set of defaults,
+ * never a lock.
+ */
+export type ThemePreset = 'berry' | 'forest' | 'ocean' | 'sunset' | 'swiss' | 'zinc'
 
 /**
  * Panel typeface. `'inter'` and `'geist'` load from Google Fonts at runtime;
@@ -92,10 +99,14 @@ export interface LoginOptions {
 }
 
 export interface PayloadThemeOptions {
+  /**
+   * A whole look in one word — `'zinc'`, `'ocean'`, `'forest'`, `'sunset'`,
+   * `'berry'` or `'swiss'`. Sets the accent, radius and typeface together;
+   * pass any of those explicitly to override just that part.
+   */
+  preset?: ThemePreset
   /** The single accent color as a hex string. Drives the whole 50–950 scale. */
   accent?: string
-  /** Surface/neutral palette. @default 'soft' */
-  preset?: ThemePreset
   /** Global corner rounding. @default 'md' */
   radius?: ThemeRadius
   /** Panel typeface — a built-in key or a custom CSS font-family stack. @default 'default' */
@@ -138,7 +149,8 @@ export interface ResolvedThemeConfig {
   css: string
   /** The configured accent as canonical hex — read by the header customizer. */
   accent: string
-  preset: ThemePreset
+  /** The preset the config named, or null when the options stand alone. */
+  preset: null | ThemePreset
   radius: ThemeRadius
   /** The configured font option as given ('default' when omitted). */
   font: string
@@ -156,7 +168,31 @@ export interface ResolvedThemeConfig {
   fallbackIconName: string
 }
 
-const PRESETS: ThemePreset[] = ['soft', 'noir', 'minimal']
+/** One preset's full identity. `label` is the customizer's button text. */
+export interface ThemePresetDefinition {
+  accent: string
+  font: ThemeFontKey
+  key: ThemePreset
+  label: string
+  radius: ThemeRadius
+}
+
+/**
+ * The six built-in looks, shared by the `preset` option and the header
+ * customizer's preset row — one list, so a config-set preset and a clicked one
+ * are always the same theme. Neutral names on purpose: each is a coherent
+ * identity, not a brand.
+ */
+export const THEME_PRESETS: ThemePresetDefinition[] = [
+  { key: 'zinc', label: 'Zinc', accent: '#18181b', font: 'geist', radius: 'md' },
+  { key: 'ocean', label: 'Ocean', accent: '#2563eb', font: 'inter', radius: 'lg' },
+  { key: 'forest', label: 'Forest', accent: '#059669', font: 'inter', radius: 'md' },
+  { key: 'sunset', label: 'Sunset', accent: '#ea580c', font: 'inter', radius: 'full' },
+  { key: 'berry', label: 'Berry', accent: '#db2777', font: 'geist', radius: 'lg' },
+  { key: 'swiss', label: 'Swiss', accent: '#dc2626', font: 'helvetica', radius: 'none' },
+]
+
+const PRESETS: ThemePreset[] = THEME_PRESETS.map((preset) => preset.key)
 const RADII: ThemeRadius[] = ['none', 'sm', 'md', 'lg', 'full']
 
 /**
@@ -176,7 +212,6 @@ export const RADIUS_TOKENS: Record<ThemeRadius, { card: string; ctl: string; ite
 
 const DEFAULTS = {
   accent: '#4f4ece',
-  preset: 'soft' as ThemePreset,
   radius: 'md' as ThemeRadius,
   font: 'default',
   fallbackIconName: 'folder',
@@ -252,24 +287,29 @@ export function resolveOptions(options: PayloadThemeOptions): {
   cssVariables?: Record<string, string>
   resolved: ResolvedThemeConfig
 } {
-  const accent = options.accent ?? DEFAULTS.accent
+  // A preset only supplies defaults — every explicit option still wins, so
+  // `preset: 'ocean', accent: '#e30613'` is Ocean's geometry in your red.
+  const presetKey = options.preset ?? null
+  if (presetKey !== null) {
+    assert(
+      PRESETS.includes(presetKey),
+      `Invalid preset: '${presetKey}'. Expected one of ${PRESETS.join(', ')}.`,
+    )
+  }
+  const preset = THEME_PRESETS.find((candidate) => candidate.key === presetKey)
+
+  const accent = options.accent ?? preset?.accent ?? DEFAULTS.accent
   // normalizeHex throws a clear message like:
   // "Invalid accent color: 'mor'. Expected hex like #7c3aed"
   normalizeHex(accent)
 
-  const preset = options.preset ?? DEFAULTS.preset
-  assert(
-    PRESETS.includes(preset),
-    `Invalid preset: '${preset}'. Expected one of ${PRESETS.join(', ')}.`,
-  )
-
-  const radius = options.radius ?? DEFAULTS.radius
+  const radius = options.radius ?? preset?.radius ?? DEFAULTS.radius
   assert(
     RADII.includes(radius),
     `Invalid radius: '${radius}'. Expected one of ${RADII.join(', ')}.`,
   )
 
-  const font = options.font ?? DEFAULTS.font
+  const font = options.font ?? preset?.font ?? DEFAULTS.font
   assert(
     typeof font === 'string' && font.trim() !== '',
     `font must be a non-empty string — a built-in key ('inter', 'geist', 'helvetica', 'system') or a CSS font-family stack.`,
@@ -326,7 +366,7 @@ export function resolveOptions(options: PayloadThemeOptions): {
     resolved: {
       css: '', // filled by the plugin after computing the scale
       accent: normalizeHex(accent),
-      preset,
+      preset: presetKey,
       radius,
       font,
       fontURL: resolvedFont.url,

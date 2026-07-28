@@ -1,11 +1,13 @@
 'use client'
 
 import { getTranslation } from '@payloadcms/translations'
-import { Link, useAuth, useConfig, useLocale, useTranslation } from '@payloadcms/ui'
+import { Link, useAuth, useConfig, useLocale } from '@payloadcms/ui'
 import { DynamicIcon } from 'lucide-react/dynamic'
 import { usePathname, useRouter } from 'next/navigation'
 import { formatAdminURL } from 'payload/shared'
 import React from 'react'
+
+import { useThemeTranslation } from '../../translations/useThemeTranslation'
 
 /**
  * The shared user block: an avatar + name/email trigger opening a
@@ -24,7 +26,7 @@ import React from 'react'
 export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant = 'sidebar' }) => {
   const { user } = useAuth()
   const { config } = useConfig()
-  const { i18n } = useTranslation()
+  const { i18n, t } = useThemeTranslation()
   const locale = useLocale()
   const router = useRouter()
   const pathname = usePathname()
@@ -67,7 +69,9 @@ export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant
   const email = typeof user.email === 'string' ? user.email : ''
   const rawName = (user as { name?: unknown }).name
   const name =
-    typeof rawName === 'string' && rawName.trim() ? rawName.trim() : email.split('@')[0] || 'User'
+    typeof rawName === 'string' && rawName.trim()
+      ? rawName.trim()
+      : email.split('@')[0] || t('general:user')
   const initials =
     name
       .split(/\s+/)
@@ -113,12 +117,12 @@ export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant
             role="menuitem"
           >
             <DynamicIcon aria-hidden="true" name="circle-user" strokeWidth={1.9} />
-            Account
+            {t('authentication:account')}
           </Link>
           {localization ? (
             <React.Fragment>
               <div aria-hidden="true" className={cls('-menu-sep')} />
-              <div className={cls('-menu-label')}>Locale</div>
+              <div className={cls('-menu-label')}>{t('general:locale')}</div>
               {localization.locales.map((localeOption) => {
                 const isActive = locale?.code === localeOption.code
                 return (
@@ -151,7 +155,7 @@ export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant
             role="menuitem"
           >
             <DynamicIcon aria-hidden="true" name="log-out" strokeWidth={1.9} />
-            Log out
+            {t('authentication:logOut')}
           </Link>
         </div>
       ) : null}
