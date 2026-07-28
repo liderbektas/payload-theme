@@ -19,6 +19,7 @@ import React from 'react'
 
 import type { ResolvedThemeConfig } from '../../options'
 
+import { useThemeTranslation } from '../../translations/useThemeTranslation'
 import { CommandPalette } from '../CommandPalette'
 import { DocOutline } from '../DocOutline'
 import { ShortcutsModal } from '../ShortcutsModal'
@@ -88,6 +89,7 @@ const isComponentPath = (value: string): boolean => value.includes('#')
 /** Search pill under the logo — opens the ⌘K palette. The shortcut label is
  * resolved after mount so server HTML never guesses the platform. */
 const NavSearch: React.FC = () => {
+  const { t } = useThemeTranslation()
   const [shortcut, setShortcut] = React.useState('⌘K')
 
   React.useEffect(() => {
@@ -106,7 +108,7 @@ const NavSearch: React.FC = () => {
         name="search"
         strokeWidth={2}
       />
-      <span className="pt-nav__search-label">Search</span>
+      <span className="pt-nav__search-label">{t('payloadTheme:search')}</span>
       <kbd className="pt-nav__search-kbd" suppressHydrationWarning>
         {shortcut}
       </kbd>
@@ -249,7 +251,12 @@ export const Nav: React.FC = () => {
         onClick={() => setNavOpen(false)}
       />
       <div className="nav__scroll" ref={navRef}>
-        <Link aria-label="Dashboard" className="pt-nav__logo" href={adminRoute} prefetch={false}>
+        <Link
+          aria-label={i18n.t('general:dashboard')}
+          className="pt-nav__logo"
+          href={adminRoute}
+          prefetch={false}
+        >
           {logoIsImage ? (
             logoIsPair ? (
               <React.Fragment>

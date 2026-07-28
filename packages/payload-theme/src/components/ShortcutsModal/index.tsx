@@ -5,6 +5,8 @@ import { DynamicIcon } from 'lucide-react/dynamic'
 import React from 'react'
 import { createPortal } from 'react-dom'
 
+import { useThemeTranslation } from '../../translations/useThemeTranslation'
+
 /**
  * Keyboard-shortcuts cheatsheet. Opens on `?` anywhere in the panel (unless
  * typing in a field) and via the palette's "Keyboard shortcuts" action
@@ -31,6 +33,7 @@ const isEditableTarget = (target: EventTarget | null): boolean => {
 
 export const ShortcutsModal: React.FC = () => {
   const { user } = useAuth()
+  const { t } = useThemeTranslation()
   const [open, setOpen] = React.useState(false)
   const [isMac, setIsMac] = React.useState(true)
 
@@ -64,23 +67,23 @@ export const ShortcutsModal: React.FC = () => {
   const sections: ShortcutSection[] = [
     {
       rows: [
-        { keys: [mod, 'K'], label: 'Open the command palette' },
-        { keys: ['?'], label: 'Keyboard shortcuts' },
-        { keys: ['Esc'], label: 'Close dialogs and popovers' },
+        { keys: [mod, 'K'], label: t('payloadTheme:shortcutOpenPalette') },
+        { keys: ['?'], label: t('payloadTheme:keyboardShortcuts') },
+        { keys: ['Esc'], label: t('payloadTheme:shortcutCloseDialogs') },
       ],
-      title: 'Global',
+      title: t('payloadTheme:shortcutsGlobal'),
     },
     {
       rows: [
-        { keys: ['↑', '↓'], label: 'Move through results' },
-        { keys: ['↵'], label: 'Open the selected result' },
-        { keys: [mod, 'K'], label: 'Close the palette' },
+        { keys: ['↑', '↓'], label: t('payloadTheme:shortcutMoveResults') },
+        { keys: ['↵'], label: t('payloadTheme:shortcutOpenResult') },
+        { keys: [mod, 'K'], label: t('payloadTheme:shortcutClosePalette') },
       ],
-      title: 'Command palette',
+      title: t('payloadTheme:shortcutsPalette'),
     },
     {
-      rows: [{ keys: [mod, 'S'], label: 'Save the document (Payload built-in)' }],
-      title: 'Edit view',
+      rows: [{ keys: [mod, 'S'], label: t('payloadTheme:shortcutSaveDocument') }],
+      title: t('payloadTheme:shortcutsEditView'),
     },
   ]
 
@@ -88,7 +91,7 @@ export const ShortcutsModal: React.FC = () => {
     <div className="pt-shortcuts" role="presentation">
       <div aria-hidden="true" className="pt-shortcuts__backdrop" onClick={() => setOpen(false)} />
       <div
-        aria-label="Keyboard shortcuts"
+        aria-label={t('payloadTheme:keyboardShortcuts')}
         aria-modal="true"
         className="pt-shortcuts__panel"
         role="dialog"
@@ -96,10 +99,10 @@ export const ShortcutsModal: React.FC = () => {
         <div className="pt-shortcuts__head">
           <span className="pt-shortcuts__title">
             <DynamicIcon aria-hidden="true" name="keyboard" strokeWidth={1.9} />
-            Keyboard shortcuts
+            {t('payloadTheme:keyboardShortcuts')}
           </span>
           <button
-            aria-label="Close"
+            aria-label={t('general:close')}
             className="pt-shortcuts__close"
             onClick={() => setOpen(false)}
             type="button"

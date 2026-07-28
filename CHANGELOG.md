@@ -4,6 +4,46 @@ All notable changes to `payload-theme` are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.9.0] — 2026-07-28
+
+### Added
+
+- **The theme speaks eight languages.** Every string the theme adds — the
+  sidebar search pill, the ⌘K palette and its group headings, the dashboard
+  captions and trend tooltips, "On this page", the whole customizer panel, the
+  media view toggle, the login copy — was hardcoded English, so installing the
+  plugin into a German or Turkish panel produced a half-translated admin.
+  They now ship in **English, German, French, Spanish, Italian, Dutch,
+  Portuguese and Turkish** under a `payloadTheme:*` namespace merged into
+  `config.i18n.translations`, and follow the panel language the user picked.
+  A language without a translation falls back to English rather than leaking
+  raw keys, and a project that declares its own `payloadTheme:*` keys wins —
+  the supported way to reword the theme without overriding a component.
+  Strings Payload already ships (`general:close`, `authentication:logOut`,
+  `general:createNewLabel`, …) are reused from its namespaces instead of
+  duplicated.
+- **`preset` — a whole look in one word.** `payloadTheme({ preset: 'ocean' })`
+  sets accent, radius and typeface together. The six presets are the exact
+  ones the header customizer offers (Zinc, Ocean, Forest, Sunset, Berry,
+  Swiss), now defined once and shared by both, so a look you click is a look
+  you can commit. Every option you pass explicitly still wins over the preset,
+  so `{ preset: 'ocean', accent: '#e30613' }` is Ocean's geometry in your red.
+- **Copy config writes the short form.** When the customizer's current state
+  matches a preset exactly, the copied snippet is the one-line `preset:` form
+  instead of three separate options.
+
+### Changed
+
+- **BREAKING (types only): `preset` no longer accepts `'soft' | 'noir' |
+  'minimal'`.** Those values were validated, typed and exported but read by no
+  component or stylesheet — the option did nothing. The name now carries the
+  six real themes. Anything passing an old value gets a clear error naming the
+  valid ones; nothing that worked before stops working, because nothing before
+  worked.
+- The playground now enables four panel languages (`de`, `en`, `fr`, `tr`) so
+  the Account language switcher is real and the theme's own chrome can be
+  checked outside English.
+
 ## [0.8.3] — 2026-07-24
 
 ### Fixed

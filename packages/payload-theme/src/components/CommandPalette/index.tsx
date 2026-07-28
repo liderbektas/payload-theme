@@ -3,7 +3,7 @@
 import type { StaticLabel } from 'payload'
 
 import { getTranslation } from '@payloadcms/translations'
-import { useAuth, useConfig, useEntityVisibility, useTheme, useTranslation } from '@payloadcms/ui'
+import { useAuth, useConfig, useEntityVisibility, useTheme } from '@payloadcms/ui'
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic'
 import { usePathname, useRouter } from 'next/navigation'
 import { formatAdminURL } from 'payload/shared'
@@ -12,6 +12,7 @@ import { createPortal } from 'react-dom'
 
 import type { ResolvedThemeConfig } from '../../options'
 
+import { useThemeTranslation } from '../../translations/useThemeTranslation'
 import { resolveIconName } from '../navIcons'
 
 /**
@@ -99,7 +100,7 @@ export const CommandPalette: React.FC = () => {
   const { isEntityVisible } = useEntityVisibility()
   const { config } = useConfig()
   const { setTheme, theme: colorScheme } = useTheme()
-  const { i18n } = useTranslation()
+  const { i18n, t } = useThemeTranslation()
   const router = useRouter()
   const pathname = usePathname()
 
@@ -172,10 +173,10 @@ export const CommandPalette: React.FC = () => {
     }
 
     items.push({
-      group: 'Navigate',
+      group: t('payloadTheme:groupNavigate'),
       iconName: themeConfig?.nav?.icons?.dashboard ?? 'layout-dashboard',
       id: 'nav-dashboard',
-      label: i18n.t('general:dashboard'),
+      label: t('general:dashboard'),
       perform: () => go(adminRoute),
     })
 
@@ -189,8 +190,8 @@ export const CommandPalette: React.FC = () => {
       const href = formatAdminURL({ adminRoute, path: `/collections/${slug}` })
 
       items.push({
-        group: 'Navigate',
-        hint: 'Collection',
+        group: t('payloadTheme:groupNavigate'),
+        hint: t('payloadTheme:hintCollection'),
         iconName,
         id: `nav-${slug}`,
         label,
@@ -199,11 +200,13 @@ export const CommandPalette: React.FC = () => {
 
       if (permissions?.collections?.[slug]?.create) {
         createItems.push({
-          group: 'Create',
-          hint: 'New',
+          group: t('payloadTheme:groupCreate'),
+          hint: t('payloadTheme:hintNew'),
           iconName,
           id: `create-${slug}`,
-          label: `New ${getTranslation(collection.labels?.singular as StaticLabel, i18n)}`,
+          label: t('general:createNewLabel', {
+            label: getTranslation(collection.labels?.singular as StaticLabel, i18n),
+          }),
           perform: () => go(formatAdminURL({ adminRoute, path: `/collections/${slug}/create` })),
         })
       }
@@ -225,8 +228,8 @@ export const CommandPalette: React.FC = () => {
       const slug = global.slug
       if (!isEntityVisible({ globalSlug: slug }) || !permissions?.globals?.[slug]?.read) continue
       items.push({
-        group: 'Navigate',
-        hint: 'Global',
+        group: t('payloadTheme:groupNavigate'),
+        hint: t('payloadTheme:hintGlobal'),
         iconName: resolveIconName(themeConfig, slug),
         id: `nav-global-${slug}`,
         label: getTranslation(global.label as StaticLabel, i18n),
@@ -237,33 +240,36 @@ export const CommandPalette: React.FC = () => {
     items.push(...createItems)
 
     items.push({
-      group: 'Actions',
-      hint: 'Appearance',
+      group: t('payloadTheme:groupActions'),
+      hint: t('payloadTheme:hintAppearance'),
       iconName: colorScheme === 'dark' ? 'sun' : 'moon',
       id: 'action-theme',
-      label: colorScheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode',
+      label:
+        colorScheme === 'dark'
+          ? t('payloadTheme:switchToLightMode')
+          : t('payloadTheme:switchToDarkMode'),
       perform: () => {
         setTheme(colorScheme === 'dark' ? 'light' : 'dark')
         close()
       },
     })
     items.push({
-      group: 'Actions',
-      hint: 'Help',
+      group: t('payloadTheme:groupActions'),
+      hint: t('payloadTheme:hintHelp'),
       iconName: 'keyboard',
       id: 'action-shortcuts',
-      label: 'Keyboard shortcuts',
+      label: t('payloadTheme:keyboardShortcuts'),
       perform: () => {
         close()
         window.dispatchEvent(new CustomEvent('pt:open-shortcuts'))
       },
     })
     items.push({
-      group: 'Actions',
-      hint: 'Session',
+      group: t('payloadTheme:groupActions'),
+      hint: t('payloadTheme:hintSession'),
       iconName: 'log-out',
       id: 'action-logout',
-      label: i18n.t('authentication:logOut'),
+      label: t('authentication:logOut'),
       perform: () =>
         go(formatAdminURL({ adminRoute, path: config.admin?.routes?.logout ?? '/logout' })),
     })
@@ -273,6 +279,7 @@ export const CommandPalette: React.FC = () => {
     config,
     themeConfig,
     i18n,
+    t,
     adminRoute,
     apiRoute,
     serverURL,
@@ -352,7 +359,7 @@ export const CommandPalette: React.FC = () => {
               const raw = doc[target.titleField]
               const title = typeof raw === 'string' && raw.trim() ? raw : `#${String(doc.id)}`
               return {
-                group: 'Documents',
+                group: t('payloadTheme:groupDocuments'),
                 hint: target.label,
                 iconName: target.iconName,
                 id: `doc-${target.slug}-${String(doc.id)}`,
@@ -380,7 +387,7 @@ export const CommandPalette: React.FC = () => {
       controller.abort()
       window.clearTimeout(timer)
     }
-  }, [open, query, searchableCollections, adminRoute, go])
+  }, [open, query, searchableCollections, adminRoute, go, t])
 
   // ---- recents: resolve missing titles when the palette opens -----------------
   // One GET per unresolved entry through the REST API — access control applies,
@@ -460,7 +467,7 @@ export const CommandPalette: React.FC = () => {
       .map((entry): PaletteItem => {
         const meta = collectionMeta.get(entry.slug)
         return {
-          group: 'Recent',
+          group: t('payloadTheme:groupRecent'),
           hint: meta?.label ?? entry.slug,
           iconName: meta?.iconName ?? 'file',
           id: `recent-${entry.slug}-${entry.id}`,
@@ -469,7 +476,7 @@ export const CommandPalette: React.FC = () => {
             go(formatAdminURL({ adminRoute, path: `/collections/${entry.slug}/${entry.id}` })),
         }
       })
-  }, [recents, collectionMeta, user, permissions, adminRoute, go])
+  }, [recents, collectionMeta, user, permissions, adminRoute, go, t])
 
   // ---- filtering + grouping -----------------------------------------------------
   const trimmedQuery = query.trim()
@@ -530,7 +537,7 @@ export const CommandPalette: React.FC = () => {
     <div className="pt-palette" role="presentation">
       <div aria-hidden="true" className="pt-palette__backdrop" onClick={close} />
       <div
-        aria-label="Command palette"
+        aria-label={t('payloadTheme:commandPalette')}
         aria-modal="true"
         className="pt-palette__panel"
         role="dialog"
@@ -543,11 +550,11 @@ export const CommandPalette: React.FC = () => {
             strokeWidth={2}
           />
           <input
-            aria-label="Search"
+            aria-label={t('payloadTheme:search')}
             className="pt-palette__input"
             onChange={(event) => setQuery(event.target.value)}
             onKeyDown={onInputKeyDown}
-            placeholder="Search or jump to…"
+            placeholder={t('payloadTheme:searchPlaceholder')}
             ref={inputRef}
             type="text"
             value={query}
@@ -557,9 +564,13 @@ export const CommandPalette: React.FC = () => {
           </button>
         </div>
         <div className="pt-palette__list" ref={listRef}>
-          {searching ? <div className="pt-palette__status">Searching documents…</div> : null}
+          {searching ? (
+            <div className="pt-palette__status">{t('payloadTheme:searchingDocuments')}</div>
+          ) : null}
           {!searching && visibleItems.length === 0 ? (
-            <div className="pt-palette__status">No results for “{trimmedQuery}”</div>
+            <div className="pt-palette__status">
+              {t('payloadTheme:noResultsFor', { query: trimmedQuery })}
+            </div>
           ) : null}
           {groups.map((group) => (
             <div className="pt-palette__group" key={group.label}>
@@ -595,14 +606,14 @@ export const CommandPalette: React.FC = () => {
         <div className="pt-palette__footer">
           <span>
             <kbd>↑</kbd>
-            <kbd>↓</kbd> navigate
+            <kbd>↓</kbd> {t('payloadTheme:paletteNavigate')}
           </span>
           <span>
-            <kbd>↵</kbd> open
+            <kbd>↵</kbd> {t('payloadTheme:paletteOpen')}
           </span>
           <span>
             <kbd>{isMac ? '⌘' : 'Ctrl'}</kbd>
-            <kbd>K</kbd> toggle
+            <kbd>K</kbd> {t('payloadTheme:paletteToggle')}
           </span>
         </div>
       </div>

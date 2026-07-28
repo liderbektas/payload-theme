@@ -4,9 +4,9 @@ import { useConfig, useNav, useTheme } from '@payloadcms/ui'
 import { DynamicIcon } from 'lucide-react/dynamic'
 import React from 'react'
 
-import type { ResolvedThemeConfig, ThemeRadius } from '../../options'
+import type { ResolvedThemeConfig, ThemePresetDefinition, ThemeRadius } from '../../options'
 
-import { RADIUS_TOKENS } from '../../options'
+import { RADIUS_TOKENS, THEME_PRESETS } from '../../options'
 import {
   buildTheme,
   FONT_KEYS,
@@ -17,6 +17,7 @@ import {
   themeToCss,
   type ThemeFontKey,
 } from '../../theme'
+import { useThemeTranslation } from '../../translations/useThemeTranslation'
 import { UserMenu } from '../UserMenu'
 
 /**
@@ -54,26 +55,6 @@ const RADIUS_OPTIONS: ThemeRadius[] = ['none', 'sm', 'md', 'lg', 'full']
 
 /** Runtime-selectable fonts: 'default' keeps the config/Payload font. */
 const FONT_OPTIONS = FONT_KEYS
-
-/**
- * One-click full themes: accent + radius + typeface applied together.
- * Neutral names on purpose — each is a coherent identity, not a brand.
- */
-type FullPreset = {
-  accent: string
-  font: ThemeFontKey
-  key: string
-  label: string
-  radius: ThemeRadius
-}
-const THEME_PRESETS: FullPreset[] = [
-  { key: 'zinc', label: 'Zinc', accent: '#18181b', font: 'geist', radius: 'md' },
-  { key: 'ocean', label: 'Ocean', accent: '#2563eb', font: 'inter', radius: 'lg' },
-  { key: 'forest', label: 'Forest', accent: '#059669', font: 'inter', radius: 'md' },
-  { key: 'sunset', label: 'Sunset', accent: '#ea580c', font: 'inter', radius: 'full' },
-  { key: 'berry', label: 'Berry', accent: '#db2777', font: 'geist', radius: 'lg' },
-  { key: 'swiss', label: 'Swiss', accent: '#dc2626', font: 'helvetica', radius: 'none' },
-]
 
 type Overrides = {
   accent?: string
@@ -219,14 +200,16 @@ async function copyText(text: string): Promise<boolean> {
  * toggler). `useNav` is Payload's context, so the grid animates as usual. */
 const NavCollapse: React.FC = () => {
   const { navOpen, setNavOpen } = useNav()
+  const { t } = useThemeTranslation()
+  const label = navOpen ? t('payloadTheme:collapseSidebar') : t('payloadTheme:expandSidebar')
 
   return (
     <button
       aria-expanded={navOpen}
-      aria-label={navOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+      aria-label={label}
       className="pt-header-btn pt-nav-collapse"
       onClick={() => setNavOpen(!navOpen)}
-      title={navOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+      title={label}
       type="button"
     >
       <DynamicIcon
@@ -242,14 +225,15 @@ const NavCollapse: React.FC = () => {
  * the same preference store as the Account page's "Admin Theme" radios. */
 const ThemeToggle: React.FC = () => {
   const { setTheme, theme } = useTheme()
+  const { t } = useThemeTranslation()
   const isDark = theme === 'dark'
 
   return (
     <button
-      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      aria-label={isDark ? t('payloadTheme:switchToLightMode') : t('payloadTheme:switchToDarkMode')}
       className="pt-header-btn"
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      title={isDark ? 'Light mode' : 'Dark mode'}
+      title={isDark ? t('payloadTheme:lightMode') : t('payloadTheme:darkMode')}
       type="button"
     >
       <DynamicIcon aria-hidden="true" name={isDark ? 'sun' : 'moon'} strokeWidth={1.9} />
@@ -260,6 +244,7 @@ const ThemeToggle: React.FC = () => {
 const Customizer: React.FC = () => {
   const { config } = useConfig()
   const { setTheme, theme } = useTheme()
+  const { t } = useThemeTranslation()
   const themeConfig = config.admin?.custom?.payloadTheme as ResolvedThemeConfig | undefined
 
   const [open, setOpen] = React.useState(false)
@@ -337,7 +322,7 @@ const Customizer: React.FC = () => {
     }
   }
 
-  const applyPreset = (preset: FullPreset) => {
+  const applyPreset = (preset: ThemePresetDefinition) => {
     setHexDraft('')
     const next: Overrides = { ...overrides }
     if (normalizeHex(preset.accent) === configAccent) delete next.accent
@@ -349,15 +334,21 @@ const Customizer: React.FC = () => {
     update(next)
   }
 
-  const isPresetActive = (preset: FullPreset): boolean =>
+  const isPresetActive = (preset: ThemePresetDefinition): boolean =>
     activeAccent.toLowerCase() === preset.accent.toLowerCase() &&
     activeRadius === preset.radius &&
     activeFont === preset.font
 
-  /** The current on-screen look as a paste-ready plugin config. */
+  /** The current on-screen look as a paste-ready plugin config. An exact
+   * preset match copies as the one-word `preset:` form — the same six looks
+   * back the option and this row, so the snippet stays as short as the config
+   * that produced it. */
   const copyConfig = async () => {
-    const lines = [`  accent: '${activeAccent}',`, `  radius: '${activeRadius}',`]
-    if (activeFont !== 'default') lines.push(`  font: '${activeFont}',`)
+    const matched = THEME_PRESETS.find(isPresetActive)
+    const lines = matched
+      ? [`  preset: '${matched.key}',`]
+      : [`  accent: '${activeAccent}',`, `  radius: '${activeRadius}',`]
+    if (!matched && activeFont !== 'default') lines.push(`  font: '${activeFont}',`)
     const snippet = `payloadTheme({\n${lines.join('\n')}\n})`
     const ok = await copyText(snippet)
     if (ok) {
@@ -384,18 +375,22 @@ const Customizer: React.FC = () => {
       <button
         aria-expanded={open}
         aria-haspopup="dialog"
-        aria-label="Theme settings"
+        aria-label={t('payloadTheme:themeSettings')}
         className="pt-header-btn"
         onClick={() => setOpen((current) => !current)}
-        title="Theme settings"
+        title={t('payloadTheme:themeSettings')}
         type="button"
       >
         <DynamicIcon aria-hidden="true" name="palette" strokeWidth={1.9} />
       </button>
       {open ? (
-        <div aria-label="Theme settings" className="pt-custom__panel" role="dialog">
+        <div
+          aria-label={t('payloadTheme:themeSettings')}
+          className="pt-custom__panel"
+          role="dialog"
+        >
           <div className="pt-custom__section">
-            <div className="pt-custom__label">Presets</div>
+            <div className="pt-custom__label">{t('payloadTheme:presets')}</div>
             <div className="pt-custom__presets">
               {THEME_PRESETS.map((preset) => (
                 <button
@@ -423,11 +418,11 @@ const Customizer: React.FC = () => {
           </div>
 
           <div className="pt-custom__section">
-            <div className="pt-custom__label">Accent</div>
+            <div className="pt-custom__label">{t('payloadTheme:accent')}</div>
             <div className="pt-custom__swatches">
               {swatches.map((hex) => (
                 <button
-                  aria-label={`Accent ${hex}`}
+                  aria-label={t('payloadTheme:accentSwatch', { hex })}
                   aria-pressed={activeAccent.toLowerCase() === hex.toLowerCase()}
                   className={[
                     'pt-custom__swatch',
@@ -450,7 +445,7 @@ const Customizer: React.FC = () => {
                 style={{ backgroundColor: activeAccent }}
               />
               <input
-                aria-label="Custom accent hex"
+                aria-label={t('payloadTheme:customAccentHex')}
                 className="pt-custom__hex-input"
                 maxLength={7}
                 onChange={(event) => onHexInput(event.target.value)}
@@ -463,7 +458,7 @@ const Customizer: React.FC = () => {
           </div>
 
           <div className="pt-custom__section">
-            <div className="pt-custom__label">Radius</div>
+            <div className="pt-custom__label">{t('payloadTheme:radius')}</div>
             <div className="pt-custom__segments">
               {RADIUS_OPTIONS.map((option) => (
                 <button
@@ -496,7 +491,7 @@ const Customizer: React.FC = () => {
           </div>
 
           <div className="pt-custom__section">
-            <div className="pt-custom__label">Font</div>
+            <div className="pt-custom__label">{t('payloadTheme:font')}</div>
             <div className="pt-custom__fonts">
               {FONT_OPTIONS.map((option) => {
                 const preset =
@@ -517,7 +512,7 @@ const Customizer: React.FC = () => {
                     style={preset ? { fontFamily: preset.stack } : undefined}
                     type="button"
                   >
-                    {preset?.label ?? 'Default'}
+                    {preset?.label ?? t('payloadTheme:fontDefault')}
                   </button>
                 )
               })}
@@ -525,7 +520,7 @@ const Customizer: React.FC = () => {
           </div>
 
           <div className="pt-custom__section">
-            <div className="pt-custom__label">Color mode</div>
+            <div className="pt-custom__label">{t('payloadTheme:colorMode')}</div>
             <div className="pt-custom__segments">
               {(['light', 'dark'] as const).map((mode) => (
                 <button
@@ -537,14 +532,14 @@ const Customizer: React.FC = () => {
                   onClick={() => setTheme(mode)}
                   type="button"
                 >
-                  {mode === 'light' ? 'Light' : 'Dark'}
+                  {mode === 'light' ? t('general:light') : t('general:dark')}
                 </button>
               ))}
             </div>
           </div>
 
           <div className="pt-custom__section">
-            <div className="pt-custom__label">Content layout</div>
+            <div className="pt-custom__label">{t('payloadTheme:contentLayout')}</div>
             <div className="pt-custom__segments">
               {(['centered', 'full'] as const).map((mode) => (
                 <button
@@ -566,7 +561,9 @@ const Customizer: React.FC = () => {
                   }}
                   type="button"
                 >
-                  {mode === 'centered' ? 'Centered' : 'Full'}
+                  {mode === 'centered'
+                    ? t('payloadTheme:layoutCentered')
+                    : t('payloadTheme:layoutFull')}
                 </button>
               ))}
             </div>
@@ -578,15 +575,15 @@ const Customizer: React.FC = () => {
                 .filter(Boolean)
                 .join(' ')}
               onClick={() => void copyConfig()}
-              title="Copy the current look as a payloadTheme({ ... }) snippet"
+              title={t('payloadTheme:copyConfigTitle')}
               type="button"
             >
               <DynamicIcon aria-hidden="true" name={copied ? 'check' : 'clipboard'} strokeWidth={1.9} />
-              {copied ? 'Copied!' : 'Copy config'}
+              {copied ? t('payloadTheme:copied') : t('payloadTheme:copyConfig')}
             </button>
             <button className="pt-custom__reset" onClick={reset} type="button">
               <DynamicIcon aria-hidden="true" name="rotate-ccw" strokeWidth={1.9} />
-              Reset
+              {t('general:reset')}
             </button>
           </div>
         </div>

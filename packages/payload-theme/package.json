@@ -1,7 +1,7 @@
 {
   "name": "payload-theme",
-  "version": "0.8.3",
-  "description": "A shadcn-style theme for the Payload CMS admin panel — dashboard with sparklines, ⌘K command palette, grouped icon sidebar, live theme customizer, dark mode. One accent color, two lines of setup.",
+  "version": "0.9.0",
+  "description": "A shadcn-style theme for the Payload CMS admin panel — dashboard with sparklines, ⌘K command palette, grouped icon sidebar, live theme customizer, dark mode, 8 languages. One accent color, two lines of setup.",
   "license": "MIT",
   "author": "Lider Bektaş <liderbektas200@gmail.com>",
   "homepage": "https://github.com/liderbektas/payload-theme#readme",
@@ -28,6 +28,7 @@
     "shadcn",
     "dark-mode",
     "command-palette",
+    "i18n",
     "ui",
     "dashboard",
     "cms",

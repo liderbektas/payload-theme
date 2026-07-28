@@ -21,6 +21,7 @@ import type { CollectionConfig, Config, Field } from 'payload'
 
 import { resolveOptions, type PayloadThemeOptions } from './options'
 import { buildTheme, resolveFont, themeToCss } from './theme'
+import { withThemeTranslations } from './translations'
 
 const BOOL_CELL = 'payload-theme/client#BoolCell'
 const MEDIA_TOGGLE = 'payload-theme/client#MediaListToggle'
@@ -100,6 +101,12 @@ export const payloadTheme =
     config.admin = config.admin ?? {}
     config.admin.custom = { ...config.admin.custom, payloadTheme: resolved }
 
+    // The theme's own strings, under a `payloadTheme:*` namespace, for every
+    // language Payload accepts (English where a locale isn't translated yet).
+    // Anything the project already declared there is preserved and wins, so
+    // rewording the theme's copy needs no component override.
+    config.i18n = withThemeTranslations(config.i18n)
+
     // List-view upgrades: boolean chips + the media grid toggle.
     config.collections = (config.collections ?? []).map(transformCollection)
 
@@ -151,6 +158,7 @@ export const payloadTheme =
   }
 
 export default payloadTheme
+export { THEME_PRESETS } from './options'
 export type {
   DashboardOptions,
   DashboardWidget,
@@ -160,5 +168,8 @@ export type {
   PayloadThemeOptions,
   ThemeFont,
   ThemePreset,
+  ThemePresetDefinition,
   ThemeRadius,
 } from './options'
+export { THEME_I18N_NAMESPACE, THEME_TRANSLATIONS } from './translations'
+export type { ThemeTranslationKey, ThemeTranslations } from './translations'

@@ -5,6 +5,8 @@ import React from 'react'
 
 import type { ResolvedThemeConfig } from '../../options'
 
+import { themeT } from '../../translations/types'
+
 /**
  * Login branding injected via `admin.components.beforeLogin`. Renders three
  * things:
@@ -23,11 +25,14 @@ import type { ResolvedThemeConfig } from '../../options'
  * The stylesheet switches the card to the split layout only when
  * `.pt-login-hero` exists, so forgot-password / reset keep the plain card.
  */
-export const LoginHero: React.FC<ServerProps> = ({ payload }) => {
+export const LoginHero: React.FC<ServerProps> = ({ i18n, payload }) => {
   const theme = payload?.config?.admin?.custom?.payloadTheme as ResolvedThemeConfig | undefined
+  const t = themeT(i18n)
 
-  const heading = theme?.login?.heading ?? 'Welcome back'
-  const tagline = theme?.login?.tagline ?? 'Sign in to manage your content.'
+  // Config copy wins; otherwise the localized default for the viewer's panel
+  // language, so an untouched install still reads correctly in every locale.
+  const heading = theme?.login?.heading ?? t('payloadTheme:loginHeading')
+  const tagline = theme?.login?.tagline ?? t('payloadTheme:loginTagline')
 
   // The form column follows the viewer's color scheme, so keep the pair and
   // let CSS show the matching variant (same mechanism as the nav logo).

@@ -10,7 +10,9 @@ import { formatAdminURL } from 'payload/shared'
 import React from 'react'
 
 import type { ResolvedDashboardWidget, ResolvedThemeConfig } from '../../options'
+import type { ThemeTFunction } from '../../translations/types'
 
+import { themeT } from '../../translations/types'
 import { resolveIconName } from '../navIcons'
 import { CountUp } from './client'
 
@@ -101,7 +103,7 @@ const Sparkline: React.FC<{ id: string; points: number[] }> = ({ id, points }) =
   )
 }
 
-const CollectionCard: React.FC<{ card: CollectionCardData }> = ({ card }) => {
+const CollectionCard: React.FC<{ card: CollectionCardData; t: ThemeTFunction }> = ({ card, t }) => {
   const { count, createHref, delta, href, iconName, label, slug, spark } = card
 
   return (
@@ -123,8 +125,8 @@ const CollectionCard: React.FC<{ card: CollectionCardData }> = ({ card }) => {
               data-trend={delta.trend}
               title={
                 delta.trend === 'new'
-                  ? 'All documents were created in the last 30 days'
-                  : 'New documents, last 30 days vs the 30 before'
+                  ? t('payloadTheme:trendAllNewTitle')
+                  : t('payloadTheme:trendTitle')
               }
             >
               {delta.trend === 'up' ? (
@@ -138,8 +140,8 @@ const CollectionCard: React.FC<{ card: CollectionCardData }> = ({ card }) => {
           ) : null}
         </span>
         <span className="pt-dash__card-caption">
-          {count === 1 ? 'document' : 'documents'}
-          {spark ? ' · last 30 days' : ''}
+          {t('payloadTheme:documentCount', { count: count ?? 0 })}
+          {spark ? ` · ${t('payloadTheme:lastThirtyDays')}` : ''}
         </span>
       </div>
       {spark ? <Sparkline id={slug} points={spark} /> : null}
@@ -147,7 +149,7 @@ const CollectionCard: React.FC<{ card: CollectionCardData }> = ({ card }) => {
       <Link aria-label={label} className="pt-dash__card-link" href={href} prefetch={false} />
       {createHref ? (
         <Link
-          aria-label={`Create new ${label}`}
+          aria-label={t('general:createNewLabel', { label })}
           className="pt-dash__card-create"
           href={createHref}
           prefetch={false}
@@ -159,20 +161,20 @@ const CollectionCard: React.FC<{ card: CollectionCardData }> = ({ card }) => {
   )
 }
 
-const GlobalCard: React.FC<{ card: GlobalCardData }> = ({ card }) => {
+const GlobalCard: React.FC<{ card: GlobalCardData; t: ThemeTFunction }> = ({ card, t }) => {
   const { href, iconName, label } = card
 
   return (
     <article className="pt-dash__card pt-dash__card--global">
       <div className="pt-dash__card-head">
-        <span className="pt-dash__card-label">Global</span>
+        <span className="pt-dash__card-label">{t('payloadTheme:global')}</span>
         <span aria-hidden="true" className="pt-dash__card-icon">
           <DynamicIcon aria-hidden="true" name={iconName as IconName} strokeWidth={1.9} />
         </span>
       </div>
       <div className="pt-dash__card-body">
         <span className="pt-dash__card-title">{label}</span>
-        <span className="pt-dash__card-caption">Manage configuration</span>
+        <span className="pt-dash__card-caption">{t('payloadTheme:manageConfiguration')}</span>
       </div>
       <Link aria-label={label} className="pt-dash__card-link" href={href} prefetch={false} />
     </article>
@@ -197,8 +199,10 @@ function sparkWindowStart(): Date {
 function computeDelta(
   current: number,
   previous: number,
+  t: ThemeTFunction,
 ): CollectionCardData['delta'] {
-  if (previous === 0) return current > 0 ? { label: 'New', trend: 'new' } : null
+  if (previous === 0)
+    return current > 0 ? { label: t('payloadTheme:trendNew'), trend: 'new' } : null
   const pct = Math.round(((current - previous) / previous) * 100)
   if (pct === 0) return { label: '±0%', trend: 'flat' }
   return pct > 0
@@ -241,6 +245,7 @@ export async function Dashboard(props: DashboardViewServerProps) {
   } = payload
 
   const theme = admin?.custom?.payloadTheme as ResolvedThemeConfig | undefined
+  const t = themeT(i18n)
   const since = sparkWindowStart()
 
   // ---- collection cards (same visibility + read filtering as the Nav) ------
@@ -290,7 +295,7 @@ export async function Dashboard(props: DashboardViewServerProps) {
             },
           }),
         ])
-        delta = computeDelta(currentWindow.totalDocs, previousWindow.totalDocs)
+        delta = computeDelta(currentWindow.totalDocs, previousWindow.totalDocs, t)
       } catch {
         // no chip is fine — the card still renders
       }
@@ -352,11 +357,11 @@ export async function Dashboard(props: DashboardViewServerProps) {
   // ---- built-in cells ---------------------------------------------------------
   const cells: DashboardCell[] = [
     ...collectionCards.map((card) => ({
-      Component: () => <CollectionCard card={card} />,
+      Component: () => <CollectionCard card={card} t={t} />,
       key: `collection-${card.slug}`,
     })),
     ...globalCards.map((card) => ({
-      Component: () => <GlobalCard card={card} />,
+      Component: () => <GlobalCard card={card} t={t} />,
       key: `global-${card.slug}`,
     })),
   ]

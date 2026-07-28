@@ -106,4 +106,25 @@ test.describe('Admin Panel', () => {
     const editViewArtifact = page.locator('input[name="email"]')
     await expect(editViewArtifact).toBeVisible()
   })
+
+  test('the theme’s own chrome follows the panel language', async ({ browser }) => {
+    // A German panel must not come out half-English: the strings below all
+    // come from the theme, not from Payload, so they only translate if the
+    // `payloadTheme:*` namespace reached the browser.
+    const context = await browser.newContext({
+      locale: 'de-DE',
+      viewport: { height: 1000, width: 1600 },
+    })
+    const dePage = await context.newPage()
+
+    await dePage.goto('http://localhost:3000/admin/login')
+    await expect(dePage.locator('.pt-login-hero__heading')).toHaveText('Willkommen zurück')
+
+    await login({ page: dePage, user: testUser })
+    await expect(dePage.locator('.pt-nav__search-label')).toHaveText('Suchen')
+    await expect(dePage.locator('.pt-dash__card-caption').first()).toContainText('Dokument')
+    await expect(dePage.locator('text=/payloadTheme:/')).toHaveCount(0)
+
+    await context.close()
+  })
 })
