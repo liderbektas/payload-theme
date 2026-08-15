@@ -92,6 +92,36 @@ test.describe('Admin Panel', () => {
     expect(align).toBe('center')
   })
 
+  test('sidebar keeps its scroll offset across navigation', async () => {
+    // Payload renders the nav inside DefaultTemplate — part of the page, not
+    // the layout — so every navigation remounts it and the scrolled menu node
+    // is thrown away. The offset must survive that.
+    await page.goto('http://localhost:3000/admin')
+    await expect(page.locator('.pt-dash__grid')).toBeVisible()
+
+    // Short viewport (still desktop-wide) so the entity list has to scroll.
+    await page.setViewportSize({ height: 420, width: 1600 })
+
+    const menu = page.locator('.pt-nav__wrap')
+    await expect(menu).toBeVisible()
+    expect(await menu.evaluate((el) => el.scrollHeight > el.clientHeight)).toBe(true)
+
+    await menu.evaluate((el) => {
+      el.scrollTop = el.scrollHeight
+    })
+    const before = await menu.evaluate((el) => el.scrollTop)
+    expect(before).toBeGreaterThan(0)
+
+    await page.locator('.pt-nav a[href="/admin/collections/users"]').click()
+    await page.waitForURL(/\/admin\/collections\/users(\?.*)?$/)
+    await expect(page.locator('h1', { hasText: 'Users' }).first()).toBeVisible()
+
+    const after = await menu.evaluate((el) => el.scrollTop)
+    expect(Math.abs(after - before)).toBeLessThanOrEqual(2)
+
+    await page.setViewportSize({ height: 1000, width: 1600 })
+  })
+
   test('can navigate to list view', async () => {
     await page.goto('http://localhost:3000/admin/collections/users')
     // Payload may normalize the list URL with default query params

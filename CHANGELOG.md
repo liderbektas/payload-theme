@@ -4,6 +4,32 @@ All notable changes to `payload-theme` are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.9.1] — 2026-08-15
+
+### Fixed
+
+- **The sidebar flickered and lost its scroll position on every navigation**
+  ([#4](https://github.com/liderbektas/payload-theme/issues/4)). Payload
+  renders the nav inside `DefaultTemplate`, which belongs to the page rather
+  than the layout, so clicking a menu item remounts the whole sidebar. Two
+  things fell out of that remount, both now handled:
+  - **Icons blanked for a frame.** lucide's `DynamicIcon` re-imports its icon
+    in an effect on every mount and renders nothing until that promise
+    settles, so each navigation blanked all the icons and shifted the labels
+    left before they popped back — the visible flicker. Resolved icons are now
+    cached at module scope and render synchronously on later mounts, so the
+    first paint after a navigation is already correct; the not-yet-loaded
+    state is an empty box of the icon's size instead of nothing, so nothing
+    shifts on the very first load either. The dashboard cards, ⌘K palette,
+    header actions and user menu share the same cache.
+  - **The menu scrolled back to the top.** With enough collections to make the
+    entity list scroll, clicking an item you had to scroll down to threw the
+    scrolled node away and started from 0. The offset is now remembered and
+    restored before the browser paints the new page.
+- The search pill no longer replays its `⌘K` → `Ctrl K` swap on every
+  navigation for Windows and Linux users — the resolved label is remembered
+  the same way.
+
 ## [0.9.0] — 2026-07-28
 
 ### Added

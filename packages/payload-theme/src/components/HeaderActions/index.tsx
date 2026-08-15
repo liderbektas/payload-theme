@@ -1,7 +1,6 @@
 'use client'
 
 import { useConfig, useNav, useTheme } from '@payloadcms/ui'
-import { DynamicIcon } from 'lucide-react/dynamic'
 import React from 'react'
 
 import type { ResolvedThemeConfig, ThemePresetDefinition, ThemeRadius } from '../../options'
@@ -18,6 +17,7 @@ import {
   type ThemeFontKey,
 } from '../../theme'
 import { useThemeTranslation } from '../../translations/useThemeTranslation'
+import { Icon } from '../Icon'
 import { UserMenu } from '../UserMenu'
 
 /**
@@ -212,7 +212,7 @@ const NavCollapse: React.FC = () => {
       title={label}
       type="button"
     >
-      <DynamicIcon
+      <Icon
         aria-hidden="true"
         name={navOpen ? 'panel-left-close' : 'panel-left-open'}
         strokeWidth={1.9}
@@ -236,7 +236,7 @@ const ThemeToggle: React.FC = () => {
       title={isDark ? t('payloadTheme:lightMode') : t('payloadTheme:darkMode')}
       type="button"
     >
-      <DynamicIcon aria-hidden="true" name={isDark ? 'sun' : 'moon'} strokeWidth={1.9} />
+      <Icon aria-hidden="true" name={isDark ? 'sun' : 'moon'} strokeWidth={1.9} />
     </button>
   )
 }
@@ -381,7 +381,7 @@ const Customizer: React.FC = () => {
         title={t('payloadTheme:themeSettings')}
         type="button"
       >
-        <DynamicIcon aria-hidden="true" name="palette" strokeWidth={1.9} />
+        <Icon aria-hidden="true" name="palette" strokeWidth={1.9} />
       </button>
       {open ? (
         <div
@@ -481,7 +481,7 @@ const Customizer: React.FC = () => {
                   type="button"
                 >
                   {option === 'none' ? (
-                    <DynamicIcon aria-hidden="true" name="ban" strokeWidth={1.9} />
+                    <Icon aria-hidden="true" name="ban" strokeWidth={1.9} />
                   ) : (
                     option.toUpperCase()
                   )}
@@ -578,11 +578,11 @@ const Customizer: React.FC = () => {
               title={t('payloadTheme:copyConfigTitle')}
               type="button"
             >
-              <DynamicIcon aria-hidden="true" name={copied ? 'check' : 'clipboard'} strokeWidth={1.9} />
+              <Icon aria-hidden="true" name={copied ? 'check' : 'clipboard'} strokeWidth={1.9} />
               {copied ? t('payloadTheme:copied') : t('payloadTheme:copyConfig')}
             </button>
             <button className="pt-custom__reset" onClick={reset} type="button">
-              <DynamicIcon aria-hidden="true" name="rotate-ccw" strokeWidth={1.9} />
+              <Icon aria-hidden="true" name="rotate-ccw" strokeWidth={1.9} />
               {t('general:reset')}
             </button>
           </div>

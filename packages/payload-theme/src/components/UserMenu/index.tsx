@@ -2,12 +2,12 @@
 
 import { getTranslation } from '@payloadcms/translations'
 import { Link, useAuth, useConfig, useLocale } from '@payloadcms/ui'
-import { DynamicIcon } from 'lucide-react/dynamic'
 import { usePathname, useRouter } from 'next/navigation'
 import { formatAdminURL } from 'payload/shared'
 import React from 'react'
 
 import { useThemeTranslation } from '../../translations/useThemeTranslation'
+import { Icon } from '../Icon'
 
 /**
  * The shared user block: an avatar + name/email trigger opening a
@@ -116,7 +116,7 @@ export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant
             prefetch={false}
             role="menuitem"
           >
-            <DynamicIcon aria-hidden="true" name="circle-user" strokeWidth={1.9} />
+            <Icon aria-hidden="true" name="circle-user" strokeWidth={1.9} />
             {t('authentication:account')}
           </Link>
           {localization ? (
@@ -137,7 +137,7 @@ export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant
                   >
                     <span aria-hidden="true" className={cls('-menu-check')}>
                       {isActive ? (
-                        <DynamicIcon aria-hidden="true" name="check" strokeWidth={2.2} />
+                        <Icon aria-hidden="true" name="check" strokeWidth={2.2} />
                       ) : null}
                     </span>
                     {getTranslation(localeOption.label, i18n)}
@@ -154,7 +154,7 @@ export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant
             prefetch={false}
             role="menuitem"
           >
-            <DynamicIcon aria-hidden="true" name="log-out" strokeWidth={1.9} />
+            <Icon aria-hidden="true" name="log-out" strokeWidth={1.9} />
             {t('authentication:logOut')}
           </Link>
         </div>
@@ -173,7 +173,7 @@ export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant
           <span className={cls('-name')}>{name}</span>
           {email ? <span className={cls('-email')}>{email}</span> : null}
         </span>
-        <DynamicIcon
+        <Icon
           aria-hidden="true"
           className={cls('-chevron')}
           name="chevrons-up-down"

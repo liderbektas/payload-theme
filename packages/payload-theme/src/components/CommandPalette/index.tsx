@@ -4,7 +4,6 @@ import type { StaticLabel } from 'payload'
 
 import { getTranslation } from '@payloadcms/translations'
 import { useAuth, useConfig, useEntityVisibility, useTheme } from '@payloadcms/ui'
-import { DynamicIcon, type IconName } from 'lucide-react/dynamic'
 import { usePathname, useRouter } from 'next/navigation'
 import { formatAdminURL } from 'payload/shared'
 import React from 'react'
@@ -13,6 +12,7 @@ import { createPortal } from 'react-dom'
 import type { ResolvedThemeConfig } from '../../options'
 
 import { useThemeTranslation } from '../../translations/useThemeTranslation'
+import { Icon, type IconName } from '../Icon'
 import { resolveIconName } from '../navIcons'
 
 /**
@@ -543,7 +543,7 @@ export const CommandPalette: React.FC = () => {
         role="dialog"
       >
         <div className="pt-palette__search">
-          <DynamicIcon
+          <Icon
             aria-hidden="true"
             className="pt-palette__search-icon"
             name="search"
@@ -590,7 +590,7 @@ export const CommandPalette: React.FC = () => {
                   type="button"
                 >
                   <span aria-hidden="true" className="pt-palette__item-icon">
-                    <DynamicIcon
+                    <Icon
                       aria-hidden="true"
                       name={item.iconName as IconName}
                       strokeWidth={1.9}
