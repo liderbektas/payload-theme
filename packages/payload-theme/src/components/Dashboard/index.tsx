@@ -4,7 +4,6 @@ import type { CollectionSlug, GlobalSlug, StaticLabel } from 'payload'
 import { getTranslation } from '@payloadcms/translations'
 import { Gutter } from '@payloadcms/ui'
 import { RenderServerComponent } from '@payloadcms/ui/elements/RenderServerComponent'
-import { DynamicIcon, type IconName } from 'lucide-react/dynamic'
 import Link from 'next/link'
 import { formatAdminURL } from 'payload/shared'
 import React from 'react'
@@ -13,6 +12,7 @@ import type { ResolvedDashboardWidget, ResolvedThemeConfig } from '../../options
 import type { ThemeTFunction } from '../../translations/types'
 
 import { themeT } from '../../translations/types'
+import { Icon, type IconName } from '../Icon'
 import { resolveIconName } from '../navIcons'
 import { CountUp } from './client'
 
@@ -111,7 +111,7 @@ const CollectionCard: React.FC<{ card: CollectionCardData; t: ThemeTFunction }> 
       <div className="pt-dash__card-head">
         <span className="pt-dash__card-label">{label}</span>
         <span aria-hidden="true" className="pt-dash__card-icon">
-          <DynamicIcon aria-hidden="true" name={iconName as IconName} strokeWidth={1.9} />
+          <Icon aria-hidden="true" name={iconName as IconName} strokeWidth={1.9} />
         </span>
       </div>
       <div className="pt-dash__card-body">
@@ -130,10 +130,10 @@ const CollectionCard: React.FC<{ card: CollectionCardData; t: ThemeTFunction }> 
               }
             >
               {delta.trend === 'up' ? (
-                <DynamicIcon aria-hidden="true" name="trending-up" strokeWidth={2} />
+                <Icon aria-hidden="true" name="trending-up" strokeWidth={2} />
               ) : null}
               {delta.trend === 'down' ? (
-                <DynamicIcon aria-hidden="true" name="trending-down" strokeWidth={2} />
+                <Icon aria-hidden="true" name="trending-down" strokeWidth={2} />
               ) : null}
               {delta.label}
             </span>
@@ -154,7 +154,7 @@ const CollectionCard: React.FC<{ card: CollectionCardData; t: ThemeTFunction }> 
           href={createHref}
           prefetch={false}
         >
-          <DynamicIcon aria-hidden="true" name="plus" strokeWidth={2} />
+          <Icon aria-hidden="true" name="plus" strokeWidth={2} />
         </Link>
       ) : null}
     </article>
@@ -169,7 +169,7 @@ const GlobalCard: React.FC<{ card: GlobalCardData; t: ThemeTFunction }> = ({ car
       <div className="pt-dash__card-head">
         <span className="pt-dash__card-label">{t('payloadTheme:global')}</span>
         <span aria-hidden="true" className="pt-dash__card-icon">
-          <DynamicIcon aria-hidden="true" name={iconName as IconName} strokeWidth={1.9} />
+          <Icon aria-hidden="true" name={iconName as IconName} strokeWidth={1.9} />
         </span>
       </div>
       <div className="pt-dash__card-body">

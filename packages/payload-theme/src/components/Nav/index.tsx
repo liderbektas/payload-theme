@@ -12,7 +12,6 @@ import {
   useTranslation,
 } from '@payloadcms/ui'
 import { PayloadLogo } from '@payloadcms/ui/graphics/Logo'
-import { DynamicIcon, type IconName } from 'lucide-react/dynamic'
 import { usePathname } from 'next/navigation'
 import { formatAdminURL } from 'payload/shared'
 import React from 'react'
@@ -22,6 +21,7 @@ import type { ResolvedThemeConfig } from '../../options'
 import { useThemeTranslation } from '../../translations/useThemeTranslation'
 import { CommandPalette } from '../CommandPalette'
 import { DocOutline } from '../DocOutline'
+import { Icon, type IconName } from '../Icon'
 import { ShortcutsModal } from '../ShortcutsModal'
 import { UserMenu } from '../UserMenu'
 import { resolveIconName } from '../navIcons'
@@ -56,7 +56,7 @@ const NavItemLink: React.FC<{ exact?: boolean; item: NavItem; pathname: string }
 
   const content = (
     <React.Fragment>
-      <DynamicIcon
+      <Icon
         aria-hidden="true"
         className="pt-nav__icon"
         name={iconName as IconName}
@@ -86,14 +86,20 @@ const NavItemLink: React.FC<{ exact?: boolean; item: NavItem; pathname: string }
 /** True for a Payload import-map component path (e.g. `/components/X#X`). */
 const isComponentPath = (value: string): boolean => value.includes('#')
 
+/** Last resolved shortcut label. Module scope, so the Nav's remount on every
+ * navigation starts from the platform's label instead of replaying the ⌘K →
+ * Ctrl K swap (see the icon cache in ../Icon for the same reason). */
+let shortcutLabel = '⌘K'
+
 /** Search pill under the logo — opens the ⌘K palette. The shortcut label is
  * resolved after mount so server HTML never guesses the platform. */
 const NavSearch: React.FC = () => {
   const { t } = useThemeTranslation()
-  const [shortcut, setShortcut] = React.useState('⌘K')
+  const [shortcut, setShortcut] = React.useState(shortcutLabel)
 
   React.useEffect(() => {
-    if (/win|linux/i.test(navigator.platform)) setShortcut('Ctrl K')
+    shortcutLabel = /win|linux/i.test(navigator.platform) ? 'Ctrl K' : '⌘K'
+    setShortcut(shortcutLabel)
   }, [])
 
   return (
@@ -102,7 +108,7 @@ const NavSearch: React.FC = () => {
       onClick={() => window.dispatchEvent(new CustomEvent('pt:open-palette'))}
       type="button"
     >
-      <DynamicIcon
+      <Icon
         aria-hidden="true"
         className="pt-nav__search-icon"
         name="search"
@@ -116,6 +122,43 @@ const NavSearch: React.FC = () => {
   )
 }
 
+/** How far the entity list was scrolled, kept at module scope for the same
+ * reason as the icon cache: Payload renders the Nav inside `DefaultTemplate`,
+ * which belongs to the page rather than the layout, so every navigation
+ * remounts the sidebar and throws its scrolled `<nav>` node away. */
+let navScrollTop = 0
+
+/** SSR-safe layout effect: restoring the offset must happen before the browser
+ * paints, but the Nav is server-rendered too and `useLayoutEffect` warns there. */
+const useIsomorphicLayoutEffect =
+  typeof window === 'undefined' ? React.useEffect : React.useLayoutEffect
+
+/**
+ * Keeps the menu's scroll offset across navigations: remembers it while the
+ * user scrolls and puts it back on the next mount, so clicking a collection
+ * you had to scroll down to no longer snaps the sidebar back to the top.
+ */
+const useNavScrollMemory = () => {
+  const ref = React.useRef<HTMLElement | null>(null)
+
+  useIsomorphicLayoutEffect(() => {
+    const element = ref.current
+    if (!element) return
+
+    // Clamped by the browser, so a shorter menu (fewer permitted entities)
+    // simply lands at its own bottom instead of an impossible offset.
+    if (navScrollTop > 0) element.scrollTop = navScrollTop
+
+    const onScroll = () => {
+      navScrollTop = element.scrollTop
+    }
+    element.addEventListener('scroll', onScroll, { passive: true })
+    return () => element.removeEventListener('scroll', onScroll)
+  }, [])
+
+  return ref
+}
+
 export const Nav: React.FC = () => {
   const pathname = usePathname()
   const { config } = useConfig()
@@ -123,6 +166,7 @@ export const Nav: React.FC = () => {
   const { permissions } = useAuth()
   const { isEntityVisible } = useEntityVisibility()
   const { hydrated, navOpen, navRef, setNavOpen, shouldAnimate } = useNav()
+  const menuRef = useNavScrollMemory()
 
   // Close the mobile drawer when the command palette opens (from ⌘K OR the
   // search pill), so the palette never layers over/beside the open drawer.
@@ -275,7 +319,7 @@ export const Nav: React.FC = () => {
         <NavSearch />
         {/* Only this middle block scrolls — the logo/search above and the
          * user block below stay pinned at any content height. */}
-        <nav className="nav__wrap pt-nav__wrap">
+        <nav className="nav__wrap pt-nav__wrap" ref={menuRef}>
           <div className="pt-nav__group">
             <NavItemLink item={dashboardItem} exact pathname={pathname} />
           </div>

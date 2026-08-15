@@ -1,11 +1,11 @@
 'use client'
 
 import { useAuth } from '@payloadcms/ui'
-import { DynamicIcon } from 'lucide-react/dynamic'
 import React from 'react'
 import { createPortal } from 'react-dom'
 
 import { useThemeTranslation } from '../../translations/useThemeTranslation'
+import { Icon } from '../Icon'
 
 /**
  * Keyboard-shortcuts cheatsheet. Opens on `?` anywhere in the panel (unless
@@ -98,7 +98,7 @@ export const ShortcutsModal: React.FC = () => {
       >
         <div className="pt-shortcuts__head">
           <span className="pt-shortcuts__title">
-            <DynamicIcon aria-hidden="true" name="keyboard" strokeWidth={1.9} />
+            <Icon aria-hidden="true" name="keyboard" strokeWidth={1.9} />
             {t('payloadTheme:keyboardShortcuts')}
           </span>
           <button
@@ -107,7 +107,7 @@ export const ShortcutsModal: React.FC = () => {
             onClick={() => setOpen(false)}
             type="button"
           >
-            <DynamicIcon aria-hidden="true" name="x" strokeWidth={2} />
+            <Icon aria-hidden="true" name="x" strokeWidth={2} />
           </button>
         </div>
         <div className="pt-shortcuts__body">
