@@ -7,6 +7,7 @@ import { formatAdminURL } from 'payload/shared'
 import React from 'react'
 
 import { useThemeTranslation } from '../../translations/useThemeTranslation'
+import { useThemeAvatar } from '../AvatarProvider/client'
 import { Icon } from '../Icon'
 
 /**
@@ -26,6 +27,7 @@ import { Icon } from '../Icon'
 export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant = 'sidebar' }) => {
   const { user } = useAuth()
   const { config } = useConfig()
+  const { node: avatarNode, src: avatarSrc } = useThemeAvatar()
   const { i18n, t } = useThemeTranslation()
   const locale = useLocale()
   const router = useRouter()
@@ -80,6 +82,25 @@ export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant
       .join('')
       .toUpperCase() || '?'
 
+  // Resolved server-side by the AvatarProvider: an image URL (gravatar or the
+  // configured user field), a rendered `admin.avatar.Component`, or neither —
+  // in which case the accent initials circle stands, as it always has.
+  const avatarInner = avatarSrc ? (
+    <img alt="" className={cls('-avatar-img')} src={avatarSrc} />
+  ) : (
+    (avatarNode ?? initials)
+  )
+  // The modifier drops the accent fill so artwork isn't framed by a colored
+  // disc, and clips whatever the custom component renders to the circle.
+  const avatar = (
+    <span
+      aria-hidden="true"
+      className={`${cls('-avatar')}${avatarSrc || avatarNode ? ` ${cls('-avatar--image')}` : ''}`}
+    >
+      {avatarInner}
+    </span>
+  )
+
   const accountHref = formatAdminURL({
     adminRoute,
     path: config.admin?.routes?.account ?? '/account',
@@ -100,9 +121,7 @@ export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant
       {open ? (
         <div className={cls('-menu')} role="menu">
           <div className={cls('-menu-header')}>
-            <span aria-hidden="true" className={cls('-avatar')}>
-              {initials}
-            </span>
+            {avatar}
             <span className={cls('-info')}>
               <span className={cls('-name')}>{name}</span>
               {email ? <span className={cls('-email')}>{email}</span> : null}
@@ -136,9 +155,7 @@ export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant
                     type="button"
                   >
                     <span aria-hidden="true" className={cls('-menu-check')}>
-                      {isActive ? (
-                        <Icon aria-hidden="true" name="check" strokeWidth={2.2} />
-                      ) : null}
+                      {isActive ? <Icon aria-hidden="true" name="check" strokeWidth={2.2} /> : null}
                     </span>
                     {getTranslation(localeOption.label, i18n)}
                   </button>
@@ -166,9 +183,7 @@ export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant
         onClick={() => setOpen((current) => !current)}
         type="button"
       >
-        <span aria-hidden="true" className={cls('-avatar')}>
-          {initials}
-        </span>
+        {avatar}
         <span className={cls('-info')}>
           <span className={cls('-name')}>{name}</span>
           {email ? <span className={cls('-email')}>{email}</span> : null}

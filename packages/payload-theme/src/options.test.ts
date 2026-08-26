@@ -134,3 +134,34 @@ describe('resolveOptions — dashboard.widgets', () => {
     )
   })
 })
+
+describe('resolveOptions — avatar', () => {
+  it("resolves to null when omitted, so Payload's own admin.avatar decides", () => {
+    expect(resolveOptions({}).resolved.avatar).toBeNull()
+  })
+
+  it('normalizes the string forms to tagged objects', () => {
+    expect(resolveOptions({ avatar: 'initials' }).resolved.avatar).toEqual({ type: 'initials' })
+    expect(resolveOptions({ avatar: 'gravatar' }).resolved.avatar).toEqual({ type: 'gravatar' })
+  })
+
+  it('normalizes the field form, trimming and defaulting size to null', () => {
+    expect(resolveOptions({ avatar: { field: ' photo ' } }).resolved.avatar).toEqual({
+      name: 'photo',
+      size: null,
+      type: 'field',
+    })
+    expect(
+      resolveOptions({ avatar: { field: 'profile.photo', size: 'thumbnail' } }).resolved.avatar,
+    ).toEqual({ name: 'profile.photo', size: 'thumbnail', type: 'field' })
+  })
+
+  it('rejects invalid avatar options with a clear error', () => {
+    expect(() => resolveOptions({ avatar: 'photo' as 'gravatar' })).toThrow(
+      /Invalid avatar: 'photo'/,
+    )
+    expect(() => resolveOptions({ avatar: { field: '  ' } })).toThrow(/avatar\.field/)
+    expect(() => resolveOptions({ avatar: { field: 'photo', size: '' } })).toThrow(/avatar\.size/)
+    expect(() => resolveOptions({ avatar: [] as unknown as 'gravatar' })).toThrow(/avatar must be/)
+  })
+})

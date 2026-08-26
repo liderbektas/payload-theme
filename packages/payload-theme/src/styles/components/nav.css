@@ -204,6 +204,23 @@
     font-weight: 600;
     letter-spacing: 0.02em;
   }
+  /* Photo/gravatar/custom-component avatars: no accent disc behind the
+   * artwork, and everything the source renders is clipped to the circle. */
+  .pt-nav__user-avatar--image {
+    background: none;
+    overflow: hidden;
+  }
+  .pt-nav__user-avatar--image > * {
+    width: 100%;
+    height: 100%;
+  }
+  .pt-nav__user-avatar--image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 999px;
+    object-fit: cover;
+  }
   .pt-nav__user-info {
     flex: 1;
     min-width: 0;

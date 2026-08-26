@@ -11,6 +11,15 @@ export const Users: CollectionConfig = {
   fields: [
     // Email added by default
     {
+      name: 'avatar',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description:
+          "Shown in the theme's sidebar and header user menus (`avatar: { field: 'avatar' }`).",
+      },
+    },
+    {
       name: 'role',
       type: 'select',
       required: true,

@@ -248,6 +248,12 @@ payloadTheme({
   // Small mark, used as a fallback for the login logo.
   icon: '/mark.svg',
 
+  // The user avatar in the sidebar/header user block. Omit it and the theme
+  // honors Payload's own `admin.avatar` (gravatar or a custom Component),
+  // falling back to the accent initials circle.
+  //   'initials' | 'gravatar' | { field, size }
+  avatar: { field: 'avatar' },
+
   // Copy on the login brand panel.
   login: {
     heading: 'Welcome back',
@@ -289,11 +295,59 @@ payloadTheme({
 | `logo` | `string \| { light, dark }` | Payload logo | Image URL(s) shown at the top of the sidebar and above the login form. |
 | `logoHeight` | `number \| string` | `26` | Rendered logo height — a number is px, a string is any CSS length. |
 | `icon` | `string \| { light, dark }` | — | Small mark, used as a login-logo fallback. |
+| `avatar` | `'initials' \| 'gravatar' \| { field, size }` | Payload's `admin.avatar`, else initials | Where the user avatar comes from — see [User avatar](#user-avatar). |
 | `login.heading` | `string` | `'Welcome back'` | Big heading on the login brand panel. |
 | `login.tagline` | `string` | `'Sign in to manage your content.'` | Supporting line under the heading. |
 | `nav.icons` | `Record<slug, iconName>` | folder icon | Maps collections/globals to [lucide](https://lucide.dev) icons — sidebar, dashboard cards and palette. |
 | `dashboard.widgets` | `DashboardWidget[]` | `[]` | Custom components rendered below the built-in dashboard content. |
 | `cssVariables` | `Record<string, string>` | — | Escape hatch: override any raw `--pt-*` token directly. |
+
+## User avatar
+
+The user block at the bottom of the sidebar (and the compact chip in the header) draws an accent circle with the user's initials by default. Three other sources are one option away:
+
+```ts
+payloadTheme({
+  // 1. A field on your auth collection — an upload/relationship to a media
+  //    collection, or a plain text field holding a URL. Dot paths reach into
+  //    groups ('profile.photo'); `size` picks a named upload size.
+  avatar: { field: 'avatar', size: 'thumbnail' },
+
+  // 2. The Gravatar registered to the user's email.
+  avatar: 'gravatar',
+
+  // 3. The initials circle, explicitly — keeps it even when `admin.avatar` is set.
+  avatar: 'initials',
+})
+```
+
+Add the field to your auth collection like any other:
+
+```ts
+export const Users: CollectionConfig = {
+  slug: 'users',
+  auth: true,
+  fields: [{ name: 'avatar', type: 'upload', relationTo: 'media' }],
+}
+```
+
+**Payload's own `admin.avatar` works too.** Leave the theme's `avatar` option out and whatever you set on the config decides — including a custom component:
+
+```ts
+export default buildConfig({
+  admin: {
+    // 'default' | 'gravatar' | { Component }
+    avatar: { Component: '/components/MyAvatar#MyAvatar' },
+  },
+  plugins: [payloadTheme({ accent: '#e30613' })],
+})
+```
+
+The component is rendered on the server (so it receives `payload`, `user`, `i18n` and `permissions` as props) and placed inside the theme's circle, which clips it and drops its accent fill. `admin.avatar: 'default'` means "Payload's default icon" — the theme reads that as its own default and keeps the initials.
+
+> Payload also renders `admin.avatar.Component` into its own header account button, which this theme hides — so a custom component mounts twice per page. Keep it side-effect-free (or use the theme's `avatar` option instead) if that matters to you.
+
+Resolution happens once per request in a server provider, so an upload relationship is looked up with access control applied and never fetched in the browser. Anything unresolvable — no field value, a deleted upload, no read access — falls back to initials rather than breaking the page.
 
 ## Dashboard widgets
 
@@ -369,7 +423,7 @@ No component is forked and no file of yours is rewritten: the plugin adds keys t
 | --- | --- | --- |
 | `admin.components.Nav` | **replaces** | The grouped icon sidebar, ⌘K pill and user block. |
 | `admin.components.views.dashboard.Component` | **replaces** | The stat-card dashboard. |
-| `admin.components.providers` | adds 2 | `ThemeProvider` (injects the `--pt-*` tokens) and `ListQuickActions` (row-hover edit/delete). |
+| `admin.components.providers` | adds 3 | `AvatarProvider` (resolves the user avatar server-side), `ThemeProvider` (injects the `--pt-*` tokens) and `ListQuickActions` (row-hover edit/delete). |
 | `admin.components.actions` | adds 1 | `HeaderActions` — customizer, light/dark toggle, user menu. |
 | `admin.components.beforeLogin` | adds 1 | `LoginHero` — the brand panel. The split login layout only applies when it renders. |
 | `admin.custom.payloadTheme` | adds 1 | The resolved theme config the client components read. |
@@ -411,6 +465,8 @@ Everything else rides on public API (`@payloadcms/ui` hooks, the local API, REST
 ## Troubleshooting
 
 **"Component not found in import map"** — run `npx payload generate:importmap` after installing, then restart the dev server.
+
+**Avatar still showing initials** — the avatar resolver is a registered component, so run `npx payload generate:importmap` and restart after upgrading. Then check the source: `avatar: { field }` needs a value on *that* user's document, and `avatar: 'initials'` (or `admin.avatar: 'default'`) deliberately keeps the initials.
 
 **Styles not applying** — make sure `@import 'payload-theme/styles.css';` is in `src/app/(payload)/custom.scss`.
 

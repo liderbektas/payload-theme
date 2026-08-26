@@ -4,6 +4,40 @@ All notable changes to `payload-theme` are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.9.2] — 2026-08-26
+
+### Added
+
+- **The user avatar is configurable, and Payload's own `admin.avatar` works
+  again** ([#6](https://github.com/liderbektas/payload-theme/issues/6)). The
+  theme replaces Payload's Nav and hides its header account button, so the
+  only avatar on screen was the initials circle the theme drew itself — with
+  no way to change it, and `admin.avatar` rendering into a `display: none`
+  node. A new server-side `AvatarProvider` now resolves the avatar once per
+  request and hands it to both user blocks (sidebar and header):
+  - `avatar: { field: 'avatar', size: 'thumbnail' }` — a field on your auth
+    collection. An `upload`/`relationship` is looked up with access control
+    applied (Payload's auth depth is 0, so the value arrives as an ID); a
+    plain text field holding a URL is used as-is. Dot paths reach into groups,
+    and `size` picks a named upload size instead of the original file.
+  - `avatar: 'gravatar'` — the Gravatar for the user's email, hashed with
+    SHA-256 (no new dependency).
+  - `avatar: 'initials'` — the circle, explicitly, even when `admin.avatar`
+    is set.
+  - **Option omitted → Payload decides.** `admin.avatar: 'gravatar'` and
+    `admin.avatar: { Component }` both render inside the theme's circle now;
+    the custom component is server-rendered through the import map, so it
+    still receives `payload`, `user`, `i18n` and `permissions`.
+
+  Anything unresolvable — no value, a deleted upload, no read access — falls
+  back to initials instead of breaking the page, and with nothing configured
+  the provider does no work at all.
+
+### Upgrading
+
+- Run `npx payload generate:importmap` and restart: the avatar resolver is a
+  registered component and needs an entry in your import map.
+
 ## [0.9.1] — 2026-08-15
 
 ### Fixed

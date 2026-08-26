@@ -417,6 +417,10 @@ export interface Project {
 export interface User {
   id: number;
   /**
+   * Shown in the theme's sidebar and header user menus (`avatar: { field: 'avatar' }`).
+   */
+  avatar?: (number | null) | Media;
+  /**
    * Controls the access level of this user in the admin panel.
    */
   role: 'admin' | 'editor';
@@ -725,6 +729,7 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  avatar?: T;
   role?: T;
   updatedAt?: T;
   createdAt?: T;

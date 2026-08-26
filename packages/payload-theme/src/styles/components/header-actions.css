@@ -473,6 +473,22 @@
     font-weight: 600;
     letter-spacing: 0.02em;
   }
+  /* Same treatment as the sidebar block when the avatar is real artwork. */
+  .pt-header-user-avatar--image {
+    background: none;
+    overflow: hidden;
+  }
+  .pt-header-user-avatar--image > * {
+    width: 100%;
+    height: 100%;
+  }
+  .pt-header-user-avatar--image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 999px;
+    object-fit: cover;
+  }
   .pt-header-user-info {
     min-width: 0;
     display: flex;

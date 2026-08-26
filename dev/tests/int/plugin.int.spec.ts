@@ -18,7 +18,21 @@ describe('payload-theme plugin', () => {
     expect(theme.dashboard.widgets).toEqual([])
 
     const dependencies = payload.config.admin?.dependencies ?? {}
-    expect(Object.keys(dependencies).filter((key) => key.startsWith('payload-theme-widget'))).toEqual([])
+    expect(
+      Object.keys(dependencies).filter((key) => key.startsWith('payload-theme-widget')),
+    ).toEqual([])
+  })
+
+  it('registers the server-side AvatarProvider so custom avatars can render', () => {
+    const providers = (payload.config.admin?.components?.providers ?? []) as string[]
+    expect(providers).toContain('payload-theme/rsc#AvatarProvider')
+  })
+
+  it('carries the playground’s avatar option through to the client config', () => {
+    const theme = payload.config.admin?.custom?.payloadTheme as {
+      avatar: { name: string; size: null | string; type: string }
+    }
+    expect(theme.avatar).toEqual({ name: 'avatar', size: null, type: 'field' })
   })
 
   it('registers its translation namespace without displacing Payload’s own', async () => {

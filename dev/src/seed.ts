@@ -153,6 +153,22 @@ const run = async (): Promise<void> => {
   const tagId = (i: number) => tags[i % tags.length].id
   const mediaId = (i: number) => media[i % media.length].id
 
+  // 4b. Give the admin a profile picture so the theme's `avatar` option has
+  // something to show. Media is recreated on every run, so re-point it here.
+  payload.logger.info('Seed: attaching an avatar to the admin user…')
+  const adminUser = await payload.find({
+    collection: 'users',
+    where: { email: { equals: ADMIN_EMAIL } },
+    limit: 1,
+  })
+  if (adminUser.docs.length > 0) {
+    await payload.update({
+      collection: 'users',
+      id: adminUser.docs[0].id,
+      data: { avatar: mediaId(4) },
+    })
+  }
+
   // 5. Posts — varied statuses, at least one draft, exercising every field type.
   payload.logger.info('Seed: creating posts…')
   const postSpecs = [

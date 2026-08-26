@@ -63,6 +63,9 @@ export default buildConfig({
   plugins: [
     payloadTheme({
       accent: '#0d9488',
+      // Exercises the user-field avatar source: the seeded admin gets one of
+      // the placeholder images, everyone else falls back to initials.
+      avatar: { field: 'avatar' },
       nav: {
         icons: {
           media: 'image',

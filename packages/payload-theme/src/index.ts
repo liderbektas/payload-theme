@@ -78,7 +78,8 @@ const transformCollection = (collection: CollectionConfig): CollectionConfig => 
  * 2. stashes the serializable theme config on `admin.custom.payloadTheme`,
  * 3. registers dashboard widgets in `admin.dependencies` so the import-map
  *    generator picks them up,
- * 4. registers the custom Nav, Dashboard and the accent-injecting provider.
+ * 4. registers the custom Nav, Dashboard, the accent-injecting provider and
+ *    the server-side avatar resolver.
  */
 export const payloadTheme =
   (options: PayloadThemeOptions = {}) =>
@@ -133,6 +134,9 @@ export const payloadTheme =
     components.Nav = 'payload-theme/client#Nav'
     components.providers = [
       ...(components.providers ?? []),
+      // resolves the user avatar server-side (gravatar, a user field, or
+      // Payload's own `admin.avatar` component) for the sidebar/header blocks
+      'payload-theme/rsc#AvatarProvider',
       'payload-theme/client#ThemeProvider',
       // one global instance powers the row-hover edit/duplicate/delete cluster
       'payload-theme/client#ListQuickActions',
@@ -166,6 +170,7 @@ export type {
   DashboardWidgetWidth,
   NavOptions,
   PayloadThemeOptions,
+  ThemeAvatarOption,
   ThemeFont,
   ThemePreset,
   ThemePresetDefinition,

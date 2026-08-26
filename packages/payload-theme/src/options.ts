@@ -42,6 +42,23 @@ export type ThemeRadius = 'full' | 'lg' | 'md' | 'none' | 'sm'
  */
 export type ThemeAsset = string | { dark: string; light: string }
 
+/**
+ * Where the user avatar in the sidebar/header user block comes from.
+ *
+ * - `'initials'` — the accent circle with the user's initials (the default
+ *   look, and the explicit way to opt OUT of Payload's `admin.avatar`).
+ * - `'gravatar'` — the Gravatar registered to the user's email.
+ * - `{ field }` — a field on the authenticated user's document: an `upload`
+ *   or `relationship` to an upload collection, or a plain text/URL field.
+ *   Dot paths reach into groups (`'profile.photo'`). `size` picks a named
+ *   upload size (`'thumbnail'`) instead of the original file.
+ *
+ * When this option is omitted the theme honors Payload's own
+ * `admin.avatar` — `'gravatar'` and `{ Component }` both render inside the
+ * theme's avatar circle — and falls back to initials.
+ */
+export type ThemeAvatarOption = 'gravatar' | 'initials' | { field: string; size?: string }
+
 export interface NavOptions {
   /**
    * Per-entity sidebar icons, keyed by collection/global slug. Values are
@@ -124,6 +141,12 @@ export interface PayloadThemeOptions {
   logoHeight?: number | string
   /** Small mark/favicon for collapsed nav and login. Same shape as `logo`. */
   icon?: ThemeAsset
+  /**
+   * Source of the user avatar in the sidebar and header user blocks.
+   * Omit to honor Payload's `admin.avatar` (gravatar or a custom
+   * `Component`), falling back to the accent initials circle.
+   */
+  avatar?: ThemeAvatarOption
   /** Sidebar navigation options. */
   nav?: NavOptions
   /** Dashboard widget area (rendered below the built-in dashboard content). */
@@ -144,6 +167,14 @@ export interface ResolvedDashboardWidget {
   width: DashboardWidgetWidth
 }
 
+/**
+ * The avatar option normalized for the server→client trip: a plain tagged
+ * object, never a bare string, so the `AvatarProvider` can switch on `type`.
+ * `null` means "not configured" — Payload's own `admin.avatar` decides.
+ */
+export type ResolvedAvatar =
+  { name: string; size: null | string; type: 'field' } | { type: 'gravatar' } | { type: 'initials' }
+
 export interface ResolvedThemeConfig {
   /** Precomputed `--pt-*` CSS custom properties (light + dark), injected at runtime. */
   css: string
@@ -161,6 +192,8 @@ export interface ResolvedThemeConfig {
   /** Normalized to a pair: a plain-string option is used for both schemes. */
   logo?: { dark: string; light: string }
   icon?: { dark: string; light: string }
+  /** Avatar source, or null when the `avatar` option is omitted. */
+  avatar: null | ResolvedAvatar
   nav: { icons: Record<string, string> }
   /** Unset fields fall back to the defaults at render time. */
   login: { heading?: string; tagline?: string }
@@ -264,6 +297,33 @@ function normalizeWidgets(widgets: DashboardWidget[] | undefined): ResolvedDashb
   })
 }
 
+/** Validate the `avatar` option and normalize it to a tagged object. */
+function normalizeAvatar(value: ThemeAvatarOption | undefined): null | ResolvedAvatar {
+  if (value === undefined) return null
+
+  if (typeof value === 'string') {
+    assert(
+      value === 'initials' || value === 'gravatar',
+      `Invalid avatar: '${value}'. Expected 'initials', 'gravatar' or { field: 'avatar' }.`,
+    )
+    return value === 'gravatar' ? { type: 'gravatar' } : { type: 'initials' }
+  }
+
+  assert(
+    value && typeof value === 'object' && !Array.isArray(value),
+    `avatar must be 'initials', 'gravatar' or an object like { field: 'avatar' }.`,
+  )
+  assert(
+    typeof value.field === 'string' && value.field.trim() !== '',
+    `avatar.field must be the name of a field on your auth collection, e.g. { field: 'avatar' }.`,
+  )
+  assert(
+    value.size === undefined || (typeof value.size === 'string' && value.size.trim() !== ''),
+    `avatar.size must be the name of an upload size, e.g. { field: 'avatar', size: 'thumbnail' }.`,
+  )
+  return { type: 'field', name: value.field.trim(), size: value.size?.trim() ?? null }
+}
+
 /** Validate a logo/icon option and normalize it to a `{ light, dark }` pair. */
 function normalizeAsset(
   value: ThemeAsset | undefined,
@@ -327,6 +387,7 @@ export function resolveOptions(options: PayloadThemeOptions): {
 
   const logo = normalizeAsset(options.logo, 'logo')
   const icon = normalizeAsset(options.icon, 'icon')
+  const avatar = normalizeAvatar(options.avatar)
   const widgets = normalizeWidgets(options.dashboard?.widgets)
 
   const loginHeading = options.login?.heading
@@ -373,6 +434,7 @@ export function resolveOptions(options: PayloadThemeOptions): {
       dashboard: { widgets },
       logo,
       icon,
+      avatar,
       nav: { icons },
       login: { heading: loginHeading, tagline: loginTagline },
       fallbackIconName: DEFAULTS.fallbackIconName,
