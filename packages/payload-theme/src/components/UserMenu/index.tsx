@@ -1,13 +1,15 @@
 'use client'
 
 import { getTranslation } from '@payloadcms/translations'
-import { Link, useAuth, useConfig, useLocale } from '@payloadcms/ui'
+import { Link, useAuth, useConfig, useLocale, useRouteTransition } from '@payloadcms/ui'
+import { useLocaleLoading } from '@payloadcms/ui/providers/Locale'
 import { usePathname, useRouter } from 'next/navigation'
 import { formatAdminURL } from 'payload/shared'
 import React from 'react'
 
 import { useThemeTranslation } from '../../translations/useThemeTranslation'
 import { useThemeAvatar } from '../AvatarProvider/client'
+import { Flag } from '../Flag'
 import { Icon } from '../Icon'
 
 /**
@@ -32,6 +34,8 @@ export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant
   const locale = useLocale()
   const router = useRouter()
   const pathname = usePathname()
+  const { startRouteTransition } = useRouteTransition()
+  const { setLocaleIsLoading } = useLocaleLoading()
 
   const [open, setOpen] = React.useState(false)
   const rootRef = React.useRef<HTMLDivElement>(null)
@@ -109,11 +113,27 @@ export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant
 
   // Same mechanism as Payload's own header Localizer: set the `locale` query
   // param and navigate — Payload handles the rest (incl. remembering it).
+  //
+  // The two wrappers are not decoration. A locale switch is a server round
+  // trip, and a bare `router.push` spends all of it looking like a dead click:
+  // the menu closes and NOTHING else happens — no progress bar, no spinner,
+  // same URL, same field values — until the RSC payload lands. On anything
+  // slower than localhost that reads as "the switcher is broken", which is
+  // exactly how it was reported. `startRouteTransition` drives Payload's own
+  // top progress bar; `setLocaleIsLoading` feeds `DocumentInfoProvider`'s
+  // `isInitializing`, so the document view knows it is showing stale content.
+  //
+  // The pushed URL is relative — just the query — so it can't disagree with
+  // the address bar the way a rebuilt `${pathname}?…` can under a Next
+  // `basePath`, a rewrite or `trailingSlash`.
   const switchLocale = (code: string) => {
     setOpen(false)
+    setLocaleIsLoading(true)
     const params = new URLSearchParams(window.location.search)
     params.set('locale', code)
-    router.push(`${pathname}?${params.toString()}`)
+    startRouteTransition(() => {
+      router.push(`?${params.toString()}`)
+    })
   }
 
   return (
@@ -144,10 +164,11 @@ export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant
               <div className={cls('-menu-label')}>{t('general:locale')}</div>
               {localization.locales.map((localeOption) => {
                 const isActive = locale?.code === localeOption.code
+                const label = getTranslation(localeOption.label, i18n)
                 return (
                   <button
                     aria-checked={isActive}
-                    className={cls('-menu-item')}
+                    className={`${cls('-menu-item')} ${cls('-menu-item--locale')}`}
                     disabled={isActive}
                     key={localeOption.code}
                     onClick={() => switchLocale(localeOption.code)}
@@ -157,7 +178,19 @@ export const UserMenu: React.FC<{ variant?: 'header' | 'sidebar' }> = ({ variant
                     <span aria-hidden="true" className={cls('-menu-check')}>
                       {isActive ? <Icon aria-hidden="true" name="check" strokeWidth={2.2} /> : null}
                     </span>
-                    {getTranslation(localeOption.label, i18n)}
+                    <Flag className={cls('-menu-flag')} code={localeOption.code} />
+                    <span className={cls('-menu-locale')}>
+                      <span className={cls('-menu-name')}>{label}</span>
+                      {/* The code, exactly as Payload's own Localizer shows it.
+                       * A bare "Türkçe" reads as the PANEL language — which is
+                       * a different setting, on the account page — and that
+                       * mix-up is what gets reported as a broken switcher.
+                       * "(tr)" says content locale without a word of prose.
+                       * Dropped when the label IS the code, to avoid "tr (tr)". */}
+                      {label !== localeOption.code ? (
+                        <span className={cls('-menu-code')}>({localeOption.code})</span>
+                      ) : null}
+                    </span>
                   </button>
                 )
               })}

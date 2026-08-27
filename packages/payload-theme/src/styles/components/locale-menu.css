@@ -1,0 +1,68 @@
+@layer payload {
+  /*
+   * The content-locale rows inside the user menu, for BOTH placements — the
+   * sidebar block (`pt-nav__user-*`) and the header chip (`pt-header-user-*`).
+   *
+   * Shared file rather than a duplicated block in nav.css and
+   * header-actions.css: the row is one component that happens to render under
+   * two class prefixes, and its geometry has to stay in sync or the flag sits
+   * at a different height in the two menus.
+   *
+   * Loaded after both of those modules so it lands last in the same layer.
+   */
+
+  /* The row carries a flag AND a code, so it runs tighter than the plain
+   * icon+label rows above it — 10px between four things reads as a list of
+   * unrelated items. */
+  .pt-nav__user-menu-item--locale,
+  .pt-header-user-menu-item--locale {
+    gap: 8px;
+  }
+
+  /* Label + code travel together, so a long locale name truncates as one unit
+   * instead of orphaning the "(xx)" on its own line. */
+  .pt-nav__user-menu-locale,
+  .pt-header-user-menu-locale {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  /* A long locale label ("Português (Brasil)") would otherwise push the code
+   * past the sidebar's edge; the NAME truncates and the code always survives,
+   * since the code is the half that disambiguates. */
+  .pt-nav__user-menu-name,
+  .pt-header-user-menu-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .pt-nav__user-menu-code,
+  .pt-header-user-menu-code {
+    flex-shrink: 0;
+    font-size: 0.72rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--theme-elevation-500);
+  }
+
+  /* The active row is `disabled`, which browsers grey out; the code is already
+   * secondary text and would fade to nothing on top of that. */
+  .pt-nav__user-menu-item:disabled .pt-nav__user-menu-code,
+  .pt-header-user-menu-item:disabled .pt-header-user-menu-code {
+    color: var(--theme-elevation-600);
+  }
+
+  /* Overrides the menu's blanket `svg { width: 16px; height: 16px }` — a flag
+   * is 4:3, not square, and gets its ring colour from `currentColor`. */
+  .pt-nav__user-menu-item .pt-flag,
+  .pt-header-user-menu-item .pt-flag {
+    flex-shrink: 0;
+    display: block;
+    width: 20px;
+    height: 15px;
+    color: var(--theme-elevation-1000);
+  }
+}
