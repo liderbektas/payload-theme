@@ -33,6 +33,7 @@
 @import './layout/frame.css';
 @import './components/dashboard.css';
 @import './components/header-actions.css';
+@import './components/locale-menu.css';
 @import './components/controls.css';
 @import './components/doc-chrome.css';
 @import './components/media.css';

@@ -94,7 +94,7 @@ The default dashboard becomes a widget grid: one stat card per collection with a
 
 ### A sidebar that reads like a product
 
-Your logo on top, a ⌘K search pill, **grouped collections with lucide icons** (`admin.group` + `nav.icons`), an accent pill on the active item, and a shadcn-style **user block pinned to the bottom** — avatar, name, email, and a popup with Account, the locale switcher and Log out. When collections overflow, only the menu scrolls; logo, search and the user block stay put. On desktop, a **panel toggle at the header's left** collapses the whole sidebar with a smooth grid animation — full-width content one click away.
+Your logo on top, a ⌘K search pill, **grouped collections with lucide icons** (`admin.group` + `nav.icons`), an accent pill on the active item, and a shadcn-style **user block pinned to the bottom** — avatar, name, email, and a popup with Account, the content-locale switcher and Log out. Each locale gets a flag and its code (`🇧🇷 Português (Brasil) (pt-BR)`) so it never reads as the panel language, which is a separate setting on the account page. When collections overflow, only the menu scrolls; logo, search and the user block stay put. On desktop, a **panel toggle at the header's left** collapses the whole sidebar with a smooth grid animation — full-width content one click away.
 
 ### ⌘K command palette
 

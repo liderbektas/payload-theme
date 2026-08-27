@@ -4,6 +4,39 @@ All notable changes to `payload-theme` are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.9.3] — 2026-08-27
+
+### Fixed
+
+- **The locale switcher looked dead for the whole server round trip**
+  ([#7](https://github.com/liderbektas/payload-theme/issues/7)). It did switch
+  — the URL, `useLocale`, a document's localized fields and the stored
+  preference all updated correctly — but it did so silently: the menu called
+  `router.push` bare, so between the click and the RSC payload landing there
+  was no progress bar, no loading state and no URL change. Throttled to a 4s
+  navigation, the menu sat perfectly still for the full four seconds where
+  Payload's own switcher starts its progress bar on the first frame, and the
+  theme hides Payload's switcher — so there was no second opinion to reach
+  for. The switch now runs through `startRouteTransition` (Payload's top
+  progress bar) and `setLocaleIsLoading` (`DocumentInfoProvider`'s
+  `isInitializing`), the same two wrappers Payload's `Localizer` uses.
+- The pushed URL is relative now (`?locale=…`) rather than a rebuilt
+  `${pathname}?…`, so it cannot disagree with the address bar under a Next
+  `basePath`, a rewrite or `trailingSlash`.
+
+### Added
+
+- **Locale rows show a flag and the locale code** — `🇹🇷 Türkçe (tr)`. A bare
+  "Türkçe" reads as the PANEL language, which is a different setting living on
+  the account page, and that mix-up is half of what #7 was: switching a
+  content locale changes nothing on screen unless a field is `localized: true`.
+  The code is the same disambiguation Payload's own `Localizer` prints, and it
+  is dropped when the label already IS the code. The flags are inline SVG, not
+  emoji, because Windows ships no flag glyphs and renders `🇹🇷` as the letters
+  "TR" — 55 regions are drawn, resolved from the locale code (an explicit
+  region wins, so `pt-BR` flies Brazil and `pt` Portugal); anything unmapped
+  simply shows the code on its own.
+
 ## [0.9.2] — 2026-08-26
 
 ### Added
