@@ -30,6 +30,25 @@
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--pt-accent-ring) 18%, transparent);
   }
 
+  /* ---- code / JSON fields: the Monaco box wears the input frame. Its
+   * colors are Monaco's own, set unlayered — see overrides/unlayered.css */
+  .field-type .code-editor {
+    border: 1px solid var(--pt-input-border);
+    border-radius: var(--pt-radius-ctl);
+    box-shadow: var(--pt-shadow-xs);
+    transition:
+      border-color 0.12s ease,
+      box-shadow 0.12s ease;
+  }
+  .field-type .code-editor:focus-within {
+    border-color: var(--pt-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--pt-accent-ring) 18%, transparent);
+  }
+  /* the border above out-ranks Payload's error border — restate it */
+  .code-field.error .code-editor {
+    border-color: var(--theme-error-500);
+  }
+
   /* ---- search inputs share the same language ---- */
   .search-filter__input {
     border-radius: var(--pt-radius-ctl);
@@ -90,8 +109,12 @@
    * so we can't override the box-shadow directly. Instead we reassign that
    * variable locally to a faint accent, softening the glow to a subtle halo,
    * and mark focus with an accent border. */
-  .field-type.checkbox .checkbox-input:not(.checkbox-input--read-only):focus-within .checkbox-input__input,
-  .field-type.checkbox .checkbox-input:not(.checkbox-input--read-only):active .checkbox-input__input {
+  .field-type.checkbox
+    .checkbox-input:not(.checkbox-input--read-only):focus-within
+    .checkbox-input__input,
+  .field-type.checkbox
+    .checkbox-input:not(.checkbox-input--read-only):active
+    .checkbox-input__input {
     --theme-success-400: color-mix(in srgb, var(--pt-accent-ring) 18%, transparent);
     border-color: var(--pt-accent);
   }

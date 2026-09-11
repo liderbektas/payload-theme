@@ -86,6 +86,33 @@ export const Projects: CollectionConfig = {
               ],
             },
             {
+              // explicit `admin.width`s — the theme's form grid must leave
+              // these rows alone (#9)
+              type: 'row',
+              fields: [
+                {
+                  name: 'ownerName',
+                  type: 'text',
+                  admin: { width: '20%' },
+                },
+                {
+                  name: 'ownerEmail',
+                  type: 'email',
+                  admin: { width: '25%' },
+                },
+                {
+                  name: 'ownerRole',
+                  type: 'text',
+                  admin: { width: '35%' },
+                },
+                {
+                  name: 'ownerPhone',
+                  type: 'text',
+                  admin: { width: '20%' },
+                },
+              ],
+            },
+            {
               name: 'repoUrl',
               type: 'text',
               admin: {

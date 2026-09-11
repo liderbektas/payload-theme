@@ -4,6 +4,38 @@ All notable changes to `payload-theme` are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.9.4] — 2026-09-11
+
+### Fixed
+
+- **`admin.width` was ignored inside `row` fields**
+  ([#9](https://github.com/liderbektas/payload-theme/issues/9)). A row's body
+  is a `.render-fields` like any group or block body, so the two-column form
+  grid swallowed it too: widths of 20% / 25% / 35% / 20% came out as two lines
+  of equal 50% fields. Rows are now left out of the grid and keep Payload's
+  own flex row, sized by `--field-width`; only the gutters are retuned to the
+  grid's 20px / 22px so a row still sits flush with the fields around it.
+- **Radio buttons never picked up the accent.** The rule targeted
+  `.radio-input--checked`, but Payload marks the chosen option
+  `.radio-input--is-selected`, so the stock near-black dot showed through.
+- The tab strip of a `tabs` field jutted past both edges of the edit card —
+  Payload bleeds it out by `--gutter-h`, wider than the card's padding. It now
+  sits on the card's content box.
+
+### Changed
+
+- **Field tabs** are shadcn underline tabs: body-size medium labels in the
+  muted color, the active one in the text color over a 2px accent bar, instead
+  of Payload's h4-sized labels at half opacity over a black bar. Error tabs keep
+  their red tint; keyboard focus gets an accent outline.
+- **Radio buttons** are a 16px input-bordered ring with an accent dot, and
+  swap Payload's green focus glow for the same accent ring as inputs.
+- **Code and JSON fields** wear the input frame (border, radius, xs shadow,
+  accent focus ring), and the Monaco editor inside drops the `vs` theme's
+  off-white background, blue line numbers and gray current-line box for the
+  input background, muted line numbers and an accent selection — light and
+  dark. Syntax colors are Monaco's own.
+
 ## [0.9.3] — 2026-08-27
 
 ### Fixed
@@ -128,7 +160,7 @@ All notable changes to `payload-theme` are documented here. The format follows
 ### Changed
 
 - **BREAKING (types only): `preset` no longer accepts `'soft' | 'noir' |
-  'minimal'`.** Those values were validated, typed and exported but read by no
+'minimal'`.** Those values were validated, typed and exported but read by no
   component or stylesheet — the option did nothing. The name now carries the
   six real themes. Anything passing an old value gets a clear error naming the
   valid ones; nothing that worked before stops working, because nothing before
@@ -241,7 +273,7 @@ All notable changes to `payload-theme` are documented here. The format follows
 
 ### Changed
 
-- **Dark mode surfaces:** nested surfaces now get *lighter* as they stack —
+- **Dark mode surfaces:** nested surfaces now get _lighter_ as they stack —
   top-level group panels (e.g. Seo) are a raised `elevation-100` surface
   instead of a near-black well, and every field box inside a lifted surface
   (inputs, textareas, selects, upload cards) sits flat and transparent with

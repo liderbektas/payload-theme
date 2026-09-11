@@ -376,6 +376,10 @@ export interface Project {
    */
   budget?: number | null;
   launchDate?: string | null;
+  ownerName?: string | null;
+  ownerEmail?: string | null;
+  ownerRole?: string | null;
+  ownerPhone?: string | null;
   /**
    * Git repository for this project.
    */
@@ -685,6 +689,10 @@ export interface ProjectsSelect<T extends boolean = true> {
   cover?: T;
   budget?: T;
   launchDate?: T;
+  ownerName?: T;
+  ownerEmail?: T;
+  ownerRole?: T;
+  ownerPhone?: T;
   repoUrl?: T;
   deployCommand?: T;
   integrations?: T;

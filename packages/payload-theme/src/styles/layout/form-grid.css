@@ -13,10 +13,16 @@
 @layer payload {
   @media (min-width: 1025px) {
     /* the fields ROOT is itself a .render-fields — cover it and every
-     * nested one (groups, block/array bodies) with one alias */
+     * nested one (groups, block/array bodies) with one alias. A `row`
+     * field's body is a .render-fields too, but the author already laid
+     * that one out: it keeps Payload's flex row so `admin.width` holds
+     * (#9) — see the row rules at the bottom. */
     .template-default__wrap
       > .collection-edit
-      :is(.document-fields__fields.render-fields, .document-fields__fields .render-fields) {
+      :is(
+        .document-fields__fields.render-fields,
+        .document-fields__fields .render-fields:not(.row__fields)
+      ) {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 22px 20px;
@@ -25,7 +31,10 @@
     /* grid gap owns the rhythm — drop Payload's per-field margins */
     .template-default__wrap
       > .collection-edit
-      :is(.document-fields__fields.render-fields, .document-fields__fields .render-fields)
+      :is(
+        .document-fields__fields.render-fields,
+        .document-fields__fields .render-fields:not(.row__fields)
+      )
       > .field-type {
       margin-bottom: 0;
       min-width: 0;
@@ -34,7 +43,10 @@
     /* hidden carriers must not leave empty grid cells */
     .template-default__wrap
       > .collection-edit
-      :is(.document-fields__fields.render-fields, .document-fields__fields .render-fields)
+      :is(
+        .document-fields__fields.render-fields,
+        .document-fields__fields .render-fields:not(.row__fields)
+      )
       > [type='hidden'] {
       display: none;
     }
@@ -42,7 +54,10 @@
     /* compact types share a row, two by two */
     .template-default__wrap
       > .collection-edit
-      :is(.document-fields__fields.render-fields, .document-fields__fields .render-fields)
+      :is(
+        .document-fields__fields.render-fields,
+        .document-fields__fields .render-fields:not(.row__fields)
+      )
       > :is(
         .field-type.text,
         .field-type.number,
@@ -62,7 +77,10 @@
      * 20px switch on the input row */
     .template-default__wrap
       > .collection-edit
-      :is(.document-fields__fields.render-fields, .document-fields__fields .render-fields)
+      :is(
+        .document-fields__fields.render-fields,
+        .document-fields__fields .render-fields:not(.row__fields)
+      )
       > .field-type.checkbox {
       align-self: start;
       /* measured: label row + this offset puts the 20px switch's center
@@ -71,7 +89,11 @@
     }
 
     /* Lexical renders its own nested field UIs — keep those stacked */
-    .template-default__wrap > .collection-edit .document-fields__fields .rich-text-lexical .render-fields {
+    .template-default__wrap
+      > .collection-edit
+      .document-fields__fields
+      .rich-text-lexical
+      .render-fields {
       display: block;
     }
     .template-default__wrap
@@ -81,6 +103,37 @@
       .render-fields
       > .field-type {
       margin-bottom: var(--spacing-field, var(--base));
+    }
+
+    /* `row` fields: Payload's own flex row (each child sized by
+     * --field-width, i.e. `admin.width`), only retuned to the grid's
+     * rhythm — no trailing margin (the grid gap spaces the row) and the
+     * same 20px column / 22px row gaps as the grid around it. The
+     * gutter is split as 10px either side of each child, so the widths
+     * still add up to exactly 100% of the row. */
+    .template-default__wrap
+      > .collection-edit
+      .document-fields__fields
+      .field-type.row
+      > .row__fields {
+      margin-bottom: 0;
+      row-gap: 22px;
+    }
+    .template-default__wrap
+      > .collection-edit
+      .document-fields__fields
+      .field-type.row
+      > .row__fields:has(> :nth-child(2)) {
+      margin-inline: -10px;
+    }
+    .template-default__wrap
+      > .collection-edit
+      .document-fields__fields
+      .field-type.row
+      > .row__fields:has(> :nth-child(2))
+      > * {
+      flex-basis: calc(var(--field-width) - 20px);
+      margin-inline: 10px;
     }
   }
 }

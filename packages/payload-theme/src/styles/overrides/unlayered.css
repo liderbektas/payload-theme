@@ -110,3 +110,45 @@ html[data-theme='dark'] .no-results.no-results {
     transform: scale(1.04);
   }
 }
+
+/* UNLAYERED on purpose: Monaco (code / JSON fields) injects its theme at
+ * runtime as an unlayered <style class="monaco-colors"> — its palette as
+ * --vscode-* variables on `.monaco-editor`, plus the current-line box
+ * painted straight from the theme. One class more specific than Monaco's
+ * rules keeps these ahead whichever stylesheet lands last. Syntax token
+ * colors stay Monaco's own (vs / vs-dark). The frame is in FORMS. */
+.code-editor .monaco-editor {
+  --vscode-editor-background: var(--theme-input-bg);
+  --vscode-editorGutter-background: var(--theme-input-bg);
+  --vscode-editorLineNumber-foreground: var(--theme-elevation-400);
+  --vscode-editorLineNumber-activeForeground: var(--theme-elevation-800);
+  --vscode-editor-selectionBackground: color-mix(in srgb, var(--pt-accent) 22%, transparent);
+  --vscode-editor-inactiveSelectionBackground: color-mix(
+    in srgb,
+    var(--pt-accent) 12%,
+    transparent
+  );
+  --vscode-focusBorder: transparent;
+}
+/* round the painted surface inside the frame's radius */
+.code-editor .monaco-editor,
+.code-editor .monaco-editor .overflow-guard {
+  border-radius: calc(var(--pt-radius-ctl) - 1px);
+}
+/* current line: a faint tint while editing, not vs's 2px gray box */
+.code-editor .monaco-editor .view-overlays .current-line,
+.code-editor .monaco-editor .margin-view-overlays .current-line {
+  border-color: transparent;
+}
+/* the caret is painted straight from the theme too, not from a variable */
+.code-editor .monaco-editor .cursors-layer .cursor {
+  background-color: var(--pt-accent);
+  border-color: var(--pt-accent);
+}
+.code-editor .monaco-editor.focused .view-overlays .current-line {
+  background: color-mix(in srgb, var(--theme-elevation-500) 6%, transparent);
+}
+.code-field.error .code-editor .monaco-editor {
+  --vscode-editor-background: var(--theme-error-50);
+  --vscode-editorGutter-background: var(--theme-error-50);
+}

@@ -13,12 +13,96 @@
     border-radius: 999px;
   }
 
-  /* ---- radio: accent when checked ---- */
-  .radio-input--checked .radio-input__styled-radio {
+  /* ---- field tabs (`type: 'tabs'`): shadcn underline tabs. Payload
+   * renders h4-sized labels at half opacity over a near-black bar; here
+   * they are body-size muted labels, the active one in the text color over
+   * a 2px accent bar. ---- */
+  .tabs-field__tabs {
+    border-bottom-color: var(--theme-border-color);
+  }
+  .tabs-field__tab-button {
+    padding-bottom: 12px;
+    margin-inline-end: 24px;
+    color: var(--theme-elevation-500);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: 0;
+    opacity: 1;
+    transition: color 0.15s ease;
+  }
+  .tabs-field__tab-button:hover {
+    color: var(--theme-text);
+  }
+  .tabs-field__tab-button::after {
+    height: 2px;
+    border-radius: 2px 2px 0 0;
+    background: var(--pt-accent);
+  }
+  .tabs-field__tab-button:hover::after {
+    opacity: 0;
+  }
+  .tabs-field__tab-button--active {
+    color: var(--theme-text);
+  }
+  .tabs-field__tab-button:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--pt-accent-ring) 45%, transparent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  /* the label color above out-ranks Payload's error tint — restate it */
+  .tabs-field__tab-button--has-error {
+    color: var(--theme-error-500);
+  }
+  .tabs-field__tab-button--has-error::after {
+    background: var(--theme-error-500);
+  }
+
+  /* ---- radio: shadcn RadioGroup — a 16px input-bordered ring with an
+   * accent dot. Payload marks the chosen option `--is-selected` and paints
+   * the dot as a ::before with a thick background-colored border. ---- */
+  .radio-input__styled-radio {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--pt-input-border);
+    border-radius: 50%;
+    background: var(--theme-input-bg);
+    box-shadow: var(--pt-shadow-xs);
+    transition:
+      border-color 0.12s ease,
+      box-shadow 0.12s ease;
+  }
+  .radio-input__styled-radio::before {
+    position: absolute;
+    inset: 3px;
+    width: auto;
+    height: auto;
+    border: 0;
+    background-color: var(--pt-accent);
+    transition: opacity 0.12s ease;
+  }
+  .radio-input:hover .radio-input__styled-radio {
+    border-color: var(--theme-elevation-400);
+  }
+  .radio-input--is-selected .radio-input__styled-radio,
+  .radio-input--is-selected:hover .radio-input__styled-radio {
     border-color: var(--pt-accent);
   }
-  .radio-input--checked .radio-input__styled-radio::before {
-    background-color: var(--pt-accent);
+  /* Payload's focus is a green 3px glow — swap it for the input ring,
+   * keyboard focus only */
+  .radio-input input[type='radio']:focus + .radio-input__styled-radio {
+    box-shadow: var(--pt-shadow-xs);
+  }
+  .radio-input input[type='radio']:focus-visible + .radio-input__styled-radio {
+    border-color: var(--pt-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--pt-accent-ring) 18%, transparent);
+  }
+  .radio-group--read-only .radio-input .radio-input__styled-radio {
+    border-color: var(--pt-input-border);
+  }
+  .radio-group--read-only .radio-input__styled-radio::before {
+    background-color: var(--theme-elevation-400);
   }
 
   /* ---- content links pick up the accent ---- */

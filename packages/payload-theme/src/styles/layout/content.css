@@ -45,16 +45,46 @@
     box-shadow: var(--pt-shadow-xs);
     padding: 28px 32px 32px;
   }
-  html[data-theme='dark']
-    .template-default__wrap
-    > .collection-edit
-    .document-fields__fields {
+  html[data-theme='dark'] .template-default__wrap > .collection-edit .document-fields__fields {
     background: var(--theme-elevation-50);
   }
 
   /* the divider between main and sidebar is replaced by the cards */
   .template-default__wrap > .collection-edit .document-fields__edit {
     border-right: 0;
+  }
+
+  /* tabs fields: Payload bleeds the tab strip (and its divider) out by
+   * --gutter-h and pads it back in — inside the card that juts the
+   * divider past both card edges. Keep strip and panel on the card's
+   * content box instead. (Tabs nested in a collapsible keep their own
+   * bleed.) */
+  .template-default__wrap
+    > .collection-edit
+    .document-fields__fields
+    .tabs-field:not(.tabs-field--within-collapsible) {
+    margin-inline: 0;
+  }
+  .template-default__wrap
+    > .collection-edit
+    .document-fields__fields
+    .tabs-field:not(.tabs-field--within-collapsible)
+    > .tabs-field__content-wrap {
+    padding-inline: 0;
+  }
+  .template-default__wrap
+    > .collection-edit
+    .document-fields__fields
+    .tabs-field:not(.tabs-field--within-collapsible)
+    > .tabs-field__tabs-wrap
+    > .tabs-field__tabs::before,
+  .template-default__wrap
+    > .collection-edit
+    .document-fields__fields
+    .tabs-field:not(.tabs-field--within-collapsible)
+    > .tabs-field__tabs-wrap
+    > .tabs-field__tabs::after {
+    width: 0;
   }
 
   /* top-level group fields (Seo, …): their own muted inset panel with a
@@ -79,10 +109,7 @@
   }
   /* (the flat-field rule itself lives in STRUCTURED FIELDS — it covers
    * group panels and blocks/array row lists with one selector) */
-  .template-default__wrap
-    > .collection-edit
-    .group-field--top-level
-    > .group-field__header {
+  .template-default__wrap > .collection-edit .group-field--top-level > .group-field__header {
     margin-bottom: 14px;
   }
 
