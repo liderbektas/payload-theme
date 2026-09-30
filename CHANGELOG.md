@@ -4,6 +4,17 @@ All notable changes to `payload-theme` are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- **Every icon rendered blank with lucide-react 1.42+**
+  ([#10](https://github.com/liderbektas/payload-theme/issues/10)). lucide
+  renamed each icon module's `__iconNode` export to `__iconData` (geometry
+  under `.node`) in a minor release, which the `^1.24.0` range picks up, so the
+  icon cache never filled and every sidebar, palette, header and dashboard icon
+  stayed an empty placeholder. Both shapes are read now.
+
 ## [0.9.4] — 2026-09-11
 
 ### Fixed
