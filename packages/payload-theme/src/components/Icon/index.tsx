@@ -6,6 +6,8 @@ import { Icon as LucideIcon } from 'lucide-react'
 import { dynamicIconImports } from 'lucide-react/dynamic'
 import React from 'react'
 
+import { iconNodeOf } from './iconNode'
+
 export type { IconName }
 
 /** lucide's icon geometry: `[element, attributes][]`, fed to its renderer. */
@@ -36,7 +38,8 @@ const load = (name: string): Promise<void> => {
   const promise = importer
     ? importer()
         .then((mod) => {
-          loaded.set(name, mod.__iconNode as IconNode)
+          const node = iconNodeOf(mod)
+          if (node) loaded.set(name, node as IconNode)
         })
         .catch(() => {
           // Chunk failed to load: keep the placeholder rather than taking the
