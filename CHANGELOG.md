@@ -4,6 +4,71 @@ All notable changes to `payload-theme` are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.10.0] — 2026-10-29
+
+### Added
+
+- **`neutral` option** — `'zinc' | 'slate' | 'gray' | 'neutral' | 'stone'`.
+  Retints Payload's whole base ladder (and so every surface, border and text
+  rung, light and dark) to one of Tailwind's neutral families. Presets now
+  carry a neutral too: Ocean is slate, Forest and Sunset are stone, Swiss is
+  neutral, Zinc and Berry stay zinc.
+- **`density` option** — `'comfortable' | 'compact'`. Compact shrinks input
+  height (40 → 34px), select and large-button padding, table row padding, the
+  form grid's row gap and the view padding. Comfortable is pixel-identical to
+  before.
+- **`frame` option** — `'inset' | 'flat'`. Flat drops the floating content
+  card: no gutter, radius or shadow, one hairline against the docked sidebar.
+- **`darkMode` option** — `'deep' | 'dim'`. Dim lifts every dark surface one
+  rung (card on zinc-900 instead of 950) for a softer night look.
+- All four are in the header customizer, and **Copy config** writes them.
+- **Status-toned badges** in list cells. Select values with a well-known name
+  get a soft semantic tint — green for published/active/approved…,
+  amber for draft/pending/review…, blue for scheduled/queued/processing…, red
+  for rejected/failed/cancelled…; archived is a quieter neutral, and anything
+  else keeps the neutral pill.
+- **Sticky list header and identity column.** Long lists scroll inside the
+  table card (capped to the viewport, `--pt-table-max-h`), so the header row
+  stays visible; the select box and first data column stay put while wide
+  tables scroll sideways, with a hairline at the frozen edge once scrolled
+  (browsers with scroll-state queries).
+- **Route progress bar** in the accent color with a soft glow, instead of
+  Payload's near-black line.
+- Tokens: `--pt-danger`, `--pt-info` and `-text` variants for every status
+  color; a type scale `--pt-text-3xs` … `--pt-text-3xl` that every theme font
+  size now reads (sizes moved by at most ±0.5px); density and frame tokens.
+
+### Changed
+
+- Views no longer fade-rise in on navigation, and dashboard cards no longer
+  cascade in — content mounts in place.
+
+### Fixed
+
+- Odd list rows never showed the hover tint: the zebra reset painted them
+  `transparent` with the same specificity, later in the file.
+- **Icons blank on every full page load.** Each lucide icon is a lazy chunk,
+  so the server HTML only held empty boxes and the header buttons, sidebar
+  and dashboard cards stayed iconless until the chunks arrived. The plugin
+  now loads the geometry of every icon the panel can draw (the theme's own UI
+  plus `nav.icons` and the fallback) once at init and ships it on
+  `admin.custom`; the first paint has real icons. The loader reads both
+  lucide module shapes (`__iconNode` up to 1.41, `__iconData.node` from
+  1.42). The plugin function is now async, which Payload's `plugins` array
+  supports.
+- **Customizer settings looked reset after a refresh.** Overrides were only
+  applied after hydration, so the config's own look showed until then. The
+  customizer now stores the exact CSS it applied, and an inline script in the
+  ThemeProvider replays it before the first paint.
+- **The customizer panel ran off the left edge on phones** — it was aligned
+  to the palette button, which isn't the header's last chip. On screens up
+  to 768px it now spans the header with a 12px gutter, and its height uses
+  `dvh` so the footer buttons stay reachable under mobile browser chrome.
+- Badges carry no dot: the list select pills and the document status pill
+  are text only.
+- The playground's `next.config` sets `experimental.reactDebugChannel: false`
+  — see Troubleshooting for the dev-only `'i18n'` read-only error it avoids.
+
 ## [0.9.4] — 2026-09-11
 
 ### Fixed

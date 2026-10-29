@@ -23,7 +23,7 @@
   }
   /* calmer page title (shadcn text-2xl, not Payload's display size) */
   .list-header__title {
-    font-size: 1.6rem;
+    font-size: var(--pt-text-2xl);
     font-weight: 650;
     letter-spacing: -0.02em;
   }
@@ -56,7 +56,7 @@
   .custom-view-description {
     margin-top: 4px;
     color: var(--theme-elevation-500);
-    font-size: 0.9rem;
+    font-size: var(--pt-text-xs);
     max-width: 72ch;
   }
   .collection-list .list-header {
@@ -121,7 +121,7 @@
    * Title left, tabs as the right-side control, description below. The
    * header/content separator is the doc-controls bar's hairline. */
   .doc-header__title {
-    font-size: 1.6rem;
+    font-size: var(--pt-text-2xl);
     font-weight: 650;
     letter-spacing: -0.02em;
     overflow: hidden;

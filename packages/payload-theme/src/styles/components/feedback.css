@@ -25,7 +25,7 @@
     background: var(--theme-elevation-50);
   }
   .payload-toast-container .payload-toast-item .toast-title {
-    font-size: 13px;
+    font-size: var(--pt-text-base);
     font-weight: 550;
     line-height: 1.45;
   }
@@ -61,7 +61,7 @@
   /* ---- tooltips: rounded bubble ---- */
   .tooltip {
     border-radius: var(--pt-radius-item);
-    font-size: 0.8rem;
+    font-size: var(--pt-text-2xs);
     font-weight: 500;
   }
 

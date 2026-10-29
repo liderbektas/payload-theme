@@ -101,3 +101,22 @@ export { generateScale, generateScaleOklch, SCALE_STEPS, type Scale, type ScaleS
 export { isValidHex, normalizeHex } from './validate'
 export { themeToCss, type ThemeCssOptions } from './css'
 export { FONT_KEYS, FONT_PRESETS, resolveFont, type ThemeFontKey } from './fonts'
+export {
+  DARK_MODES,
+  DARK_TOKENS,
+  DENSITIES,
+  DENSITY_TOKENS,
+  FRAMES,
+  FRAME_TOKENS,
+  NEUTRAL_PALETTES,
+  NEUTRALS,
+  neutralLadder,
+  SURFACE_DEFAULTS,
+  surfaceToCss,
+  type SurfaceCssOptions,
+  type SurfaceOptions,
+  type ThemeDarkMode,
+  type ThemeDensity,
+  type ThemeFrame,
+  type ThemeNeutral,
+} from './surface'

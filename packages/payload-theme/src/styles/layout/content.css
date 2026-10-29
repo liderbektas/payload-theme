@@ -167,7 +167,7 @@
   .doc-controls__meta {
     align-items: center;
     gap: 12px;
-    font-size: 0.85rem;
+    font-size: var(--pt-text-xs);
   }
   .doc-controls__list-item {
     display: flex;
@@ -180,11 +180,11 @@
   }
   .doc-controls__label {
     color: var(--theme-elevation-500);
-    font-size: 0.82rem;
+    font-size: var(--pt-text-2xs);
   }
   .doc-controls__value {
     color: var(--theme-elevation-700);
-    font-size: 0.82rem;
+    font-size: var(--pt-text-2xs);
     font-weight: 500;
   }
   /* status: drop the "Status:" prefix — the chip form says it already */
@@ -194,20 +194,11 @@
   .doc-controls .status__value-wrap {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
     padding: 3px 11px;
     border-radius: 999px;
     background: var(--theme-elevation-100);
     color: var(--theme-elevation-600);
-    font-size: 0.78rem;
+    font-size: var(--pt-text-2xs);
     font-weight: 500;
-  }
-  .doc-controls .status__value-wrap::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-    opacity: 0.55;
   }
 }

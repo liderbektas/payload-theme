@@ -147,7 +147,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      font-size: 12.5px;
+      font-size: var(--pt-text-sm);
       font-weight: 550;
       color: var(--theme-text);
     }
@@ -165,7 +165,7 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       color: var(--theme-elevation-500);
-      font-size: 11px;
+      font-size: var(--pt-text-xs);
       font-weight: 500;
     }
     .table td.cell-alt {
@@ -216,7 +216,7 @@
       -webkit-backdrop-filter: blur(4px);
       backdrop-filter: blur(4px);
       color: #fff;
-      font-size: 10.5px;
+      font-size: var(--pt-text-2xs);
       font-weight: 500;
       white-space: nowrap;
       opacity: 0;

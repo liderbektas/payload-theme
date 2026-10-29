@@ -9,7 +9,8 @@
 @layer payload {
   /* selected row = faint accent wash (selection is a deliberate state) */
   .table tbody tr:has(.checkbox-input--checked) {
-    background: color-mix(in srgb, var(--pt-accent) 7%, transparent);
+    --pt-row-wash: color-mix(in srgb, var(--pt-accent) 7%, transparent);
+    background: var(--pt-row-wash);
   }
 
   /* row + header select checkboxes: accent box + contrast check when checked */
@@ -51,7 +52,7 @@
    * chip and the em-dash separators go away (chips separate themselves). */
   .list-selection {
     gap: 10px;
-    font-size: 13px;
+    font-size: var(--pt-text-base);
     color: var(--theme-elevation-500);
   }
   .list-selection > span:not(:first-child) {
@@ -67,7 +68,7 @@
     border: 1px solid var(--theme-border-color);
     border-radius: 999px;
     color: var(--theme-elevation-600);
-    font-size: 12.5px;
+    font-size: var(--pt-text-sm);
     font-weight: 500;
     text-decoration: none;
     box-shadow: var(--pt-shadow-xs);
@@ -135,17 +136,23 @@
   .table tbody tr {
     transition: background-color 0.1s ease;
   }
+  /* row washes go through --pt-row-wash so the sticky cells below can
+   * repaint the same tint over their opaque backing */
   .table tbody tr:hover {
-    background: color-mix(in srgb, var(--theme-elevation-500) 6%, transparent);
+    --pt-row-wash: color-mix(in srgb, var(--theme-elevation-500) 6%, transparent);
+    background: var(--pt-row-wash);
   }
   /* keep selected rows clearly stronger than hover */
   .table tbody tr:has(.checkbox-input--checked):hover {
-    background: color-mix(in srgb, var(--pt-accent) 11%, transparent);
+    --pt-row-wash: color-mix(in srgb, var(--pt-accent) 11%, transparent);
+    background: var(--pt-row-wash);
   }
 
-  /* drop the zebra striping */
+  /* drop the zebra striping. Same specificity as the hover/selected rules
+   * above and later in the file, so it paints the row's wash rather than
+   * `transparent` — otherwise odd rows would never show hover/selection. */
   .table tbody tr:nth-child(odd) {
-    background: transparent;
+    background: var(--pt-row-wash, transparent);
     border-radius: 0;
   }
 
@@ -179,8 +186,8 @@
  *
  * Wrap the table in a rounded, bordered card (overflow:auto from Payload
  * clips to the radius, so horizontal scroll still works). Payload tags each
- * select value with a `.selected--<value>` class, so select cells render as
- * quiet neutral badges.
+ * select value with a `.selected--<value>` class; those badges (neutral or
+ * status-toned) live in the list module.
  * ==================================================================== */
 @layer payload {
   .table {
@@ -203,21 +210,6 @@
     border-radius: 5px;
   }
 
-  /* status pills — one neutral chip for every value; no semantic coloring,
-   * consistent with the rest of the theme's badges */
-  .cell-status .selected--draft,
-  .cell-status .selected--published,
-  .cell-status .selected--archived {
-    display: inline-flex;
-    align-items: center;
-    padding: 3px 10px;
-    border-radius: 999px; /* badges are ALWAYS fully round, radius-agnostic */
-    background: var(--theme-elevation-100);
-    color: var(--theme-elevation-600);
-    font-size: 0.82em;
-    font-weight: 500;
-  }
-
   /* boolean cell fallback (fields that kept Payload's stock CheckboxCell —
    * the plugin normally swaps in the BoolCell chip below) */
   .bool-cell {
@@ -227,7 +219,7 @@
     background: var(--theme-elevation-100);
     color: var(--theme-elevation-600);
     font-family: var(--font-body);
-    font-size: 0.82em;
+    font-size: var(--pt-text-2xs);
   }
 }
 
@@ -236,8 +228,7 @@
  *
  * The BoolCell component (swapped in for every checkbox column by the
  * plugin) renders `.pt-bool`: a small round chip carrying only an icon —
- * green tick for true, muted X for false. Status/select badges stay the
- * neutral chip everywhere (no dots, no semantic colors — one calm voice).
+ * green tick for true, muted X for false.
  * ==================================================================== */
 @layer payload {
   .pt-bool {
@@ -261,5 +252,109 @@
   .pt-bool--false {
     background: var(--theme-elevation-100);
     color: var(--theme-elevation-400);
+  }
+}
+
+/* ==================================================================== *
+ * TABLE — sticky header row + sticky identity column (list views)
+ *
+ * Payload's .table is already the scroll container (overflow: auto), so a
+ * sticky <thead> could only ever stick inside it. Capping its height to the
+ * viewport makes long pages scroll INSIDE the table card: the header row
+ * stays put, and the row's identity (select box + first data column) stays
+ * put while wide tables scroll sideways. Short lists never reach the cap
+ * and look exactly as before. The media grid view has its own layout and
+ * is left alone; phones keep the plain flow.
+ *
+ * Body cells carry `cell-<field>` classes; header cells only an
+ * `id="heading-<field>"`, matched here by attribute (class-weight
+ * specificity) for the two utility columns: row select and drag handle.
+ * ==================================================================== */
+@layer payload {
+  @media (min-width: 769px) {
+    .collection-list:not(:has(.pt-media-toggle[data-view='grid'])) .table {
+      --pt-util-col: 48px;
+      max-height: var(--pt-table-max-h, calc(100dvh - 190px));
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: var(--theme-elevation-250) transparent;
+    }
+
+    /* utility columns get a fixed width so the column after them knows
+     * exactly where to stick */
+    .collection-list
+      .table
+      :is(.cell-_select, .cell-_dragHandle, [id='heading-_select'], [id='heading-_dragHandle']) {
+      width: var(--pt-util-col);
+      min-width: var(--pt-util-col);
+      max-width: var(--pt-util-col);
+    }
+
+    .collection-list:not(:has(.pt-media-toggle[data-view='grid'])) .table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+    }
+
+    /* the frozen cells: first cell, the cell after a utility column, and
+     * the cell after drag handle + select. `left` is set per case below,
+     * each rule more specific than the one before it. */
+    .collection-list:not(:has(.pt-media-toggle[data-view='grid'])) .table tr > :first-child,
+    .collection-list:not(:has(.pt-media-toggle[data-view='grid']))
+      .table
+      tr
+      > :is(.cell-_select, .cell-_dragHandle, [id='heading-_select'], [id='heading-_dragHandle'])
+      + * {
+      position: sticky;
+      z-index: 2;
+      left: 0;
+      /* opaque backing + the row's hover/selection tint repainted on top */
+      background: linear-gradient(var(--pt-row-wash, transparent), var(--pt-row-wash, transparent))
+        var(--theme-elevation-0);
+    }
+    .collection-list:not(:has(.pt-media-toggle[data-view='grid']))
+      .table
+      tr
+      > :is(.cell-_select, .cell-_dragHandle, [id='heading-_select'], [id='heading-_dragHandle'])
+      + * {
+      left: var(--pt-util-col);
+    }
+    .collection-list:not(:has(.pt-media-toggle[data-view='grid']))
+      .table
+      tr
+      > :is(.cell-_dragHandle, [id='heading-_dragHandle'])
+      + :is(.cell-_select, [id='heading-_select'])
+      + * {
+      left: calc(2 * var(--pt-util-col));
+    }
+    /* header cells that are also frozen sit above both scroll axes */
+    .collection-list:not(:has(.pt-media-toggle[data-view='grid'])) .table thead tr > :first-child,
+    .collection-list:not(:has(.pt-media-toggle[data-view='grid']))
+      .table
+      thead
+      tr
+      > :is([id='heading-_select'], [id='heading-_dragHandle'])
+      + * {
+      z-index: 4;
+      background: var(--theme-elevation-50);
+    }
+  }
+
+  /* A hairline marks the frozen column's edge — only once the table has
+   * actually scrolled sideways (scroll-state queries; browsers without
+   * them simply never show it). */
+  @supports (container-type: scroll-state) {
+    .collection-list .table {
+      container-type: scroll-state;
+    }
+    @container scroll-state(scrollable: left) {
+      .collection-list
+        .table
+        tr
+        > :is(.cell-_select, .cell-_dragHandle, [id='heading-_select'], [id='heading-_dragHandle'])
+        + :not(.cell-_select, [id='heading-_select']) {
+        box-shadow: inset -1px 0 0 var(--theme-border-color);
+      }
+    }
   }
 }

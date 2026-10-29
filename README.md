@@ -106,11 +106,15 @@ Press `⌘K` / `Ctrl+K` anywhere: your **five most recent documents** wait at th
 
 The palette button opens a panel where anyone can restyle the panel at runtime — no rebuild, no deploy:
 
-- **Presets** — six one-click full themes (Zinc, Ocean, Forest, Sunset, Berry, Swiss), each a coherent accent + radius + typeface identity. The same six are config values, so a look you like here is `preset: 'ocean'` in your `payload.config.ts` — and **Copy config** writes exactly that one line when the panel matches a preset
+- **Presets** — six one-click full themes (Zinc, Ocean, Forest, Sunset, Berry, Swiss), each a coherent accent + radius + typeface + neutral identity. The same six are config values, so a look you like here is `preset: 'ocean'` in your `payload.config.ts` — and **Copy config** writes exactly that one line when the panel matches a preset
 - **Accent** — 10 curated swatches + a free hex field, recoloring the entire panel live through the same OKLCH engine
 - **Radius** — the whole `'none' → 'full'` scale
 - **Font** — Inter, Geist, Helvetica or the system stack, each button previewing its own face
+- **Neutral** — the gray family behind every surface: Zinc, Slate (cool), Gray, Neutral (pure) or Stone (warm)
+- **Density** — comfortable or compact: tighter inputs, buttons, table rows and form grid for data-heavy panels
+- **Frame** — inset (content floats in a rounded card) or flat (edge to edge, one hairline against the sidebar)
 - **Color mode** — light/dark, stored in the same preference Payload's Account page uses
+- **Dark mode depth** — deep (near-black) or dim (every surface a rung lighter, softer at night)
 - **Content layout** — centered (~1280px) or full width
 
 Everything persists in the browser; **Reset** returns to your config — and **Copy config** turns whatever is on screen into a ready-to-paste `payloadTheme({ ... })` snippet, so the customizer doubles as your config generator.
@@ -220,7 +224,7 @@ Everything is optional. This is the full surface:
 
 ```ts
 payloadTheme({
-  // A whole look in one word — accent + radius + typeface together:
+  // A whole look in one word — accent + radius + typeface + neutral together:
   // 'zinc' | 'ocean' | 'forest' | 'sunset' | 'berry' | 'swiss'.
   // The same six the header customizer offers. Anything you also set
   // explicitly below wins over the preset.
@@ -237,6 +241,19 @@ payloadTheme({
   // 'helvetica' | 'system' (pure font stacks, no network) — or any custom
   // CSS font-family stack (self-host the @font-face yourself).
   font: 'inter',
+
+  // The gray family behind surfaces, borders and text:
+  // 'zinc' | 'slate' | 'gray' | 'neutral' | 'stone'.
+  neutral: 'slate',
+
+  // Spacing: 'comfortable' | 'compact' (tighter controls, rows and grid).
+  density: 'compact',
+
+  // Content frame: 'inset' (rounded card on the gray field) | 'flat'.
+  frame: 'inset',
+
+  // Dark mode depth: 'deep' (near-black) | 'dim' (one rung softer).
+  darkMode: 'dim',
 
   // Your logo — top of the sidebar AND above the login form.
   // A URL, or { light, dark } to swap artwork per color scheme.
@@ -288,10 +305,14 @@ payloadTheme({
 
 | Option | Type | Default | What it does |
 | --- | --- | --- | --- |
-| `preset` | `'zinc' \| 'ocean' \| 'forest' \| 'sunset' \| 'berry' \| 'swiss'` | — | Sets `accent`, `radius` and `font` together as one coherent identity. Each option you pass explicitly overrides its part. |
+| `preset` | `'zinc' \| 'ocean' \| 'forest' \| 'sunset' \| 'berry' \| 'swiss'` | — | Sets `accent`, `radius`, `font` and `neutral` together as one coherent identity. Each option you pass explicitly overrides its part. |
 | `accent` | `string` (hex) | `#4f4ece` | Generates a full 50–950 color scale in OKLCH and colors every interactive element with it. |
 | `radius` | `'none' \| 'sm' \| 'md' \| 'lg' \| 'full'` | `'md'` | Global corner rounding — buttons, inputs, badges, cards, tables, popovers and menu items all follow it. |
 | `font` | `'inter' \| 'geist' \| 'helvetica' \| 'system' \| string` | Payload's font | Panel typeface. `inter`/`geist` load from Google Fonts at runtime; `helvetica`/`system` are pure stacks; any other string is used as a custom font-family stack. |
+| `neutral` | `'zinc' \| 'slate' \| 'gray' \| 'neutral' \| 'stone'` | `'zinc'` | The gray family behind every surface, border and text rung (Tailwind's neutral palettes), light and dark. |
+| `density` | `'comfortable' \| 'compact'` | `'comfortable'` | `compact` tightens input and button heights, table rows, the form grid and view padding. |
+| `frame` | `'inset' \| 'flat'` | `'inset'` | `inset` floats the content in a rounded, bordered card; `flat` runs it edge to edge with one divider against the sidebar. |
+| `darkMode` | `'deep' \| 'dim'` | `'deep'` | Dark-mode depth: `deep` puts the content on near-black, `dim` lifts every surface one rung. |
 | `logo` | `string \| { light, dark }` | Payload logo | Image URL(s) shown at the top of the sidebar and above the login form. |
 | `logoHeight` | `number \| string` | `26` | Rendered logo height — a number is px, a string is any CSS length. |
 | `icon` | `string \| { light, dark }` | — | Small mark, used as a login-logo fallback. |
@@ -411,7 +432,7 @@ payloadTheme({
 })
 ```
 
-The important ones: `--pt-accent-50` … `--pt-accent-950`, `--pt-accent`, `--pt-accent-hover`, `--pt-accent-active`, `--pt-accent-subtle`, `--pt-accent-contrast`, `--pt-accent-ring`, plus the radius tokens `--pt-radius-ctl`, `--pt-radius-card`, `--pt-radius-item`, and the per-block icon hook `--pt-block-ico`.
+The important ones: `--pt-accent-50` … `--pt-accent-950`, `--pt-accent`, `--pt-accent-hover`, `--pt-accent-active`, `--pt-accent-subtle`, `--pt-accent-contrast`, `--pt-accent-ring`, plus the radius tokens `--pt-radius-ctl`, `--pt-radius-card`, `--pt-radius-item`, the status colors `--pt-ok` / `--pt-warn` / `--pt-danger` / `--pt-info` (each with a `-text` variant), the type scale `--pt-text-3xs` … `--pt-text-3xl`, the density tokens `--pt-ctl-h`, `--pt-cell-py`, `--pt-field-gap`, `--pt-section-gap`, the frame tokens `--pt-frame-inset`, `--pt-frame-radius`, `--pt-frame-shadow`, the list table's height cap `--pt-table-max-h`, and the per-block icon hook `--pt-block-ico`.
 
 ## What it touches
 
@@ -473,6 +494,14 @@ Everything else rides on public API (`@payloadcms/ui` hooks, the local API, REST
 **Theme changes not showing in dev** — Turbopack caches aggressively; delete your app's `.next` folder and restart.
 
 **`Invalid accent color: '…'`** — the accent must be a hex string like `#7c3aed`.
+
+**`Cannot assign to read only property 'i18n' of object` in `next dev`** (sometimes `Cannot read properties of undefined (reading 'time')` / `'stack'`) — a Next 16 dev-only race, not a theme bug: React's debug info (every server component's props, which Payload fills with `i18n`, `req`, `payload` …) streams over a separate websocket, and reloading while it is still resolving throws. Production builds never send it. Turn the separate channel off in `next.config`:
+
+```ts
+const nextConfig = {
+  experimental: { reactDebugChannel: false },
+}
+```
 
 ## License
 

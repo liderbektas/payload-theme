@@ -1,57 +1,37 @@
 /* ==================================================================== *
  * MOTION + FORM POLISH
  *
- * A soft fade-rise as each view's content mounts, a light stagger on the
- * dashboard cards, and quieter field typography. Every animation sits
- * behind prefers-reduced-motion.
+ * Quieter field typography. Views and dashboard cards mount without any
+ * entrance animation, so navigation never shifts content under the cursor —
+ * the route progress bar along the top edge is the only navigation cue.
  * ==================================================================== */
 @layer payload {
-  @media (prefers-reduced-motion: no-preference) {
-    /* the first content block under the app header rises in on navigation */
-    .template-default__wrap > .app-header + [class] {
-      animation: pt-view-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
-
-    /* dashboard cells cascade in */
-    .pt-dash__cell {
-      animation: pt-view-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
-    .pt-dash__cell:nth-child(2) { animation-delay: 0.03s; }
-    .pt-dash__cell:nth-child(3) { animation-delay: 0.06s; }
-    .pt-dash__cell:nth-child(4) { animation-delay: 0.09s; }
-    .pt-dash__cell:nth-child(5) { animation-delay: 0.12s; }
-    .pt-dash__cell:nth-child(6) { animation-delay: 0.15s; }
-    .pt-dash__cell:nth-child(7) { animation-delay: 0.18s; }
-    .pt-dash__cell:nth-child(8) { animation-delay: 0.21s; }
-    .pt-dash__cell:nth-child(n + 9) { animation-delay: 0.24s; }
-
-    /* custom widgets rise in after the built-in cells */
-    .pt-dash__widget {
-      animation: pt-view-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
-      animation-delay: 0.27s;
-    }
+  /* ---- route progress bar ----
+   * Payload's RouteTransition bar (fixed, 2px, top of the viewport) paints
+   * in elevation-1000 — near-black on the light panel. Accent it instead,
+   * with a soft glow on the leading edge so the thin line still reads. */
+  .progress-bar__progress {
+    background-color: var(--pt-accent);
+    border-start-end-radius: 999px;
+    border-end-end-radius: 999px;
+    box-shadow:
+      0 0 10px color-mix(in srgb, var(--pt-accent) 55%, transparent),
+      0 0 4px color-mix(in srgb, var(--pt-accent) 40%, transparent);
   }
 
   /* ---- field typography: calm labels, quiet descriptions ---- */
   .field-label {
-    font-size: 0.86rem;
+    font-size: var(--pt-text-xs);
     font-weight: 500;
     color: var(--theme-elevation-800);
   }
   .field-description {
     color: var(--theme-elevation-500);
-    font-size: 0.8rem;
+    font-size: var(--pt-text-2xs);
   }
 
   /* (collapsible / array / blocks row chrome lives in the STRUCTURED
    * FIELDS module below) */
-}
-
-@keyframes pt-view-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
 }
 
 @keyframes pt-drop-pulse {

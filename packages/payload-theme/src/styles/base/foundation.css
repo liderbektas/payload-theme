@@ -45,6 +45,24 @@
     --pt-ok: #16a34a;
     --pt-ok-text: #15803d;
     --pt-warn: #d97706;
+    --pt-warn-text: #b45309;
+    --pt-danger: #dc2626;
+    --pt-danger-text: #b91c1c;
+    --pt-info: #2563eb;
+    --pt-info-text: #1d4ed8;
+
+    /* Type scale — every theme-owned font size reads one of these rungs
+     * (Payload's root is 13px, so `base` is body text). One ladder keeps the
+     * panel's sizes coherent, and a cssVariables tweak rescales it evenly. */
+    --pt-text-3xs: 9.5px;
+    --pt-text-2xs: 10.5px;
+    --pt-text-xs: 11.5px;
+    --pt-text-sm: 12.5px;
+    --pt-text-base: 13px;
+    --pt-text-lg: 15px;
+    --pt-text-xl: 17px;
+    --pt-text-2xl: 21px;
+    --pt-text-3xl: 27px;
 
     /* shadcn shadow steps */
     --pt-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -58,17 +76,24 @@
   }
 
   html[data-theme='dark'] {
-    /* zinc-900: the dark gray field (reference dark sidebar) */
-    --theme-bg: #18181b;
+    /* zinc-900: the dark gray field (reference dark sidebar). Read through
+     * the base ladder so the `neutral` option retints it too. */
+    --theme-bg: var(--color-base-900);
 
     /* brighter status hues so the dots register on near-black */
     --pt-ok: #22c55e;
     --pt-ok-text: #4ade80;
     --pt-warn: #f59e0b;
+    --pt-warn-text: #fbbf24;
+    --pt-danger: #ef4444;
+    --pt-danger-text: #f87171;
+    --pt-info: #3b82f6;
+    --pt-info-text: #60a5fa;
 
     /* Shift the bottom of the dark elevation ladder one rung darker so the
      * content card lands on zinc-950 (the reference dark background) and the
-     * card border on zinc-800 — text rungs (300+) keep Payload's mapping. */
+     * card border on zinc-800 — text rungs (300+) keep Payload's mapping.
+     * (`darkMode: 'dim'` re-declares these one rung lighter at runtime.) */
     --theme-elevation-0: var(--color-base-950);
     --theme-elevation-50: var(--color-base-900);
     --theme-elevation-100: var(--color-base-850);

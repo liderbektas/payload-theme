@@ -1,0 +1,34 @@
+/* ==================================================================== *
+ * DENSITY — control heights, table rows, button padding
+ *
+ * Payload sizes these with fixed `base()` values compiled to px, so they
+ * can't follow a variable on their own. Each rule here re-declares one of
+ * them through a --pt-* density token whose fallback is Payload's own
+ * value — the default (`comfortable`) look is pixel-identical, and
+ * `density: 'compact'` only swaps the tokens. (Form-grid gaps and the view
+ * padding read the same tokens in their own modules.)
+ * ==================================================================== */
+@layer payload {
+  /* single-line text controls — Payload's formInput height is base(2) */
+  .field-type:is(.text, .email, .number, .password, .confirm-password, .point) input,
+  .date-time-picker .react-datepicker__input-container input {
+    height: var(--pt-ctl-h, 40px);
+  }
+
+  /* selects grow from their padding (height: auto), not a fixed height */
+  .react-select .rs__control {
+    padding-block: var(--pt-ctl-py, 7px);
+  }
+
+  /* large buttons (Save / Publish / Create new) */
+  .btn--size-large {
+    --btn-padding-block-start: var(--pt-btn-py, 8px);
+    --btn-padding-block-end: var(--pt-btn-py, 8px);
+  }
+
+  /* list rows */
+  .table th,
+  .table td {
+    padding-block: var(--pt-cell-py, 12px);
+  }
+}

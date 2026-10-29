@@ -5,6 +5,9 @@ import React from 'react'
 
 import type { ResolvedThemeConfig } from '../../options'
 
+import { seedIcons } from '../Icon'
+import { BOOT_SCRIPT } from './boot'
+
 /**
  * Injects the computed accent scale (`--pt-*` custom properties) that the
  * static stylesheet reads. Registered in `admin.components.providers`, it sits
@@ -16,8 +19,13 @@ export const ThemeProvider: React.FC<{ children?: React.ReactNode }> = ({ childr
   const { config } = useConfig()
   const theme = config.admin?.custom?.payloadTheme as ResolvedThemeConfig | undefined
 
+  // before any child renders: every Icon below draws from a warm cache
+  seedIcons(theme?.iconNodes)
+
   return (
     <React.Fragment>
+      {/* replays the header customizer's overrides before the first paint */}
+      <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} suppressHydrationWarning />
       {theme?.css ? (
         <style data-payload-theme="accent" dangerouslySetInnerHTML={{ __html: theme.css }} />
       ) : null}

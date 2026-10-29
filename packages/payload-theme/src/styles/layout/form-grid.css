@@ -25,7 +25,7 @@
       ) {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 22px 20px;
+      gap: var(--pt-field-gap, 22px) 20px;
       align-items: start;
     }
     /* grid gap owns the rhythm — drop Payload's per-field margins */
@@ -84,8 +84,9 @@
       > .field-type.checkbox {
       align-self: start;
       /* measured: label row + this offset puts the 20px switch's center
-       * exactly on the neighbouring 40px input's center line */
-      padding-top: 35px;
+       * exactly on the neighbouring 40px input's center line (and follows
+       * the control height when density shrinks it) */
+      padding-top: calc(35px + (var(--pt-ctl-h, 40px) - 40px) / 2);
     }
 
     /* Lexical renders its own nested field UIs — keep those stacked */
@@ -117,7 +118,7 @@
       .field-type.row
       > .row__fields {
       margin-bottom: 0;
-      row-gap: 22px;
+      row-gap: var(--pt-field-gap, 22px);
     }
     .template-default__wrap
       > .collection-edit

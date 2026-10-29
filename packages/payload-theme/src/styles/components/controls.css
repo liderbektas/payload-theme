@@ -191,7 +191,7 @@
     --btn-padding-block-end: 4px;
     --btn-padding-inline-start: 14px;
     --btn-padding-inline-end: 14px;
-    font-size: 0.85rem;
+    font-size: var(--pt-text-xs);
     font-weight: 500;
   }
   a.doc-tab:hover,

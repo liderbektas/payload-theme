@@ -138,7 +138,7 @@
   .pt-login-hero__tagline {
     margin: 0;
     max-width: 34ch;
-    font-size: 0.95rem;
+    font-size: var(--pt-text-sm);
     line-height: 1.55;
     color: rgb(255 255 255 / 0.66);
   }

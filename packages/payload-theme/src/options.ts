@@ -8,13 +8,32 @@
 import type { I18n } from '@payloadcms/translations'
 import type { Locale, Payload, PayloadComponent, TypedUser } from 'payload'
 
-import type { ThemeFontKey } from './theme'
+import type { IconNode } from './icons'
 
-import { normalizeHex, resolveFont } from './theme'
+import type {
+  SurfaceOptions,
+  ThemeDarkMode,
+  ThemeDensity,
+  ThemeFontKey,
+  ThemeFrame,
+  ThemeNeutral,
+} from './theme'
+
+import {
+  DARK_MODES,
+  DENSITIES,
+  FRAMES,
+  NEUTRALS,
+  normalizeHex,
+  resolveFont,
+  SURFACE_DEFAULTS,
+} from './theme'
+
+export type { ThemeDarkMode, ThemeDensity, ThemeFrame, ThemeNeutral } from './theme'
 
 /**
  * A one-word starting point: each preset is a coherent accent + radius +
- * typeface identity, the same six the header customizer offers. Any option you
+ * typeface + neutral identity, the same six the header customizer offers. Any option you
  * also pass explicitly wins over the preset, so `preset` is a set of defaults,
  * never a lock.
  */
@@ -118,8 +137,8 @@ export interface LoginOptions {
 export interface PayloadThemeOptions {
   /**
    * A whole look in one word — `'zinc'`, `'ocean'`, `'forest'`, `'sunset'`,
-   * `'berry'` or `'swiss'`. Sets the accent, radius and typeface together;
-   * pass any of those explicitly to override just that part.
+   * `'berry'` or `'swiss'`. Sets the accent, radius, typeface and neutral
+   * together; pass any of those explicitly to override just that part.
    */
   preset?: ThemePreset
   /** The single accent color as a hex string. Drives the whole 50–950 scale. */
@@ -128,6 +147,28 @@ export interface PayloadThemeOptions {
   radius?: ThemeRadius
   /** Panel typeface — a built-in key or a custom CSS font-family stack. @default 'default' */
   font?: ThemeFont
+  /**
+   * The gray family behind every surface, border and text rung — `'zinc'`,
+   * `'slate'` (cool blue-gray), `'gray'`, `'neutral'` (pure gray) or
+   * `'stone'` (warm). @default 'zinc'
+   */
+  neutral?: ThemeNeutral
+  /**
+   * Dark-mode depth: `'deep'` sets the content on near-black, `'dim'` lifts
+   * every surface a rung for a softer night look. @default 'deep'
+   */
+  darkMode?: ThemeDarkMode
+  /**
+   * Spacing density: `'compact'` tightens inputs, buttons, table rows and the
+   * form grid for data-heavy panels. @default 'comfortable'
+   */
+  density?: ThemeDensity
+  /**
+   * Content frame: `'inset'` floats the content in a rounded card on the gray
+   * field; `'flat'` runs it edge to edge with one divider against the
+   * sidebar. @default 'inset'
+   */
+  frame?: ThemeFrame
   /**
    * Sidebar logo, rendered as `<img>` at the top of the nav. A URL
    * (`'/logo.svg'`) or `{ light, dark }` URLs to swap artwork per color
@@ -183,6 +224,8 @@ export interface ResolvedThemeConfig {
   /** The preset the config named, or null when the options stand alone. */
   preset: null | ThemePreset
   radius: ThemeRadius
+  /** Neutral family, dark depth, density and frame — read by the header customizer. */
+  surface: SurfaceOptions
   /** The configured font option as given ('default' when omitted). */
   font: string
   /** Webfont stylesheet URL when the font needs loading (inter/geist), else null. */
@@ -199,6 +242,11 @@ export interface ResolvedThemeConfig {
   login: { heading?: string; tagline?: string }
   /** lucide icon name used when an entity has no mapping. */
   fallbackIconName: string
+  /**
+   * Geometry of every icon the panel can draw, loaded by the plugin at init
+   * so the first server render already has real icons (see `icons.ts`).
+   */
+  iconNodes: Record<string, IconNode>
 }
 
 /** One preset's full identity. `label` is the customizer's button text. */
@@ -207,6 +255,7 @@ export interface ThemePresetDefinition {
   font: ThemeFontKey
   key: ThemePreset
   label: string
+  neutral: ThemeNeutral
   radius: ThemeRadius
 }
 
@@ -217,12 +266,40 @@ export interface ThemePresetDefinition {
  * identity, not a brand.
  */
 export const THEME_PRESETS: ThemePresetDefinition[] = [
-  { key: 'zinc', label: 'Zinc', accent: '#18181b', font: 'geist', radius: 'md' },
-  { key: 'ocean', label: 'Ocean', accent: '#2563eb', font: 'inter', radius: 'lg' },
-  { key: 'forest', label: 'Forest', accent: '#059669', font: 'inter', radius: 'md' },
-  { key: 'sunset', label: 'Sunset', accent: '#ea580c', font: 'inter', radius: 'full' },
-  { key: 'berry', label: 'Berry', accent: '#db2777', font: 'geist', radius: 'lg' },
-  { key: 'swiss', label: 'Swiss', accent: '#dc2626', font: 'helvetica', radius: 'none' },
+  { key: 'zinc', label: 'Zinc', accent: '#18181b', font: 'geist', neutral: 'zinc', radius: 'md' },
+  {
+    key: 'ocean',
+    label: 'Ocean',
+    accent: '#2563eb',
+    font: 'inter',
+    neutral: 'slate',
+    radius: 'lg',
+  },
+  {
+    key: 'forest',
+    label: 'Forest',
+    accent: '#059669',
+    font: 'inter',
+    neutral: 'stone',
+    radius: 'md',
+  },
+  {
+    key: 'sunset',
+    label: 'Sunset',
+    accent: '#ea580c',
+    font: 'inter',
+    neutral: 'stone',
+    radius: 'full',
+  },
+  { key: 'berry', label: 'Berry', accent: '#db2777', font: 'geist', neutral: 'zinc', radius: 'lg' },
+  {
+    key: 'swiss',
+    label: 'Swiss',
+    accent: '#dc2626',
+    font: 'helvetica',
+    neutral: 'neutral',
+    radius: 'none',
+  },
 ]
 
 const PRESETS: ThemePreset[] = THEME_PRESETS.map((preset) => preset.key)
@@ -341,6 +418,14 @@ function normalizeAsset(
   return { dark: value.dark, light: value.light }
 }
 
+/** Assert `value` is one of `allowed`, naming the option in the error. */
+function assertOneOf<T extends string>(value: T, allowed: T[], name: string): void {
+  assert(
+    allowed.includes(value),
+    `Invalid ${name}: '${String(value)}'. Expected one of ${allowed.join(', ')}.`,
+  )
+}
+
 /** Validate user options (clear errors) and return everything needed downstream. */
 export function resolveOptions(options: PayloadThemeOptions): {
   accent: string
@@ -375,6 +460,17 @@ export function resolveOptions(options: PayloadThemeOptions): {
     `font must be a non-empty string — a built-in key ('inter', 'geist', 'helvetica', 'system') or a CSS font-family stack.`,
   )
   const resolvedFont = resolveFont(font)
+
+  const surface: SurfaceOptions = {
+    neutral: options.neutral ?? preset?.neutral ?? SURFACE_DEFAULTS.neutral,
+    dark: options.darkMode ?? SURFACE_DEFAULTS.dark,
+    density: options.density ?? SURFACE_DEFAULTS.density,
+    frame: options.frame ?? SURFACE_DEFAULTS.frame,
+  }
+  assertOneOf(surface.neutral, NEUTRALS, 'neutral')
+  assertOneOf(surface.dark, DARK_MODES, 'darkMode')
+  assertOneOf(surface.density, DENSITIES, 'density')
+  assertOneOf(surface.frame, FRAMES, 'frame')
 
   const icons = options.nav?.icons ?? {}
   assert(
@@ -429,6 +525,7 @@ export function resolveOptions(options: PayloadThemeOptions): {
       accent: normalizeHex(accent),
       preset: presetKey,
       radius,
+      surface,
       font,
       fontURL: resolvedFont.url,
       dashboard: { widgets },
@@ -438,6 +535,7 @@ export function resolveOptions(options: PayloadThemeOptions): {
       nav: { icons },
       login: { heading: loginHeading, tagline: loginTagline },
       fallbackIconName: DEFAULTS.fallbackIconName,
+      iconNodes: {}, // filled by the plugin (async)
     },
   }
 }

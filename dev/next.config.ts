@@ -9,6 +9,15 @@ const dirname = path.dirname(__filename)
 const nextConfig: NextConfig = {
   // Keep the floating dev-tools badge out of docs screenshots and the demo.
   devIndicators: false,
+  experimental: {
+    // Next 16 streams React's dev-only debug info (every server component's
+    // props — Payload hands them `i18n`, `req`, `payload` …) over a separate
+    // websocket. Reloading while that stream is still resolving makes React's
+    // flight client write into already-frozen objects and throw "Cannot
+    // assign to read only property 'i18n'" (or read `time`/`stack` of
+    // undefined). Inline debug info has no such race.
+    reactDebugChannel: false,
+  },
   images: {
     localPatterns: [
       {
