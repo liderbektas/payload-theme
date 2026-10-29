@@ -31,7 +31,7 @@
 
   /* forgot-password link: quiet, accent on hover */
   .login__form > a {
-    font-size: 0.85rem;
+    font-size: var(--pt-text-xs);
     color: var(--theme-elevation-500);
     text-decoration: none;
   }

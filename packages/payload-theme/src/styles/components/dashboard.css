@@ -91,7 +91,7 @@
     }
   }
   .pt-dash__card-label {
-    font-size: 0.9rem;
+    font-size: var(--pt-text-xs);
     font-weight: 500;
     color: var(--theme-elevation-500);
     overflow: hidden;
@@ -112,7 +112,7 @@
     min-width: 0;
   }
   .pt-dash__card-count {
-    font-size: 2.1rem;
+    font-size: var(--pt-text-3xl);
     font-weight: 700;
     line-height: 1.05;
     letter-spacing: -0.03em;
@@ -129,7 +129,7 @@
     gap: 4px;
     padding: 2px 8px;
     border-radius: 999px;
-    font-size: 11px;
+    font-size: var(--pt-text-xs);
     font-weight: 550;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.01em;
@@ -157,7 +157,7 @@
     color: var(--theme-error-400);
   }
   .pt-dash__card-caption {
-    font-size: 0.8rem;
+    font-size: var(--pt-text-2xs);
     font-weight: 450;
     color: var(--theme-elevation-500);
   }
@@ -172,7 +172,7 @@
   }
   /* Globals have no count — the entity name itself is the big line. */
   .pt-dash__card-title {
-    font-size: 1.3rem;
+    font-size: var(--pt-text-xl);
     font-weight: 650;
     line-height: 1.25;
     letter-spacing: -0.015em;

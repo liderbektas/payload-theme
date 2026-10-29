@@ -24,7 +24,7 @@
     padding-bottom: 12px;
     margin-inline-end: 24px;
     color: var(--theme-elevation-500);
-    font-size: 1rem;
+    font-size: var(--pt-text-base);
     font-weight: 500;
     line-height: 1.4;
     letter-spacing: 0;

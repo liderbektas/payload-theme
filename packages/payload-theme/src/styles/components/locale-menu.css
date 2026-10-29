@@ -43,7 +43,7 @@
   .pt-nav__user-menu-code,
   .pt-header-user-menu-code {
     flex-shrink: 0;
-    font-size: 0.72rem;
+    font-size: var(--pt-text-3xs);
     font-variant-numeric: tabular-nums;
     color: var(--theme-elevation-500);
   }

@@ -19,6 +19,6 @@
   /* compare-table field labels: quiet hierarchy */
   .field-diff-label {
     color: var(--theme-elevation-600);
-    font-size: 0.85rem;
+    font-size: var(--pt-text-xs);
   }
 }

@@ -25,6 +25,19 @@ type IconNode = React.ComponentProps<typeof LucideIcon>['iconNode']
  */
 const loaded = new Map<string, IconNode>()
 
+/**
+ * Seed the cache with geometry the server already resolved (the plugin ships
+ * it on `admin.custom.payloadTheme.iconNodes`). Called by the ThemeProvider
+ * during render, before any icon below it renders — on the server and on the
+ * client alike — so those icons paint on the first frame and hydrate as-is.
+ */
+export const seedIcons = (nodes: Record<string, unknown> | undefined): void => {
+  if (!nodes) return
+  for (const [name, node] of Object.entries(nodes)) {
+    if (!loaded.has(name)) loaded.set(name, node as IconNode)
+  }
+}
+
 /** In-flight (or settled) imports, so N icons of one name share a single load. */
 const loading = new Map<string, Promise<void>>()
 

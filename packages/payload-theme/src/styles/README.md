@@ -27,12 +27,16 @@ resolution, no extra requests.
 - Badges/avatars/switches are always fully round (`999px`) regardless of the
   radius setting; everything else reads `--pt-radius-{ctl,card,item}`.
 - Every animation sits behind `@media (prefers-reduced-motion: no-preference)`.
+- **Surface options are tokens with fallbacks.** `neutral`, `darkMode`,
+  `density` and `frame` never add selectors: rules read `--color-base-*`,
+  `--pt-ctl-h`, `--pt-frame-*` … with the default baked in as the fallback,
+  and `theme/surface.ts` emits overrides only for non-default choices.
 
 ## Map
 
 | Directory | Contents |
 | --- | --- |
-| `base/` | zinc surface tokens, shadows, status colors (`foundation`), view/keyframe motion (`motion`) |
-| `components/` | one file per UI area: buttons, forms, table, nav, dashboard, header actions, media (+ grid view), command palette, toasts/skeletons (`feedback`), structured fields, login hero, … |
+| `base/` | zinc surface tokens, shadows, status colors, type scale (`foundation`), route progress bar + keyframes (`motion`) |
+| `components/` | one file per UI area: buttons, forms, table, nav, dashboard, header actions, media (+ grid view), command palette, toasts/skeletons (`feedback`), structured fields, login hero, density tokens → Payload controls (`density`), … |
 | `layout/` | the inset content-card frame, content container + edit-view cards, list header, two-column form grid, responsive/mobile fixes |
 | `overrides/` | unlayered last-resort overrides (see above) |

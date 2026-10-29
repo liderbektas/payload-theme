@@ -55,4 +55,5 @@
 @import './components/doc-controls.css';
 @import './layout/list-header.css';
 @import './components/media-grid.css';
+@import './components/density.css';
 @import './overrides/unlayered.css';

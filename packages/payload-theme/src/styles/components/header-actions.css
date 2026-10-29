@@ -85,7 +85,11 @@
     z-index: 80;
     width: min(308px, calc(100vw - 32px));
     max-height: calc(100vh - var(--app-header-height, 64px) - 32px);
+    /* dvh: on phones 100vh includes the hidden browser chrome, which pushed
+     * the panel's bottom (footer buttons) off-screen */
+    max-height: calc(100dvh - var(--app-header-height, 64px) - 32px);
     overflow-y: auto;
+    overscroll-behavior: contain;
     display: flex;
     flex-direction: column;
     gap: 14px;
@@ -99,6 +103,20 @@
   html[data-theme='dark'] .pt-custom__panel {
     background: var(--theme-elevation-50);
   }
+  /* Phones: the palette button is not the header's last chip (sun/moon and
+   * the avatar sit to its right), so a panel right-aligned to the button ran
+   * off the screen's LEFT edge. Release the button's positioning and span
+   * the panel across the header row instead, a 12px gutter each side. */
+  @media (max-width: 768px) {
+    .pt-custom {
+      position: static;
+    }
+    .pt-custom__panel {
+      top: calc(100% + 6px);
+      inset-inline: 12px;
+      width: auto;
+    }
+  }
   @media (prefers-reduced-motion: no-preference) {
     .pt-custom__panel {
       animation: pt-user-menu-in 0.13s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -111,7 +129,7 @@
     gap: 7px;
   }
   .pt-custom__label {
-    font-size: 12px;
+    font-size: var(--pt-text-sm);
     font-weight: 500;
     color: var(--theme-elevation-500);
   }
@@ -134,7 +152,7 @@
     border: 1px solid var(--theme-border-color);
     border-radius: var(--pt-radius-item);
     color: var(--theme-elevation-600);
-    font-size: 11.5px;
+    font-size: var(--pt-text-xs);
     font-weight: 500;
     cursor: pointer;
     transition:
@@ -185,7 +203,7 @@
     border: 1px solid var(--theme-border-color);
     border-radius: var(--pt-radius-item);
     color: var(--theme-elevation-600);
-    font-size: 12px;
+    font-size: var(--pt-text-sm);
     font-weight: 500;
     cursor: pointer;
     transition:
@@ -307,7 +325,7 @@
     box-shadow: none;
     color: var(--theme-text);
     font-family: var(--font-mono, ui-monospace, monospace);
-    font-size: 12.5px;
+    font-size: var(--pt-text-sm);
     letter-spacing: 0.02em;
   }
   .pt-custom__hex-input::placeholder {
@@ -342,7 +360,7 @@
     background: transparent;
     border-radius: calc(var(--pt-radius-ctl) - 2px);
     color: var(--theme-elevation-500);
-    font-size: 11.5px;
+    font-size: var(--pt-text-xs);
     font-weight: 500;
     letter-spacing: 0.01em;
     cursor: pointer;
@@ -385,7 +403,7 @@
     border-radius: var(--pt-radius-ctl);
     background: transparent;
     color: var(--theme-text);
-    font-size: 12.5px;
+    font-size: var(--pt-text-sm);
     font-weight: 500;
     cursor: pointer;
     transition:
@@ -420,7 +438,7 @@
     border-radius: var(--pt-radius-ctl);
     background: var(--theme-elevation-1000);
     color: var(--theme-elevation-0);
-    font-size: 12.5px;
+    font-size: var(--pt-text-sm);
     font-weight: 500;
     cursor: pointer;
     transition: opacity 0.12s ease;
@@ -469,7 +487,7 @@
     border-radius: 999px; /* always a circle, radius-agnostic */
     background: var(--pt-accent);
     color: var(--pt-accent-contrast);
-    font-size: 0.66rem;
+    font-size: var(--pt-text-3xs);
     font-weight: 600;
     letter-spacing: 0.02em;
   }
@@ -496,7 +514,7 @@
     line-height: 1.2;
   }
   .pt-header-user-name {
-    font-size: 13px;
+    font-size: var(--pt-text-base);
     font-weight: 550;
     color: var(--theme-text);
     white-space: nowrap;
@@ -553,7 +571,7 @@
     max-width: none;
   }
   .pt-header-user-email {
-    font-size: 11.5px;
+    font-size: var(--pt-text-xs);
     color: var(--theme-elevation-500);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -566,7 +584,7 @@
   }
   .pt-header-user-menu-label {
     padding: 6px 8px 2px;
-    font-size: 0.72rem;
+    font-size: var(--pt-text-3xs);
     font-weight: 500;
     color: var(--theme-elevation-500);
   }
@@ -579,7 +597,7 @@
     border: 0;
     background: none;
     border-radius: var(--pt-radius-item);
-    font-size: 13px;
+    font-size: var(--pt-text-base);
     font-weight: 450;
     color: var(--theme-text);
     text-align: left;

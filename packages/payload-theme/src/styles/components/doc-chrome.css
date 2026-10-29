@@ -48,7 +48,7 @@
   }
   .confirmation-modal__content h1 {
     margin-bottom: 6px;
-    font-size: 1.3rem;
+    font-size: var(--pt-text-xl);
     letter-spacing: -0.015em;
   }
   /* the title and its supporting line read as ONE block */
@@ -64,7 +64,7 @@
     padding: 2px 10px;
     border-radius: 999px;
     background: var(--theme-elevation-100);
-    font-size: 0.8rem;
+    font-size: var(--pt-text-2xs);
   }
   .status__label {
     color: var(--theme-elevation-500);

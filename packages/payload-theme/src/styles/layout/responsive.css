@@ -86,7 +86,7 @@
      * (phones keep the full-bleed card) */
     @media (min-width: 769px) {
       .template-default--nav-open .template-default__wrap {
-        margin-inline-start: 8px;
+        margin-inline-start: var(--pt-frame-inset, 8px);
       }
     }
 

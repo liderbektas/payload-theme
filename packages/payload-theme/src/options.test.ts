@@ -19,6 +19,7 @@ describe('resolveOptions — preset', () => {
       expect(resolved.accent).toBe(preset.accent)
       expect(resolved.radius).toBe(preset.radius)
       expect(resolved.font).toBe(preset.font)
+      expect(resolved.surface.neutral).toBe(preset.neutral)
     }
   })
 
@@ -163,5 +164,41 @@ describe('resolveOptions — avatar', () => {
     expect(() => resolveOptions({ avatar: { field: '  ' } })).toThrow(/avatar\.field/)
     expect(() => resolveOptions({ avatar: { field: 'photo', size: '' } })).toThrow(/avatar\.size/)
     expect(() => resolveOptions({ avatar: [] as unknown as 'gravatar' })).toThrow(/avatar must be/)
+  })
+})
+
+describe('resolveOptions — surface (neutral, darkMode, density, frame)', () => {
+  it('defaults to zinc / deep / comfortable / inset', () => {
+    expect(resolveOptions({}).resolved.surface).toEqual({
+      dark: 'deep',
+      density: 'comfortable',
+      frame: 'inset',
+      neutral: 'zinc',
+    })
+  })
+
+  it('passes explicit choices through, and they beat the preset neutral', () => {
+    const { resolved } = resolveOptions({
+      darkMode: 'dim',
+      density: 'compact',
+      frame: 'flat',
+      neutral: 'stone',
+      preset: 'ocean', // neutral: 'slate'
+    })
+    expect(resolved.surface).toEqual({
+      dark: 'dim',
+      density: 'compact',
+      frame: 'flat',
+      neutral: 'stone',
+    })
+  })
+
+  it('rejects unknown values by option name, listing the valid ones', () => {
+    expect(() => resolveOptions({ neutral: 'blue' as 'zinc' })).toThrow(
+      /Invalid neutral: 'blue'.*zinc, slate/,
+    )
+    expect(() => resolveOptions({ darkMode: 'black' as 'dim' })).toThrow(/Invalid darkMode/)
+    expect(() => resolveOptions({ density: 'tight' as 'compact' })).toThrow(/Invalid density/)
+    expect(() => resolveOptions({ frame: 'boxed' as 'flat' })).toThrow(/Invalid frame/)
   })
 })

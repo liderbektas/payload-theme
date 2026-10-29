@@ -25,7 +25,7 @@ html[data-theme='dark'] .no-results.no-results {
 }
 .no-results.no-results h3 {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: var(--pt-text-lg);
   font-weight: 650;
   letter-spacing: -0.01em;
 }
@@ -33,7 +33,7 @@ html[data-theme='dark'] .no-results.no-results {
   margin: 6px auto 0;
   max-width: 40ch;
   color: var(--theme-elevation-500);
-  font-size: 0.9rem;
+  font-size: var(--pt-text-xs);
 }
 .no-results.no-results .no-results__actions {
   justify-content: center;

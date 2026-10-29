@@ -18,18 +18,86 @@
   /* (h3/p/actions rules live in the unlayered block at the end of the file —
    * they fight Payload's own unlayered NoListResults rules) */
 
-  /* ---- generic select-value badges ----
-   * Payload tags every select cell value with `selected--<value>`; every
-   * value renders as the same neutral badge — no per-value semantic colors,
-   * so custom select fields and the status column all look alike. */
+  /* ---- select-value badges ----
+   * Payload tags every select cell value with `selected--<value>`. Every
+   * value renders as the same quiet pill (text only, no dot); values whose
+   * name carries a well-known meaning pick up a soft semantic tone (green
+   * for live, amber for in-progress, blue for queued, red for failed) —
+   * anything else, custom select options included, stays neutral. */
   .table td [class*='selected--'] {
+    --pt-tone-bg: var(--theme-elevation-100);
+    --pt-tone-text: var(--theme-elevation-600);
     display: inline-flex;
     align-items: center;
     padding: 3px 10px;
     border-radius: 999px;
-    background: var(--theme-elevation-100);
-    color: var(--theme-elevation-600);
-    font-size: 0.82em;
+    background: var(--pt-tone-bg);
+    color: var(--pt-tone-text);
+    font-size: var(--pt-text-2xs);
     font-weight: 500;
+    white-space: nowrap;
+  }
+  .table
+    td
+    :is(
+      .selected--published,
+      .selected--active,
+      .selected--approved,
+      .selected--live,
+      .selected--completed,
+      .selected--done,
+      .selected--paid,
+      .selected--enabled,
+      .selected--success
+    ) {
+    --pt-tone-bg: color-mix(in srgb, var(--pt-ok) 12%, transparent);
+    --pt-tone-text: var(--pt-ok-text);
+  }
+  .table
+    td
+    :is(
+      .selected--draft,
+      .selected--pending,
+      .selected--review,
+      .selected--in-review,
+      .selected--changed,
+      .selected--unpaid,
+      .selected--warning
+    ) {
+    --pt-tone-bg: color-mix(in srgb, var(--pt-warn) 13%, transparent);
+    --pt-tone-text: var(--pt-warn-text);
+  }
+  .table
+    td
+    :is(
+      .selected--scheduled,
+      .selected--queued,
+      .selected--processing,
+      .selected--in-progress,
+      .selected--new,
+      .selected--info
+    ) {
+    --pt-tone-bg: color-mix(in srgb, var(--pt-info) 12%, transparent);
+    --pt-tone-text: var(--pt-info-text);
+  }
+  .table
+    td
+    :is(
+      .selected--rejected,
+      .selected--failed,
+      .selected--error,
+      .selected--cancelled,
+      .selected--canceled,
+      .selected--blocked,
+      .selected--expired,
+      .selected--disabled,
+      .selected--deleted
+    ) {
+    --pt-tone-bg: color-mix(in srgb, var(--pt-danger) 11%, transparent);
+    --pt-tone-text: var(--pt-danger-text);
+  }
+  /* archived reads as "out of play": the neutral pill, a step quieter */
+  .table td .selected--archived {
+    --pt-tone-text: var(--theme-elevation-450);
   }
 }

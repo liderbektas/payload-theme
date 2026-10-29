@@ -59,7 +59,7 @@
     border: 1px solid var(--theme-border-color);
     border-radius: var(--pt-radius-ctl);
     color: var(--theme-elevation-600);
-    font-size: 0.85rem;
+    font-size: var(--pt-text-xs);
     transition:
       border-color 0.12s ease,
       color 0.12s ease;

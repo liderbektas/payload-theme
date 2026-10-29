@@ -98,7 +98,7 @@
     margin: 16px 0 4px;
     padding: 0 10px;
     color: var(--theme-elevation-500);
-    font-size: 12px;
+    font-size: var(--pt-text-sm);
     font-weight: 500;
     letter-spacing: 0;
     text-transform: none;
@@ -113,7 +113,7 @@
     padding: 8px 10px;
     border-radius: var(--pt-radius-ctl);
     color: var(--theme-elevation-600); /* muted inactive; icon inherits */
-    font-size: 13.5px;
+    font-size: var(--pt-text-base);
     font-weight: 500;
     text-decoration: none;
     transition:
@@ -200,7 +200,7 @@
     border-radius: 999px;
     background: var(--pt-accent);
     color: var(--pt-accent-contrast);
-    font-size: 0.72rem;
+    font-size: var(--pt-text-3xs);
     font-weight: 600;
     letter-spacing: 0.02em;
   }
@@ -230,7 +230,7 @@
     line-height: 1.25;
   }
   .pt-nav__user-name {
-    font-size: 13px;
+    font-size: var(--pt-text-base);
     font-weight: 600;
     letter-spacing: -0.005em;
     color: var(--theme-text);
@@ -239,7 +239,7 @@
     white-space: nowrap;
   }
   .pt-nav__user-email {
-    font-size: 11.5px;
+    font-size: var(--pt-text-xs);
     color: var(--theme-elevation-500);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -298,7 +298,7 @@
   }
   .pt-nav__user-menu-label {
     padding: 6px 8px 2px;
-    font-size: 0.72rem;
+    font-size: var(--pt-text-3xs);
     font-weight: 500;
     color: var(--theme-elevation-500);
   }
@@ -311,7 +311,7 @@
     border: 0;
     background: none;
     border-radius: var(--pt-radius-item);
-    font-size: 13px;
+    font-size: var(--pt-text-base);
     font-weight: 450;
     color: var(--theme-text);
     text-align: left;

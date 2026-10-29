@@ -8,6 +8,10 @@
  * whose own padding provides that gap — exactly the reference's
  * `m-2 ml-0` inset). The app header is sticky and translucent inside the
  * card, with the breadcrumb restored as its content.
+ *
+ * Every frame dimension reads a --pt-frame-* token (the inset values are
+ * the fallbacks), so `frame: 'flat'` only swaps tokens: no gutter, no
+ * radius, no shadow, and a single divider on the sidebar's edge instead.
  * ==================================================================== */
 @layer payload {
   /* 1) Hide Payload's own desktop nav toggler: it renders OUTSIDE the
@@ -42,21 +46,28 @@
 
   @media (min-width: 769px) {
     .template-default__wrap {
-      margin-block: 8px;
-      margin-inline: 0 8px;
+      margin-block: var(--pt-frame-inset, 8px);
+      margin-inline: 0 var(--pt-frame-inset, 8px);
       /* Payload sizes the wrap at width:100% of its grid track — with the
        * side margins that overflows by exactly the gutter, eating the right
        * inset. `auto` lets the stretched grid item shrink to track minus
        * margins, so left and right insets match. */
       width: auto;
-      min-height: calc(100dvh - 16px);
-      border: 1px solid var(--theme-border-color);
-      border-radius: var(--pt-radius-card);
-      box-shadow: var(--pt-shadow-sm);
+      min-height: calc(100dvh - 2 * var(--pt-frame-inset, 8px));
+      border: var(--pt-frame-border, 1px) solid var(--theme-border-color);
+      border-radius: var(--pt-frame-radius, var(--pt-radius-card));
+      box-shadow: var(--pt-frame-shadow, var(--pt-shadow-sm));
     }
     /* drawer mode / closed nav: no sidebar gutter on the left — add our own */
     .template-default:not(.template-default--nav-open) .template-default__wrap {
-      margin-inline-start: 8px;
+      margin-inline-start: var(--pt-frame-inset, 8px);
+    }
+  }
+  /* flat frame: the content meets the docked sidebar along one hairline
+   * (≤1440px the sidebar is an overlay drawer, so there is no seam) */
+  @media (min-width: 1441px) {
+    .template-default--nav-open .template-default__wrap {
+      border-inline-start-width: 1px;
     }
   }
 
@@ -72,8 +83,11 @@
   }
   @media (min-width: 769px) {
     .app-header {
-      border-start-start-radius: calc(var(--pt-radius-card) - 1px);
-      border-start-end-radius: calc(var(--pt-radius-card) - 1px);
+      border-start-start-radius: max(
+        0px,
+        calc(var(--pt-frame-radius, var(--pt-radius-card)) - 1px)
+      );
+      border-start-end-radius: max(0px, calc(var(--pt-frame-radius, var(--pt-radius-card)) - 1px));
     }
   }
   .app-header__bg {
@@ -120,11 +134,11 @@
   /* 6) Views stretch the card to the bottom edge; a little air above and
    *    below the content. (No gray well anymore — the card IS the surface.) */
   .template-default__wrap > .app-header + [class] {
-    padding-block-start: 24px;
+    padding-block-start: var(--pt-section-gap, 24px);
   }
   .template-default__wrap > [class]:not(.app-header):not(.doc-header) {
     flex: 1 0 auto;
-    padding-block-end: 24px;
+    padding-block-end: var(--pt-section-gap, 24px);
   }
 
   /* 7) Payload wraps the account/auth fields (email, password buttons) in an

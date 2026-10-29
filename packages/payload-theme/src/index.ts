@@ -19,8 +19,9 @@
 
 import type { CollectionConfig, Config, Field } from 'payload'
 
+import { loadIconNodes, THEME_UI_ICONS } from './icons'
 import { resolveOptions, type PayloadThemeOptions } from './options'
-import { buildTheme, resolveFont, themeToCss } from './theme'
+import { buildTheme, resolveFont, surfaceToCss, themeToCss } from './theme'
 import { withThemeTranslations } from './translations'
 
 const BOOL_CELL = 'payload-theme/client#BoolCell'
@@ -73,8 +74,9 @@ const transformCollection = (collection: CollectionConfig): CollectionConfig => 
 }
 
 /**
- * The plugin factory. Returns a Payload config transform that:
- * 1. validates options and computes the accent scale (once, at init),
+ * The plugin factory. Returns an (async) Payload config transform that:
+ * 1. validates options, computes the accent scale and loads the icon
+ *    geometry the panel draws (once, at init),
  * 2. stashes the serializable theme config on `admin.custom.payloadTheme`,
  * 3. registers dashboard widgets in `admin.dependencies` so the import-map
  *    generator picks them up,
@@ -83,12 +85,26 @@ const transformCollection = (collection: CollectionConfig): CollectionConfig => 
  */
 export const payloadTheme =
   (options: PayloadThemeOptions = {}) =>
-  (incoming: Config): Config => {
+  async (incoming: Config): Promise<Config> => {
     const { accent, cssVariables, resolved } = resolveOptions(options)
+
+    // Real icons in the first server render: the theme's chrome plus every
+    // configured entity icon and the fallback, shipped on admin.custom.
+    resolved.iconNodes = await loadIconNodes([
+      ...THEME_UI_ICONS,
+      resolved.fallbackIconName,
+      ...Object.values(resolved.nav.icons),
+    ])
 
     // Compute the --pt-* tokens once here on the server; the ThemeProvider
     // renders them into a <style> so a single hex recolors every rule.
     resolved.css = themeToCss(buildTheme(accent), { cssVariables })
+
+    // Neutral family, dark depth, density and frame: only non-default choices
+    // emit (the stylesheet carries the defaults). Prepended, so the accent
+    // block's cssVariables come later and stay the ultimate escape hatch.
+    const surfaceCss = surfaceToCss(resolved.surface)
+    if (surfaceCss) resolved.css = `${surfaceCss}\n${resolved.css}`
 
     // Font override rides along in the same injected <style>. Payload declares
     // `--font-body` outside any cascade layer, so this override must be
@@ -171,7 +187,11 @@ export type {
   NavOptions,
   PayloadThemeOptions,
   ThemeAvatarOption,
+  ThemeDarkMode,
+  ThemeDensity,
   ThemeFont,
+  ThemeFrame,
+  ThemeNeutral,
   ThemePreset,
   ThemePresetDefinition,
   ThemeRadius,
