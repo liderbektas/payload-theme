@@ -12,8 +12,6 @@
  * first paint already has real icons.
  */
 
-import dynamicIconImports from 'lucide-react/dynamicIconImports'
-
 /** lucide's icon geometry: `[element, attributes][]` — plain, serializable data. */
 export type IconNode = Array<[string, Record<string, string>]>
 
@@ -59,7 +57,16 @@ const nodeOf = (mod: unknown): IconNode | undefined => {
  * exactly as before.
  */
 export async function loadIconNodes(names: string[]): Promise<Record<string, IconNode>> {
-  const imports = dynamicIconImports as Record<string, (() => Promise<unknown>) | undefined>
+  // Imported lazily, by its full file name: lucide-react has no `exports`
+  // map, so plain Node ESM (the Payload CLI, seed scripts, tsx) can't resolve
+  // the extensionless subpath bundlers accept. And if it fails anyway, the
+  // config must still load — the client's lazy icon path takes over.
+  let imports: Record<string, (() => Promise<unknown>) | undefined>
+  try {
+    imports = (await import('lucide-react/dynamicIconImports.mjs')).default as typeof imports
+  } catch {
+    return {}
+  }
   const unique = [...new Set(names)]
   const entries = await Promise.all(
     unique.map(async (name): Promise<[string, IconNode] | null> => {
