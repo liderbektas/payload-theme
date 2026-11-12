@@ -4,6 +4,15 @@ All notable changes to `payload-theme` are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- **`logoLink` option** — `{ href: string; label: string }`. Points the
+  sidebar logo somewhere other than the dashboard (the public site, say) and
+  names that link for screen readers. Omitted, the logo links to the
+  dashboard as before.
+
 ## [0.10.0] — 2026-10-29
 
 ### Added

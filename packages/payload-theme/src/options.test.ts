@@ -167,6 +167,29 @@ describe('resolveOptions — avatar', () => {
   })
 })
 
+describe('resolveOptions — logoLink', () => {
+  it('resolves to null when omitted, so the logo links to the dashboard', () => {
+    expect(resolveOptions({}).resolved.logoLink).toBeNull()
+  })
+
+  it('passes href and label through, trimmed', () => {
+    expect(
+      resolveOptions({ logoLink: { href: ' https://example.com ', label: ' Website ' } }).resolved
+        .logoLink,
+    ).toEqual({ href: 'https://example.com', label: 'Website' })
+  })
+
+  it('rejects a missing href or label with a clear error', () => {
+    expect(() => resolveOptions({ logoLink: { href: ' ', label: 'Website' } })).toThrow(
+      /logoLink\.href/,
+    )
+    expect(() => resolveOptions({ logoLink: { href: '/', label: '' } })).toThrow(/logoLink\.label/)
+    expect(() =>
+      resolveOptions({ logoLink: '/' as unknown as { href: string; label: string } }),
+    ).toThrow(/logoLink must be/)
+  })
+})
+
 describe('resolveOptions — surface (neutral, darkMode, density, frame)', () => {
   it('defaults to zinc / deep / comfortable / inset', () => {
     expect(resolveOptions({}).resolved.surface).toEqual({
