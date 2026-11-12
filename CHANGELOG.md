@@ -13,6 +13,22 @@ All notable changes to `payload-theme` are documented here. The format follows
   names that link for screen readers. Omitted, the logo links to the
   dashboard as before.
 
+### Fixed
+
+- **"Encountered a script tag while rendering React component"** in the dev
+  console on `/admin`. The header customizer's pre-paint boot script was
+  rendered by the client `ThemeProvider`, so React also created it on the
+  client, where inline scripts never run. It now comes from a new server
+  component, `payload-theme/rsc#BootScript`, registered first in
+  `admin.components.providers`. Behavior is unchanged: the script is still in
+  the initial HTML and still runs before the first paint.
+
+### Upgrading
+
+- **Run `npx payload generate:importmap`** (then restart the dev server) after
+  upgrading — the new `BootScript` provider has to be in the import map, just
+  like `AvatarProvider` in 0.10.0.
+
 ## [0.10.0] — 2026-10-29
 
 ### Added

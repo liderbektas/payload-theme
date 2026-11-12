@@ -150,6 +150,10 @@ export const payloadTheme =
     components.Nav = 'payload-theme/client#Nav'
     components.providers = [
       ...(components.providers ?? []),
+      // replays the header customizer's overrides before the first paint; a
+      // server component so its inline <script> is only ever emitted in the
+      // HTML (first, as the outermost of ours) and never created client-side
+      'payload-theme/rsc#BootScript',
       // resolves the user avatar server-side (gravatar, a user field, or
       // Payload's own `admin.avatar` component) for the sidebar/header blocks
       'payload-theme/rsc#AvatarProvider',
