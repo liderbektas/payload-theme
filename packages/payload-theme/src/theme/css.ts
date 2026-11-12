@@ -7,8 +7,8 @@
  * semantic accent tokens are re-declared under the dark selector.
  */
 
-import type { Theme } from './index'
-import { SCALE_STEPS, type AccentTokens } from './index'
+import type { Theme } from './index.js'
+import { SCALE_STEPS, type AccentTokens } from './index.js'
 
 export interface ThemeCssOptions {
   /** Selector the base (light) tokens are declared on. Default `:root`. */

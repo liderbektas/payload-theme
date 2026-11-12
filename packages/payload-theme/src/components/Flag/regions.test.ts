@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { localeToRegion } from './regions'
+import { localeToRegion } from './regions.js'
 
 describe('localeToRegion', () => {
   it('maps a bare language to its conventional region', () => {

@@ -13,6 +13,16 @@ All notable changes to `payload-theme` are documented here. The format follows
   names that link for screen readers. Omitted, the logo links to the
   dashboard as before.
 
+### Fixed
+
+- **The plugin couldn't be imported by plain Node ESM** (#17). The built
+  files kept extensionless relative imports (`./icons`), which bundlers
+  resolve but Node doesn't, so loading a Payload config that uses the theme
+  failed outside Next.js, e.g. in a project's Vitest integration tests. All
+  imports now name the full file, the package typechecks with `NodeNext`
+  resolution so a missing extension fails the build, and the build ends by
+  importing `dist/index.js` with plain Node.
+
 ## [0.10.0] — 2026-10-29
 
 ### Added

@@ -1,3 +1,3 @@
-export { AvatarProvider } from '../components/AvatarProvider'
-export { Dashboard } from '../components/Dashboard'
-export { LoginHero } from '../components/LoginHero'
+export { AvatarProvider } from '../components/AvatarProvider/index.js'
+export { Dashboard } from '../components/Dashboard/index.js'
+export { LoginHero } from '../components/LoginHero/index.js'

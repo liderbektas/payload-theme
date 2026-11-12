@@ -3,14 +3,14 @@
 import { getTranslation } from '@payloadcms/translations'
 import { Link, useAuth, useConfig, useLocale, useRouteTransition } from '@payloadcms/ui'
 import { useLocaleLoading } from '@payloadcms/ui/providers/Locale'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation.js'
 import { formatAdminURL } from 'payload/shared'
 import React from 'react'
 
-import { useThemeTranslation } from '../../translations/useThemeTranslation'
-import { useThemeAvatar } from '../AvatarProvider/client'
-import { Flag } from '../Flag'
-import { Icon } from '../Icon'
+import { useThemeTranslation } from '../../translations/useThemeTranslation.js'
+import { useThemeAvatar } from '../AvatarProvider/client.js'
+import { Flag } from '../Flag/index.js'
+import { Icon } from '../Icon/index.js'
 
 /**
  * The shared user block: an avatar + name/email trigger opening a

@@ -4,17 +4,21 @@ import type { CollectionSlug, GlobalSlug, StaticLabel } from 'payload'
 import { getTranslation } from '@payloadcms/translations'
 import { Gutter } from '@payloadcms/ui'
 import { RenderServerComponent } from '@payloadcms/ui/elements/RenderServerComponent'
-import Link from 'next/link'
+import NextLinkImport from 'next/link.js'
 import { formatAdminURL } from 'payload/shared'
 import React from 'react'
 
-import type { ResolvedDashboardWidget, ResolvedThemeConfig } from '../../options'
-import type { ThemeTFunction } from '../../translations/types'
+import type { ResolvedDashboardWidget, ResolvedThemeConfig } from '../../options.js'
+import type { ThemeTFunction } from '../../translations/types.js'
 
-import { themeT } from '../../translations/types'
-import { Icon, type IconName } from '../Icon'
-import { resolveIconName } from '../navIcons'
-import { CountUp } from './client'
+import { themeT } from '../../translations/types.js'
+import { Icon, type IconName } from '../Icon/index.js'
+import { resolveIconName } from '../navIcons.js'
+import { CountUp } from './client.js'
+
+// next/link is CommonJS: under plain Node ESM the default import is the module object (same
+// interop as Payload's own Link in @payloadcms/ui)
+const Link = 'default' in NextLinkImport ? NextLinkImport.default : NextLinkImport
 
 /**
  * Themed dashboard — replaces Payload's default dashboard view.

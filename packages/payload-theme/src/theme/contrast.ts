@@ -7,7 +7,7 @@
  * actual perceived readability rather than a naive lightness threshold.
  */
 
-import { hexToRgb, srgbToLinear, type RGB } from './oklch'
+import { hexToRgb, srgbToLinear, type RGB } from './oklch.js'
 
 /**
  * WCAG relative luminance of an sRGB color (channels 0..1), in 0..1.

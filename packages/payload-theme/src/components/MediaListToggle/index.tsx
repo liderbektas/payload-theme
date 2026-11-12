@@ -2,7 +2,7 @@
 
 import React from 'react'
 
-import { useThemeTranslation } from '../../translations/useThemeTranslation'
+import { useThemeTranslation } from '../../translations/useThemeTranslation.js'
 
 const STORAGE_KEY = 'payload-theme-media-view'
 

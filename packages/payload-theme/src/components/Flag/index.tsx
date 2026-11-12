@@ -2,10 +2,10 @@
 
 import React from 'react'
 
-import { FLAGS } from './flags'
-import { localeToRegion } from './regions'
+import { FLAGS } from './flags.js'
+import { localeToRegion } from './regions.js'
 
-export { localeToRegion } from './regions'
+export { localeToRegion } from './regions.js'
 
 export type FlagProps = {
   /** A Payload locale code — `tr`, `en-GB`, `pt_BR`, `zh-Hant-TW`. */

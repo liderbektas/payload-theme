@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import { resolveOptions, THEME_PRESETS } from './options'
-import { resolveFont } from './theme'
+import { resolveOptions, THEME_PRESETS } from './options.js'
+import { resolveFont } from './theme/index.js'
 
 describe('resolveOptions — preset', () => {
   it('resolves to null when the option is omitted, leaving the plain defaults', () => {

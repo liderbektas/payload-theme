@@ -3,8 +3,8 @@ import type { Config } from 'payload'
 import { acceptedLanguages } from '@payloadcms/translations'
 import { describe, expect, it } from 'vitest'
 
-import { en } from './en'
-import { THEME_I18N_NAMESPACE, THEME_TRANSLATIONS, withThemeTranslations } from './index'
+import { en } from './en.js'
+import { THEME_I18N_NAMESPACE, THEME_TRANSLATIONS, withThemeTranslations } from './index.js'
 
 const namespaceFor = (i18n: Config['i18n'], language: string) =>
   (i18n?.translations as Record<string, Record<string, Record<string, string>>>)?.[language]?.[

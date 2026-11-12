@@ -10,7 +10,7 @@ import {
   oklchToRgbRaw,
   srgbToLinear,
   linearToSrgb,
-} from './oklch'
+} from './oklch.js'
 
 describe('hexToRgb', () => {
   it('parses 6-digit hex', () => {

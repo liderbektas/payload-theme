@@ -3,10 +3,10 @@
 import { useConfig } from '@payloadcms/ui'
 import React from 'react'
 
-import type { ResolvedThemeConfig } from '../../options'
+import type { ResolvedThemeConfig } from '../../options.js'
 
-import { seedIcons } from '../Icon'
-import { BOOT_SCRIPT } from './boot'
+import { seedIcons } from '../Icon/index.js'
+import { BOOT_SCRIPT } from './boot.js'
 
 /**
  * Injects the computed accent scale (`--pt-*` custom properties) that the

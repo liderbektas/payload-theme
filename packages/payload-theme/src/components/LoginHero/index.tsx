@@ -3,9 +3,9 @@ import type { ServerProps } from 'payload'
 import { PayloadLogo } from '@payloadcms/ui/graphics/Logo'
 import React from 'react'
 
-import type { ResolvedThemeConfig } from '../../options'
+import type { ResolvedThemeConfig } from '../../options.js'
 
-import { themeT } from '../../translations/types'
+import { themeT } from '../../translations/types.js'
 
 /**
  * Login branding injected via `admin.components.beforeLogin`. Renders three

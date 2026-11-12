@@ -1,4 +1,4 @@
-import type { ThemeTranslations } from './en'
+import type { ThemeTranslations } from './en.js'
 
 export const it: ThemeTranslations = {
   search: 'Cerca',
