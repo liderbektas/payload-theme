@@ -262,6 +262,9 @@ payloadTheme({
   // Rendered height of the logo: a number in px, or any CSS length.
   logoHeight: 28,
 
+  // Where the sidebar logo links (default: the admin dashboard).
+  logoLink: { href: '/', label: 'Website' },
+
   // Small mark, used as a fallback for the login logo.
   icon: '/mark.svg',
 
@@ -315,6 +318,7 @@ payloadTheme({
 | `darkMode` | `'deep' \| 'dim'` | `'deep'` | Dark-mode depth: `deep` puts the content on near-black, `dim` lifts every surface one rung. |
 | `logo` | `string \| { light, dark }` | Payload logo | Image URL(s) shown at the top of the sidebar and above the login form. |
 | `logoHeight` | `number \| string` | `26` | Rendered logo height — a number is px, a string is any CSS length. |
+| `logoLink` | `{ href, label }` | — | Where the sidebar logo links, and that link's accessible name. Omit to link to the admin dashboard. |
 | `icon` | `string \| { light, dark }` | — | Small mark, used as a login-logo fallback. |
 | `avatar` | `'initials' \| 'gravatar' \| { field, size }` | Payload's `admin.avatar`, else initials | Where the user avatar comes from — see [User avatar](#user-avatar). |
 | `login.heading` | `string` | `'Welcome back'` | Big heading on the login brand panel. |

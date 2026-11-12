@@ -78,6 +78,12 @@ export type ThemeAsset = string | { dark: string; light: string }
  */
 export type ThemeAvatarOption = 'gravatar' | 'initials' | { field: string; size?: string }
 
+/** Target and accessible name of the sidebar logo link. */
+export interface ThemeLogoLink {
+  href: string
+  label: string
+}
+
 export interface NavOptions {
   /**
    * Per-entity sidebar icons, keyed by collection/global slug. Values are
@@ -180,6 +186,12 @@ export interface PayloadThemeOptions {
    * (`32` → `32px`); a string is used as-is (`'2.5rem'`). @default 26px
    */
   logoHeight?: number | string
+  /**
+   * Where the sidebar logo links, and the accessible name of that link — for
+   * example the public site: `{ href: '/', label: 'Website' }`. `href` is any
+   * URL or path. Omit to link to the admin dashboard, as before.
+   */
+  logoLink?: ThemeLogoLink
   /** Small mark/favicon for collapsed nav and login. Same shape as `logo`. */
   icon?: ThemeAsset
   /**
@@ -235,6 +247,8 @@ export interface ResolvedThemeConfig {
   /** Normalized to a pair: a plain-string option is used for both schemes. */
   logo?: { dark: string; light: string }
   icon?: { dark: string; light: string }
+  /** Where the sidebar logo links; null links to the admin dashboard. */
+  logoLink: null | ThemeLogoLink
   /** Avatar source, or null when the `avatar` option is omitted. */
   avatar: null | ResolvedAvatar
   nav: { icons: Record<string, string> }
@@ -402,6 +416,23 @@ function normalizeAvatar(value: ThemeAvatarOption | undefined): null | ResolvedA
 }
 
 /** Validate a logo/icon option and normalize it to a `{ light, dark }` pair. */
+/** Validate the logo link option, trimming both parts; null when omitted. */
+function normalizeLogoLink(value: ThemeLogoLink | undefined): null | ThemeLogoLink {
+  if (value === undefined) return null
+  assert(
+    value && typeof value === 'object' && !Array.isArray(value),
+    "logoLink must be an object like { href: '/', label: 'Website' }.",
+  )
+  const href = typeof value.href === 'string' ? value.href.trim() : ''
+  const label = typeof value.label === 'string' ? value.label.trim() : ''
+  assert(href !== '', 'logoLink.href must be a non-empty URL or path.')
+  assert(
+    label !== '',
+    'logoLink.label must be a non-empty string: it names the link for screen readers.',
+  )
+  return { href, label }
+}
+
 function normalizeAsset(
   value: ThemeAsset | undefined,
   name: string,
@@ -483,6 +514,7 @@ export function resolveOptions(options: PayloadThemeOptions): {
 
   const logo = normalizeAsset(options.logo, 'logo')
   const icon = normalizeAsset(options.icon, 'icon')
+  const logoLink = normalizeLogoLink(options.logoLink)
   const avatar = normalizeAvatar(options.avatar)
   const widgets = normalizeWidgets(options.dashboard?.widgets)
 
@@ -531,6 +563,7 @@ export function resolveOptions(options: PayloadThemeOptions): {
       dashboard: { widgets },
       logo,
       icon,
+      logoLink,
       avatar,
       nav: { icons },
       login: { heading: loginHeading, tagline: loginTagline },

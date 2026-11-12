@@ -296,9 +296,9 @@ export const Nav: React.FC = () => {
       />
       <div className="nav__scroll" ref={navRef}>
         <Link
-          aria-label={i18n.t('general:dashboard')}
+          aria-label={theme?.logoLink?.label ?? i18n.t('general:dashboard')}
           className="pt-nav__logo"
-          href={adminRoute}
+          href={theme?.logoLink?.href ?? adminRoute}
           prefetch={false}
         >
           {logoIsImage ? (

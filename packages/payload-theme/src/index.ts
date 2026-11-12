@@ -191,6 +191,7 @@ export type {
   ThemeDensity,
   ThemeFont,
   ThemeFrame,
+  ThemeLogoLink,
   ThemeNeutral,
   ThemePreset,
   ThemePresetDefinition,
