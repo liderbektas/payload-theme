@@ -1,3 +1,5 @@
+import type { ServerProps } from 'payload'
+
 import React from 'react'
 
 import { BOOT_SCRIPT } from './boot'
@@ -12,12 +14,25 @@ import { BOOT_SCRIPT } from './boot'
  * rendering React component". `BOOT_SCRIPT` is a constant that reads its data
  * from `localStorage`, so nothing here needs the client.
  *
- * Registered first in `admin.components.providers` — the outermost provider —
+ * Only with a user. Payload's `AuthProvider` (which wraps every registered
+ * provider) renders nothing on the server until it has a user, so on the
+ * unauthenticated views — login, forgot/reset password, create-first-user —
+ * this whole subtree is rendered in the browser only. A <script> there would
+ * be created client-side, never run, and bring the warning back. Nothing is
+ * lost: the customizer lives in the authenticated header, and a full load of
+ * any authenticated page still gets the script in its HTML.
+ *
+ * Registered first in `admin.components.providers` — the outermost of ours —
  * so the script lands ahead of everything else in the HTML.
  */
-export const BootScript: React.FC<{ children?: React.ReactNode }> = ({ children }) => (
+export const BootScript: React.FC<{ children?: React.ReactNode } & ServerProps> = ({
+  children,
+  user,
+}) => (
   <React.Fragment>
-    <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} suppressHydrationWarning />
+    {user ? (
+      <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} suppressHydrationWarning />
+    ) : null}
     {children}
   </React.Fragment>
 )

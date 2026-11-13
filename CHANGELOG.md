@@ -21,7 +21,10 @@ All notable changes to `payload-theme` are documented here. The format follows
   client, where inline scripts never run. It now comes from a new server
   component, `payload-theme/rsc#BootScript`, registered first in
   `admin.components.providers`. Behavior is unchanged: the script is still in
-  the initial HTML and still runs before the first paint.
+  the initial HTML and still runs before the first paint. It is skipped on the
+  unauthenticated views (login, forgot/reset password, create-first-user):
+  Payload renders those entirely in the browser, so the script could never
+  run there and only brought the warning back.
 
 ### Upgrading
 
