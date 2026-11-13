@@ -12,19 +12,19 @@ import {
   useTranslation,
 } from '@payloadcms/ui'
 import { PayloadLogo } from '@payloadcms/ui/graphics/Logo'
-import { usePathname } from 'next/navigation'
+import { usePathname } from 'next/navigation.js'
 import { formatAdminURL } from 'payload/shared'
 import React from 'react'
 
-import type { ResolvedThemeConfig } from '../../options'
+import type { ResolvedThemeConfig } from '../../options.js'
 
-import { useThemeTranslation } from '../../translations/useThemeTranslation'
-import { CommandPalette } from '../CommandPalette'
-import { DocOutline } from '../DocOutline'
-import { Icon, type IconName } from '../Icon'
-import { ShortcutsModal } from '../ShortcutsModal'
-import { UserMenu } from '../UserMenu'
-import { resolveIconName } from '../navIcons'
+import { useThemeTranslation } from '../../translations/useThemeTranslation.js'
+import { CommandPalette } from '../CommandPalette/index.js'
+import { DocOutline } from '../DocOutline/index.js'
+import { Icon, type IconName } from '../Icon/index.js'
+import { ShortcutsModal } from '../ShortcutsModal/index.js'
+import { UserMenu } from '../UserMenu/index.js'
+import { resolveIconName } from '../navIcons.js'
 
 type NavItem = {
   href: string

@@ -4,8 +4,8 @@ import { useAuth } from '@payloadcms/ui'
 import React from 'react'
 import { createPortal } from 'react-dom'
 
-import { useThemeTranslation } from '../../translations/useThemeTranslation'
-import { Icon } from '../Icon'
+import { useThemeTranslation } from '../../translations/useThemeTranslation.js'
+import { Icon } from '../Icon/index.js'
 
 /**
  * Keyboard-shortcuts cheatsheet. Opens on `?` anywhere in the panel (unless

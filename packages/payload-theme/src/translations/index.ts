@@ -18,16 +18,16 @@ import type { Config } from 'payload'
 
 import { acceptedLanguages } from '@payloadcms/translations'
 
-import type { ThemeTranslations } from './en'
+import type { ThemeTranslations } from './en.js'
 
-import { de } from './de'
-import { en } from './en'
-import { es } from './es'
-import { fr } from './fr'
-import { it } from './it'
-import { nl } from './nl'
-import { pt } from './pt'
-import { tr } from './tr'
+import { de } from './de.js'
+import { en } from './en.js'
+import { es } from './es.js'
+import { fr } from './fr.js'
+import { it } from './it.js'
+import { nl } from './nl.js'
+import { pt } from './pt.js'
+import { tr } from './tr.js'
 
 /** The namespace key every theme string lives under. */
 export const THEME_I18N_NAMESPACE = 'payloadTheme'
@@ -76,5 +76,5 @@ export function withThemeTranslations(i18n: Config['i18n']): Config['i18n'] {
   return { ...i18n, translations } as Config['i18n']
 }
 
-export { en } from './en'
-export type { ThemeTranslationKey, ThemeTranslations } from './en'
+export { en } from './en.js'
+export type { ThemeTranslationKey, ThemeTranslations } from './en.js'

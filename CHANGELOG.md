@@ -6,12 +6,61 @@ All notable changes to `payload-theme` are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.11.0] — 2026-11-13
+
 ### Added
 
 - **`logoLink` option** — `{ href: string; label: string }`. Points the
   sidebar logo somewhere other than the dashboard (the public site, say) and
   names that link for screen readers. Omitted, the logo links to the
   dashboard as before.
+
+### Fixed
+
+- **Lazily loaded icons stayed blank with lucide-react 1.42+**
+  ([#10](https://github.com/liderbektas/payload-theme/issues/10)). lucide
+  renamed each icon module's `__iconNode` export to `__iconData` (geometry
+  under `.node`) in a minor release, which the `^1.24.0` range picks up. The
+  server-side preload already read both shapes; the client `Icon`'s lazy path
+  still read only `__iconNode`, cached `undefined` and never retried. Both
+  paths now share one reader, and a module without geometry is no longer
+  cached as loaded.
+- **An icon could stay a blank placeholder after a navigation** when the same
+  icon finished loading between that instance's render and its effect: the
+  effect saw it cached and returned without redrawing. It redraws now.
+
+- **The plugin can be imported by plain Node ESM** again — Vitest, `node`
+  scripts and anything else that loads `payload.config.ts` without bundling
+  `node_modules` failed with `ERR_MODULE_NOT_FOUND: …/payload-theme/dist/icons`.
+  The build kept the source's extensionless relative imports; every relative
+  import now carries its `.js` extension, and the deep imports into packages
+  without an `exports` map (`next/navigation`, `next/link`,
+  `lucide-react/dynamic`) name their file too. The package's tsconfig now uses
+  `NodeNext` resolution so TypeScript rejects an extensionless import, and
+  `pnpm test` loads the built plugin with plain `node` and runs it over a
+  config. The published type declarations gain the same extensions, so
+  consumers on `moduleResolution: "nodenext"` resolve them as well.
+  Follows up on #13, which fixed the same error for lucide's icon map.
+
+- **"Encountered a script tag while rendering React component"** in the dev
+  console on `/admin`. The header customizer's pre-paint boot script was
+  rendered by the client `ThemeProvider`, so React also created it on the
+  client, where inline scripts never run. It now comes from a new server
+  component, `payload-theme/rsc#BootScript`, registered first in
+  `admin.components.providers`. Behavior is unchanged: the script is still in
+  the initial HTML and still runs before the first paint. It is skipped on the
+  unauthenticated views (login, forgot/reset password, create-first-user):
+  Payload renders those entirely in the browser, so the script could never
+  run there and only brought the warning back.
+
+### Upgrading
+
+- **Run `npx payload generate:importmap`** (then restart the dev server) after
+  upgrading — the new `BootScript` provider has to be in the import map, just
+  like `AvatarProvider` in 0.10.0. `next dev` regenerates it on its own, but a
+  production build from a stale `importMap.js` resolves the provider to
+  nothing, and Payload then drops everything nested inside it: the admin
+  renders blank.
 
 ## [0.10.0] — 2026-10-29
 

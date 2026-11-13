@@ -5,7 +5,7 @@
 
 import type { Payload, TypedUser } from 'payload'
 
-import type { ResolvedAvatar } from '../../options'
+import type { ResolvedAvatar } from '../../options.js'
 
 /** Loose field shape — enough to walk containers without fighting the union. */
 export type AnyField = {

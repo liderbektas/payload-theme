@@ -3,10 +3,9 @@
 import { useConfig } from '@payloadcms/ui'
 import React from 'react'
 
-import type { ResolvedThemeConfig } from '../../options'
+import type { ResolvedThemeConfig } from '../../options.js'
 
-import { seedIcons } from '../Icon'
-import { BOOT_SCRIPT } from './boot'
+import { seedIcons } from '../Icon/index.js'
 
 /**
  * Injects the computed accent scale (`--pt-*` custom properties) that the
@@ -24,8 +23,6 @@ export const ThemeProvider: React.FC<{ children?: React.ReactNode }> = ({ childr
 
   return (
     <React.Fragment>
-      {/* replays the header customizer's overrides before the first paint */}
-      <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} suppressHydrationWarning />
       {theme?.css ? (
         <style data-payload-theme="accent" dangerouslySetInnerHTML={{ __html: theme.css }} />
       ) : null}

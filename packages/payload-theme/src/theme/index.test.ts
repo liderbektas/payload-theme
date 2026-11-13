@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import { buildTheme, TOKEN_STEPS } from './index'
+import { buildTheme, TOKEN_STEPS } from './index.js'
 
 describe('buildTheme', () => {
   it('normalizes the accent and returns a full 11-step scale', () => {

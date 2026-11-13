@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { NEUTRAL_PALETTES, neutralLadder, SURFACE_DEFAULTS, surfaceToCss } from './surface'
+import { NEUTRAL_PALETTES, neutralLadder, SURFACE_DEFAULTS, surfaceToCss } from './surface.js'
 
 describe('neutralLadder', () => {
   it('fills all 21 rungs Payload derives its elevation scale from', () => {

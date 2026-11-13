@@ -19,10 +19,10 @@
 
 import type { CollectionConfig, Config, Field } from 'payload'
 
-import { loadIconNodes, THEME_UI_ICONS } from './icons'
-import { resolveOptions, type PayloadThemeOptions } from './options'
-import { buildTheme, resolveFont, surfaceToCss, themeToCss } from './theme'
-import { withThemeTranslations } from './translations'
+import { loadIconNodes, THEME_UI_ICONS } from './icons.js'
+import { resolveOptions, type PayloadThemeOptions } from './options.js'
+import { buildTheme, resolveFont, surfaceToCss, themeToCss } from './theme/index.js'
+import { withThemeTranslations } from './translations/index.js'
 
 const BOOL_CELL = 'payload-theme/client#BoolCell'
 const MEDIA_TOGGLE = 'payload-theme/client#MediaListToggle'
@@ -150,6 +150,10 @@ export const payloadTheme =
     components.Nav = 'payload-theme/client#Nav'
     components.providers = [
       ...(components.providers ?? []),
+      // replays the header customizer's overrides before the first paint; a
+      // server component so its inline <script> is only ever emitted in the
+      // HTML (first, as the outermost of ours) and never created client-side
+      'payload-theme/rsc#BootScript',
       // resolves the user avatar server-side (gravatar, a user field, or
       // Payload's own `admin.avatar` component) for the sidebar/header blocks
       'payload-theme/rsc#AvatarProvider',
@@ -178,7 +182,7 @@ export const payloadTheme =
   }
 
 export default payloadTheme
-export { THEME_PRESETS } from './options'
+export { THEME_PRESETS } from './options.js'
 export type {
   DashboardOptions,
   DashboardWidget,
@@ -196,6 +200,6 @@ export type {
   ThemePreset,
   ThemePresetDefinition,
   ThemeRadius,
-} from './options'
-export { THEME_I18N_NAMESPACE, THEME_TRANSLATIONS } from './translations'
-export type { ThemeTranslationKey, ThemeTranslations } from './translations'
+} from './options.js'
+export { THEME_I18N_NAMESPACE, THEME_TRANSLATIONS } from './translations/index.js'
+export type { ThemeTranslationKey, ThemeTranslations } from './translations/index.js'

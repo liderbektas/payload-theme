@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import { isValidHex, normalizeHex } from './validate'
+import { isValidHex, normalizeHex } from './validate.js'
 
 describe('isValidHex', () => {
   it('accepts 3- and 6-digit hex, with or without a hash', () => {

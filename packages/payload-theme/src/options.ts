@@ -8,7 +8,7 @@
 import type { I18n } from '@payloadcms/translations'
 import type { Locale, Payload, PayloadComponent, TypedUser } from 'payload'
 
-import type { IconNode } from './icons'
+import type { IconNode } from './icons.js'
 
 import type {
   SurfaceOptions,
@@ -17,7 +17,7 @@ import type {
   ThemeFontKey,
   ThemeFrame,
   ThemeNeutral,
-} from './theme'
+} from './theme/index.js'
 
 import {
   DARK_MODES,
@@ -27,9 +27,9 @@ import {
   normalizeHex,
   resolveFont,
   SURFACE_DEFAULTS,
-} from './theme'
+} from './theme/index.js'
 
-export type { ThemeDarkMode, ThemeDensity, ThemeFrame, ThemeNeutral } from './theme'
+export type { ThemeDarkMode, ThemeDensity, ThemeFrame, ThemeNeutral } from './theme/index.js'
 
 /**
  * A one-word starting point: each preset is a coherent accent + radius +

@@ -1,4 +1,4 @@
-import type { ResolvedThemeConfig } from '../options'
+import type { ResolvedThemeConfig } from '../options.js'
 
 /**
  * Resolve the lucide icon name for an entity slug: the user's `nav.icons` map

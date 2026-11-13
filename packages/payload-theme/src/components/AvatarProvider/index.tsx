@@ -3,10 +3,10 @@ import type { ServerProps } from 'payload'
 import { RenderServerComponent } from '@payloadcms/ui/elements/RenderServerComponent'
 import React from 'react'
 
-import type { ResolvedThemeConfig } from '../../options'
+import type { ResolvedThemeConfig } from '../../options.js'
 
-import { ThemeAvatarProvider } from './client'
-import { gravatarURL, resolveFieldAvatar } from './resolve'
+import { ThemeAvatarProvider } from './client.js'
+import { gravatarURL, resolveFieldAvatar } from './resolve.js'
 
 /**
  * Resolves the user avatar once per request and hands it to the client user

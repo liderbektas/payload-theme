@@ -3,9 +3,9 @@
 import { useConfig, useNav, useTheme } from '@payloadcms/ui'
 import React from 'react'
 
-import type { ResolvedThemeConfig, ThemePresetDefinition, ThemeRadius } from '../../options'
+import type { ResolvedThemeConfig, ThemePresetDefinition, ThemeRadius } from '../../options.js'
 
-import { RADIUS_TOKENS, THEME_PRESETS } from '../../options'
+import { RADIUS_TOKENS, THEME_PRESETS } from '../../options.js'
 import {
   buildTheme,
   DARK_MODES,
@@ -27,16 +27,16 @@ import {
   type ThemeFrame,
   type ThemeNeutral,
   themeToCss,
-} from '../../theme'
-import { useThemeTranslation } from '../../translations/useThemeTranslation'
-import { Icon } from '../Icon'
+} from '../../theme/index.js'
+import { useThemeTranslation } from '../../translations/useThemeTranslation.js'
+import { Icon } from '../Icon/index.js'
 import {
   BOOT_STORAGE_KEY,
   BOOT_STYLE_ID,
   type BootSnapshot,
   FONT_LINK_ID,
-} from '../ThemeProvider/boot'
-import { UserMenu } from '../UserMenu'
+} from '../ThemeProvider/boot.js'
+import { UserMenu } from '../UserMenu/index.js'
 
 /**
  * Right side of the app header: the theme customizer (palette icon), a

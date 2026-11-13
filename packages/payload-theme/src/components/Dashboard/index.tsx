@@ -4,17 +4,23 @@ import type { CollectionSlug, GlobalSlug, StaticLabel } from 'payload'
 import { getTranslation } from '@payloadcms/translations'
 import { Gutter } from '@payloadcms/ui'
 import { RenderServerComponent } from '@payloadcms/ui/elements/RenderServerComponent'
-import Link from 'next/link'
+import NextLinkImport from 'next/link.js'
 import { formatAdminURL } from 'payload/shared'
 import React from 'react'
 
-import type { ResolvedDashboardWidget, ResolvedThemeConfig } from '../../options'
-import type { ThemeTFunction } from '../../translations/types'
+import type { ResolvedDashboardWidget, ResolvedThemeConfig } from '../../options.js'
+import type { ThemeTFunction } from '../../translations/types.js'
 
-import { themeT } from '../../translations/types'
-import { Icon, type IconName } from '../Icon'
-import { resolveIconName } from '../navIcons'
-import { CountUp } from './client'
+import { themeT } from '../../translations/types.js'
+import { Icon, type IconName } from '../Icon/index.js'
+import { resolveIconName } from '../navIcons.js'
+import { CountUp } from './client.js'
+
+// next/link is CommonJS without an `exports` map: under plain Node ESM the
+// default import is the whole module object (same interop Payload's own Link uses)
+const Link = (
+  'default' in NextLinkImport ? NextLinkImport.default : NextLinkImport
+) as typeof NextLinkImport.default
 
 /**
  * Themed dashboard — replaces Payload's default dashboard view.
@@ -205,9 +211,7 @@ function computeDelta(
     return current > 0 ? { label: t('payloadTheme:trendNew'), trend: 'new' } : null
   const pct = Math.round(((current - previous) / previous) * 100)
   if (pct === 0) return { label: '±0%', trend: 'flat' }
-  return pct > 0
-    ? { label: `+${pct}%`, trend: 'up' }
-    : { label: `${pct}%`, trend: 'down' }
+  return pct > 0 ? { label: `+${pct}%`, trend: 'up' } : { label: `${pct}%`, trend: 'down' }
 }
 
 /** Bucket createdAt timestamps into one count per day, oldest day first. */

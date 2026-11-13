@@ -28,6 +28,15 @@ describe('payload-theme plugin', () => {
     expect(providers).toContain('payload-theme/rsc#AvatarProvider')
   })
 
+  it('registers the boot script as a server provider ahead of the ThemeProvider', () => {
+    const providers = (payload.config.admin?.components?.providers ?? []) as string[]
+    const boot = providers.indexOf('payload-theme/rsc#BootScript')
+    // a server component: rendered from the client ThemeProvider, React would
+    // recreate the inline <script> client-side, where it never runs
+    expect(boot).toBeGreaterThan(-1)
+    expect(boot).toBeLessThan(providers.indexOf('payload-theme/client#ThemeProvider'))
+  })
+
   it('carries the playground’s avatar option through to the client config', () => {
     const theme = payload.config.admin?.custom?.payloadTheme as {
       avatar: { name: string; size: null | string; type: string }

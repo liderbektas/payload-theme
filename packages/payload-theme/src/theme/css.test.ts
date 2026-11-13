@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
-import { buildTheme } from './index'
-import { themeToCss } from './css'
+import { buildTheme } from './index.js'
+import { themeToCss } from './css.js'
 
 const theme = buildTheme('#7c3aed')
 

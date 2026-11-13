@@ -5,7 +5,7 @@
  * with a message that tells the user exactly what shape is expected.
  */
 
-import { hexToRgb, rgbToHex } from './oklch'
+import { hexToRgb, rgbToHex } from './oklch.js'
 
 const HEX_RE = /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/
 
