@@ -6,6 +6,8 @@ All notable changes to `payload-theme` are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.11.0] — 2026-11-13
+
 ### Added
 
 - **`logoLink` option** — `{ href: string; label: string }`. Points the
