@@ -30,7 +30,10 @@ All notable changes to `payload-theme` are documented here. The format follows
 
 - **Run `npx payload generate:importmap`** (then restart the dev server) after
   upgrading — the new `BootScript` provider has to be in the import map, just
-  like `AvatarProvider` in 0.10.0.
+  like `AvatarProvider` in 0.10.0. `next dev` regenerates it on its own, but a
+  production build from a stale `importMap.js` resolves the provider to
+  nothing, and Payload then drops everything nested inside it: the admin
+  renders blank.
 
 ## [0.10.0] — 2026-10-29
 
