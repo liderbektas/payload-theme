@@ -448,7 +448,7 @@ No component is forked and no file of yours is rewritten: the plugin adds keys t
 | --- | --- | --- |
 | `admin.components.Nav` | **replaces** | The grouped icon sidebar, ⌘K pill and user block. |
 | `admin.components.views.dashboard.Component` | **replaces** | The stat-card dashboard. |
-| `admin.components.providers` | adds 3 | `AvatarProvider` (resolves the user avatar server-side), `ThemeProvider` (injects the `--pt-*` tokens) and `ListQuickActions` (row-hover edit/delete). |
+| `admin.components.providers` | adds 4 | `BootScript` (replays the header customizer's overrides before the first paint), `AvatarProvider` (resolves the user avatar server-side), `ThemeProvider` (injects the `--pt-*` tokens) and `ListQuickActions` (row-hover edit/delete). |
 | `admin.components.actions` | adds 1 | `HeaderActions` — customizer, light/dark toggle, user menu. |
 | `admin.components.beforeLogin` | adds 1 | `LoginHero` — the brand panel. The split login layout only applies when it renders. |
 | `admin.custom.payloadTheme` | adds 1 | The resolved theme config the client components read. |
