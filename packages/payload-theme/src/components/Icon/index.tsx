@@ -6,6 +6,8 @@ import { Icon as LucideIcon } from 'lucide-react'
 import { dynamicIconImports } from 'lucide-react/dynamic.mjs'
 import React from 'react'
 
+import { iconNodeOf } from './iconNode.js'
+
 export type { IconName }
 
 /** lucide's icon geometry: `[element, attributes][]`, fed to its renderer. */
@@ -49,7 +51,10 @@ const load = (name: string): Promise<void> => {
   const promise = importer
     ? importer()
         .then((mod) => {
-          loaded.set(name, mod.__iconNode as IconNode)
+          // both lucide module shapes (see iconNode.ts); a module without
+          // geometry stays out of the cache, so it isn't treated as loaded
+          const node = iconNodeOf(mod)
+          if (node) loaded.set(name, node as IconNode)
         })
         .catch(() => {
           // Chunk failed to load: keep the placeholder rather than taking the
@@ -76,7 +81,13 @@ export const Icon: React.FC<IconProps> = ({ name, ...rest }) => {
   const [, rerender] = React.useReducer((count: number) => count + 1, 0)
 
   React.useEffect(() => {
-    if (loaded.has(name)) return
+    if (loaded.has(name)) {
+      // Loaded between this render and its effect — another instance's import
+      // settled meanwhile (navigations leave a gap). This render still drew
+      // the placeholder, so draw again; returning silently left it blank.
+      if (!iconNode) rerender()
+      return
+    }
 
     let active = true
     void load(name).then(() => {
@@ -85,7 +96,7 @@ export const Icon: React.FC<IconProps> = ({ name, ...rest }) => {
     return () => {
       active = false
     }
-  }, [name])
+  }, [iconNode, name])
 
   if (iconNode) return <LucideIcon {...rest} iconNode={iconNode} />
 

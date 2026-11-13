@@ -12,8 +12,9 @@
  * first paint already has real icons.
  */
 
-/** lucide's icon geometry: `[element, attributes][]` — plain, serializable data. */
-export type IconNode = Array<[string, Record<string, string>]>
+import { type IconNode, iconNodeOf } from './components/Icon/iconNode.js'
+
+export type { IconNode }
 
 /** Every icon the theme's own UI draws by literal name. */
 export const THEME_UI_ICONS = [
@@ -40,18 +41,6 @@ export const THEME_UI_ICONS = [
 ]
 
 /**
- * The geometry of one lucide per-icon module. lucide-react renamed the export
- * in a minor release — `__iconNode` up to 1.41, `__iconData.node` from 1.42 —
- * and the `^1.24.0` range resolves either, so both shapes are read.
- */
-const nodeOf = (mod: unknown): IconNode | undefined => {
-  const candidate =
-    (mod as { __iconData?: { node?: unknown } } | undefined)?.__iconData?.node ??
-    (mod as { __iconNode?: unknown } | undefined)?.__iconNode
-  return Array.isArray(candidate) ? (candidate as IconNode) : undefined
-}
-
-/**
  * Load the nodes for `names` (deduplicated). Unknown names are skipped — the
  * client falls back to its lazy load, which renders the empty box for them
  * exactly as before.
@@ -73,7 +62,7 @@ export async function loadIconNodes(names: string[]): Promise<Record<string, Ico
       const importer = imports[name]
       if (!importer) return null
       try {
-        const node = nodeOf(await importer())
+        const node = iconNodeOf(await importer())
         return node ? [name, node] : null
       } catch {
         return null

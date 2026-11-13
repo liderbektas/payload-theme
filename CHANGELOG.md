@@ -15,6 +15,18 @@ All notable changes to `payload-theme` are documented here. The format follows
 
 ### Fixed
 
+- **Lazily loaded icons stayed blank with lucide-react 1.42+**
+  ([#10](https://github.com/liderbektas/payload-theme/issues/10)). lucide
+  renamed each icon module's `__iconNode` export to `__iconData` (geometry
+  under `.node`) in a minor release, which the `^1.24.0` range picks up. The
+  server-side preload already read both shapes; the client `Icon`'s lazy path
+  still read only `__iconNode`, cached `undefined` and never retried. Both
+  paths now share one reader, and a module without geometry is no longer
+  cached as loaded.
+- **An icon could stay a blank placeholder after a navigation** when the same
+  icon finished loading between that instance's render and its effect: the
+  effect saw it cached and returned without redrawing. It redraws now.
+
 - **The plugin can be imported by plain Node ESM** again — Vitest, `node`
   scripts and anything else that loads `payload.config.ts` without bundling
   `node_modules` failed with `ERR_MODULE_NOT_FOUND: …/payload-theme/dist/icons`.
