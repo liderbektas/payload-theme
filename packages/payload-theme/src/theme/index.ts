@@ -7,10 +7,10 @@
  * turning these values into CSS custom properties happens in a later phase.
  */
 
-import { pickContrastText } from './contrast'
-import { hexToRgb, rgbToOklch } from './oklch'
-import { generateScale, type Scale, type ScaleStep } from './scale'
-import { normalizeHex } from './validate'
+import { pickContrastText } from './contrast.js'
+import { hexToRgb, rgbToOklch } from './oklch.js'
+import { generateScale, type Scale, type ScaleStep } from './scale.js'
+import { normalizeHex } from './validate.js'
 
 /** Semantic accent tokens for a single color mode. */
 export interface AccentTokens {
@@ -90,17 +90,23 @@ export {
   oklchToRgbGamut,
   type RGB,
   type OKLCH,
-} from './oklch'
+} from './oklch.js'
 export {
   relativeLuminance,
   contrastRatio,
   pickContrastText,
   pickContrastTextForHex,
-} from './contrast'
-export { generateScale, generateScaleOklch, SCALE_STEPS, type Scale, type ScaleStep } from './scale'
-export { isValidHex, normalizeHex } from './validate'
-export { themeToCss, type ThemeCssOptions } from './css'
-export { FONT_KEYS, FONT_PRESETS, resolveFont, type ThemeFontKey } from './fonts'
+} from './contrast.js'
+export {
+  generateScale,
+  generateScaleOklch,
+  SCALE_STEPS,
+  type Scale,
+  type ScaleStep,
+} from './scale.js'
+export { isValidHex, normalizeHex } from './validate.js'
+export { themeToCss, type ThemeCssOptions } from './css.js'
+export { FONT_KEYS, FONT_PRESETS, resolveFont, type ThemeFontKey } from './fonts.js'
 export {
   DARK_MODES,
   DARK_TOKENS,
@@ -119,4 +125,4 @@ export {
   type ThemeDensity,
   type ThemeFrame,
   type ThemeNeutral,
-} from './surface'
+} from './surface.js'

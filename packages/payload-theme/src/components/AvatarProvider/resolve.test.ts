@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import type { AnyField } from './resolve'
+import type { AnyField } from './resolve.js'
 
-import { findField, gravatarURL, toImageURL, valueAtPath } from './resolve'
+import { findField, gravatarURL, toImageURL, valueAtPath } from './resolve.js'
 
 describe('valueAtPath', () => {
   it('reads a top-level key and a dot path into a group', () => {

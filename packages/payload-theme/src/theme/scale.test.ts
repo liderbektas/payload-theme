@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
-import { hexToOklch } from './oklch'
-import { generateScale, generateScaleOklch, SCALE_STEPS } from './scale'
+import { hexToOklch } from './oklch.js'
+import { generateScale, generateScaleOklch, SCALE_STEPS } from './scale.js'
 
 const PURPLE = hexToOklch('#7c3aed')!
 

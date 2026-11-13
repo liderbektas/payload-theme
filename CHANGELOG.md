@@ -15,6 +15,19 @@ All notable changes to `payload-theme` are documented here. The format follows
 
 ### Fixed
 
+- **The plugin can be imported by plain Node ESM** again — Vitest, `node`
+  scripts and anything else that loads `payload.config.ts` without bundling
+  `node_modules` failed with `ERR_MODULE_NOT_FOUND: …/payload-theme/dist/icons`.
+  The build kept the source's extensionless relative imports; every relative
+  import now carries its `.js` extension, and the deep imports into packages
+  without an `exports` map (`next/navigation`, `next/link`,
+  `lucide-react/dynamic`) name their file too. The package's tsconfig now uses
+  `NodeNext` resolution so TypeScript rejects an extensionless import, and
+  `pnpm test` loads the built plugin with plain `node` and runs it over a
+  config. The published type declarations gain the same extensions, so
+  consumers on `moduleResolution: "nodenext"` resolve them as well.
+  Follows up on #13, which fixed the same error for lucide's icon map.
+
 - **"Encountered a script tag while rendering React component"** in the dev
   console on `/admin`. The header customizer's pre-paint boot script was
   rendered by the client `ThemeProvider`, so React also created it on the

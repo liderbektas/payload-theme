@@ -1,11 +1,11 @@
 'use client'
 
 import { useConfig } from '@payloadcms/ui'
-import { usePathname } from 'next/navigation'
+import { usePathname } from 'next/navigation.js'
 import React from 'react'
 import { createPortal } from 'react-dom'
 
-import { useThemeTranslation } from '../../translations/useThemeTranslation'
+import { useThemeTranslation } from '../../translations/useThemeTranslation.js'
 
 /**
  * Sticky document outline for long edit forms — a compact rail of bars pinned

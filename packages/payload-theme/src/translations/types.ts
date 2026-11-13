@@ -7,7 +7,7 @@
 
 import type { DefaultTranslationKeys, I18n, I18nClient } from '@payloadcms/translations'
 
-import type { ThemeTranslationKey } from './en'
+import type { ThemeTranslationKey } from './en.js'
 
 /**
  * A `t` that accepts the theme's own `payloadTheme:*` keys alongside every

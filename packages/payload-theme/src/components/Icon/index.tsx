@@ -1,9 +1,9 @@
 'use client'
 
-import type { IconName } from 'lucide-react/dynamic'
+import type { IconName } from 'lucide-react/dynamic.mjs'
 
 import { Icon as LucideIcon } from 'lucide-react'
-import { dynamicIconImports } from 'lucide-react/dynamic'
+import { dynamicIconImports } from 'lucide-react/dynamic.mjs'
 import React from 'react'
 
 export type { IconName }

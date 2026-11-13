@@ -1,7 +1,7 @@
 'use client'
 
 import { toast, useConfig, useTranslation } from '@payloadcms/ui'
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation.js'
 import React from 'react'
 
 const CELL_CLASS = 'pt-actions-cell'

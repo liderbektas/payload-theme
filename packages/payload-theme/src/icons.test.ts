@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { loadIconNodes, THEME_UI_ICONS } from './icons'
+import { loadIconNodes, THEME_UI_ICONS } from './icons.js'
 
 vi.mock('lucide-react/dynamicIconImports.mjs', async (importOriginal) => {
   const real = (await importOriginal<{ default: Record<string, () => Promise<unknown>> }>()).default

@@ -4,7 +4,7 @@ import type { I18n } from '@payloadcms/translations'
 
 import { useTranslation } from '@payloadcms/ui'
 
-import type { ThemeTFunction } from './types'
+import type { ThemeTFunction } from './types.js'
 
 /**
  * Payload's `useTranslation`, with the theme's `payloadTheme:*` keys allowed.

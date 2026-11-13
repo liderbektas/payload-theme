@@ -65,7 +65,8 @@
     "build:styles": "node scripts/build-styles.mjs",
     "clean": "rm -rf dist",
     "dev": "swc src -d dist --strip-leading-paths --ignore \"**/*.test.ts\" --watch",
-    "test": "vitest run"
+    "test": "vitest run && pnpm run test:esm",
+    "test:esm": "node scripts/check-node-esm.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.24.0"

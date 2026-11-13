@@ -4,16 +4,16 @@ import type { StaticLabel } from 'payload'
 
 import { getTranslation } from '@payloadcms/translations'
 import { useAuth, useConfig, useEntityVisibility, useTheme } from '@payloadcms/ui'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation.js'
 import { formatAdminURL } from 'payload/shared'
 import React from 'react'
 import { createPortal } from 'react-dom'
 
-import type { ResolvedThemeConfig } from '../../options'
+import type { ResolvedThemeConfig } from '../../options.js'
 
-import { useThemeTranslation } from '../../translations/useThemeTranslation'
-import { Icon, type IconName } from '../Icon'
-import { resolveIconName } from '../navIcons'
+import { useThemeTranslation } from '../../translations/useThemeTranslation.js'
+import { Icon, type IconName } from '../Icon/index.js'
+import { resolveIconName } from '../navIcons.js'
 
 /**
  * ⌘K / Ctrl+K command palette. Mounted once by the Nav (admin pages

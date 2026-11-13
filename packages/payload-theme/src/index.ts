@@ -19,10 +19,10 @@
 
 import type { CollectionConfig, Config, Field } from 'payload'
 
-import { loadIconNodes, THEME_UI_ICONS } from './icons'
-import { resolveOptions, type PayloadThemeOptions } from './options'
-import { buildTheme, resolveFont, surfaceToCss, themeToCss } from './theme'
-import { withThemeTranslations } from './translations'
+import { loadIconNodes, THEME_UI_ICONS } from './icons.js'
+import { resolveOptions, type PayloadThemeOptions } from './options.js'
+import { buildTheme, resolveFont, surfaceToCss, themeToCss } from './theme/index.js'
+import { withThemeTranslations } from './translations/index.js'
 
 const BOOL_CELL = 'payload-theme/client#BoolCell'
 const MEDIA_TOGGLE = 'payload-theme/client#MediaListToggle'
@@ -182,7 +182,7 @@ export const payloadTheme =
   }
 
 export default payloadTheme
-export { THEME_PRESETS } from './options'
+export { THEME_PRESETS } from './options.js'
 export type {
   DashboardOptions,
   DashboardWidget,
@@ -200,6 +200,6 @@ export type {
   ThemePreset,
   ThemePresetDefinition,
   ThemeRadius,
-} from './options'
-export { THEME_I18N_NAMESPACE, THEME_TRANSLATIONS } from './translations'
-export type { ThemeTranslationKey, ThemeTranslations } from './translations'
+} from './options.js'
+export { THEME_I18N_NAMESPACE, THEME_TRANSLATIONS } from './translations/index.js'
+export type { ThemeTranslationKey, ThemeTranslations } from './translations/index.js'

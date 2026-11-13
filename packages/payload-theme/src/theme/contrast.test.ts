@@ -5,7 +5,7 @@ import {
   contrastRatio,
   pickContrastText,
   pickContrastTextForHex,
-} from './contrast'
+} from './contrast.js'
 
 describe('relativeLuminance', () => {
   it('is 1 for white and 0 for black', () => {

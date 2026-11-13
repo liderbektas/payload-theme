@@ -2,7 +2,7 @@ import type { ServerProps } from 'payload'
 
 import React from 'react'
 
-import { BOOT_SCRIPT } from './boot'
+import { BOOT_SCRIPT } from './boot.js'
 
 /**
  * Replays the header customizer's overrides before the first paint.

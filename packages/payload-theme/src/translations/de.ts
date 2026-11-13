@@ -1,4 +1,4 @@
-import type { ThemeTranslations } from './en'
+import type { ThemeTranslations } from './en.js'
 
 export const de: ThemeTranslations = {
   search: 'Suchen',
