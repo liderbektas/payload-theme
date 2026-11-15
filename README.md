@@ -119,6 +119,8 @@ The palette button opens a panel where anyone can restyle the panel at runtime �
 
 Everything persists in the browser; **Reset** returns to your config — and **Copy config** turns whatever is on screen into a ready-to-paste `payloadTheme({ ... })` snippet, so the customizer doubles as your config generator.
 
+Settled on a look and don't want every user restyling the panel? Bake it into your config and set `customizer: false` to remove the button.
+
 <img alt="Theme customizer" src="https://raw.githubusercontent.com/liderbektas/payload-theme/main/docs/customizer.png" width="100%">
 
 ### It speaks your panel's language
@@ -255,6 +257,9 @@ payloadTheme({
   // Dark mode depth: 'deep' (near-black) | 'dim' (one rung softer).
   darkMode: 'dim',
 
+  // Show the live theme customizer in the header (default: true).
+  customizer: true,
+
   // Your logo — top of the sidebar AND above the login form.
   // A URL, or { light, dark } to swap artwork per color scheme.
   logo: { light: '/logo.svg', dark: '/logo-dark.svg' },
@@ -316,6 +321,7 @@ payloadTheme({
 | `density` | `'comfortable' \| 'compact'` | `'comfortable'` | `compact` tightens input and button heights, table rows, the form grid and view padding. |
 | `frame` | `'inset' \| 'flat'` | `'inset'` | `inset` floats the content in a rounded, bordered card; `flat` runs it edge to edge with one divider against the sidebar. |
 | `darkMode` | `'deep' \| 'dim'` | `'deep'` | Dark-mode depth: `deep` puts the content on near-black, `dim` lifts every surface one rung. |
+| `customizer` | `boolean` | `true` | Shows the live theme customizer in the header. `false` removes it and stops applying overrides users saved earlier. |
 | `logo` | `string \| { light, dark }` | Payload logo | Image URL(s) shown at the top of the sidebar and above the login form. |
 | `logoHeight` | `number \| string` | `26` | Rendered logo height — a number is px, a string is any CSS length. |
 | `logoLink` | `{ href, label }` | — | Where the sidebar logo links, and that link's accessible name. Omit to link to the admin dashboard. |
@@ -448,8 +454,8 @@ No component is forked and no file of yours is rewritten: the plugin adds keys t
 | --- | --- | --- |
 | `admin.components.Nav` | **replaces** | The grouped icon sidebar, ⌘K pill and user block. |
 | `admin.components.views.dashboard.Component` | **replaces** | The stat-card dashboard. |
-| `admin.components.providers` | adds 4 | `BootScript` (replays the header customizer's overrides before the first paint), `AvatarProvider` (resolves the user avatar server-side), `ThemeProvider` (injects the `--pt-*` tokens) and `ListQuickActions` (row-hover edit/delete). |
-| `admin.components.actions` | adds 1 | `HeaderActions` — customizer, light/dark toggle, user menu. |
+| `admin.components.providers` | adds 4 | `BootScript` (replays the header customizer's overrides before the first paint, unless `customizer: false`), `AvatarProvider` (resolves the user avatar server-side), `ThemeProvider` (injects the `--pt-*` tokens) and `ListQuickActions` (row-hover edit/delete). |
+| `admin.components.actions` | adds 1 | `HeaderActions` — customizer (unless `customizer: false`), light/dark toggle, user menu. |
 | `admin.components.beforeLogin` | adds 1 | `LoginHero` — the brand panel. The split login layout only applies when it renders. |
 | `admin.custom.payloadTheme` | adds 1 | The resolved theme config the client components read. |
 | `admin.dependencies` | adds 1 per widget | So `generate:importmap` finds your `dashboard.widgets`. |

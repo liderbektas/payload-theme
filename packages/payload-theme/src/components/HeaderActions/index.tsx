@@ -39,8 +39,9 @@ import {
 import { UserMenu } from '../UserMenu/index.js'
 
 /**
- * Right side of the app header: the theme customizer (palette icon), a
- * light/dark toggle and the compact user menu. Registered through
+ * Right side of the app header: the theme customizer (palette icon, unless
+ * the `customizer` option is false), a light/dark toggle and the compact
+ * user menu. Registered through
  * `admin.components.actions`, so it renders on every authed admin page.
  *
  * The customizer applies RUNTIME overrides on top of the plugin config —
@@ -820,10 +821,15 @@ const Customizer: React.FC = () => {
 }
 
 export const HeaderActions: React.FC = () => {
+  const { config } = useConfig()
+  const themeConfig = config.admin?.custom?.payloadTheme as ResolvedThemeConfig | undefined
+  // `customizer: false` — no button, and so no saved overrides re-applied
+  const showCustomizer = themeConfig?.customizer !== false
+
   return (
     <div className="pt-header-actions">
       <NavCollapse />
-      <Customizer />
+      {showCustomizer ? <Customizer /> : null}
       <ThemeToggle />
       <UserMenu variant="header" />
     </div>

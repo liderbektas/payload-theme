@@ -190,6 +190,22 @@ describe('resolveOptions — logoLink', () => {
   })
 })
 
+describe('resolveOptions — customizer', () => {
+  it('defaults to true, so the header customizer shows as before', () => {
+    expect(resolveOptions({}).resolved.customizer).toBe(true)
+  })
+
+  it('passes false through to turn the customizer off', () => {
+    expect(resolveOptions({ customizer: false }).resolved.customizer).toBe(false)
+  })
+
+  it('rejects a non-boolean with a clear error', () => {
+    expect(() => resolveOptions({ customizer: 'no' as unknown as boolean })).toThrow(
+      /customizer must be true or false/,
+    )
+  })
+})
+
 describe('resolveOptions — surface (neutral, darkMode, density, frame)', () => {
   it('defaults to zinc / deep / comfortable / inset', () => {
     expect(resolveOptions({}).resolved.surface).toEqual({
