@@ -176,6 +176,13 @@ export interface PayloadThemeOptions {
    */
   frame?: ThemeFrame
   /**
+   * Show the live theme customizer (the palette button in the header). Set to
+   * `false` to fix the look to your config for every user: the button is
+   * gone and overrides a browser saved earlier are no longer applied.
+   * @default true
+   */
+  customizer?: boolean
+  /**
    * Sidebar logo, rendered as `<img>` at the top of the nav. A URL
    * (`'/logo.svg'`) or `{ light, dark }` URLs to swap artwork per color
    * scheme. Falls back to Payload's own logo when omitted.
@@ -238,6 +245,8 @@ export interface ResolvedThemeConfig {
   radius: ThemeRadius
   /** Neutral family, dark depth, density and frame — read by the header customizer. */
   surface: SurfaceOptions
+  /** Whether the header customizer renders and its saved overrides apply. */
+  customizer: boolean
   /** The configured font option as given ('default' when omitted). */
   font: string
   /** Webfont stylesheet URL when the font needs loading (inter/geist), else null. */
@@ -503,6 +512,12 @@ export function resolveOptions(options: PayloadThemeOptions): {
   assertOneOf(surface.density, DENSITIES, 'density')
   assertOneOf(surface.frame, FRAMES, 'frame')
 
+  const customizer = options.customizer ?? true
+  assert(
+    typeof customizer === 'boolean',
+    `customizer must be true or false, got '${String(customizer)}'.`,
+  )
+
   const icons = options.nav?.icons ?? {}
   assert(
     icons && typeof icons === 'object' && !Array.isArray(icons),
@@ -558,6 +573,7 @@ export function resolveOptions(options: PayloadThemeOptions): {
       preset: presetKey,
       radius,
       surface,
+      customizer,
       font,
       fontURL: resolvedFont.url,
       dashboard: { widgets },

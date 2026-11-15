@@ -2,6 +2,8 @@ import type { ServerProps } from 'payload'
 
 import React from 'react'
 
+import type { ResolvedThemeConfig } from '../../options.js'
+
 import { BOOT_SCRIPT } from './boot.js'
 
 /**
@@ -22,19 +24,29 @@ import { BOOT_SCRIPT } from './boot.js'
  * lost: the customizer lives in the authenticated header, and a full load of
  * any authenticated page still gets the script in its HTML.
  *
+ * Not with `customizer: false` either: there is no customizer to take over
+ * from the script, and overrides a browser saved while it was on must not
+ * keep applying with no way to reset them.
+ *
  * Registered first in `admin.components.providers` — the outermost of ours —
  * so the script lands ahead of everything else in the HTML.
  */
 export const BootScript: React.FC<{ children?: React.ReactNode } & ServerProps> = ({
   children,
+  payload,
   user,
-}) => (
-  <React.Fragment>
-    {user ? (
-      <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} suppressHydrationWarning />
-    ) : null}
-    {children}
-  </React.Fragment>
-)
+}) => {
+  const theme = payload?.config?.admin?.custom?.payloadTheme as ResolvedThemeConfig | undefined
+  const customizer = theme?.customizer !== false
+
+  return (
+    <React.Fragment>
+      {user && customizer ? (
+        <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} suppressHydrationWarning />
+      ) : null}
+      {children}
+    </React.Fragment>
+  )
+}
 
 export default BootScript
