@@ -1,6 +1,6 @@
 'use client'
 
-import { useConfig, useNav, useTheme } from '@payloadcms/ui'
+import { useConfig, useNav, usePreferences, useTheme } from '@payloadcms/ui'
 import React from 'react'
 
 import type { ResolvedThemeConfig, ThemePresetDefinition, ThemeRadius } from '../../options.js'
@@ -290,18 +290,32 @@ async function copyText(text: string): Promise<boolean> {
  * the header row keeps it perfectly aligned with the right-side buttons in
  * every scroll state — Payload's own toggler renders outside the content
  * card and could never line up. Hidden ≤1440px (the drawer has its own
- * toggler). `useNav` is Payload's context, so the grid animates as usual. */
+ * toggler). `useNav` is Payload's context, so the grid animates as usual.
+ *
+ * The choice is saved the way Payload's own toggler saves it: Payload reads the
+ * user's `nav` preference on every page load to decide whether the sidebar
+ * starts open, and on desktop this chip replaces the only control that wrote
+ * it. Merged, so the stored nav group states survive. */
 const NavCollapse: React.FC = () => {
   const { navOpen, setNavOpen } = useNav()
+  const { setPreference } = usePreferences()
   const { t } = useThemeTranslation()
   const label = navOpen ? t('payloadTheme:collapseSidebar') : t('payloadTheme:expandSidebar')
+
+  const toggle = () => {
+    const open = !navOpen
+    setNavOpen(open)
+    // Payload's PREFERENCE_KEYS.NAV, spelled out: that constant only exists in
+    // later 3.x releases, and the peer range starts at 3.0.
+    void setPreference('nav', { open }, true)
+  }
 
   return (
     <button
       aria-expanded={navOpen}
       aria-label={label}
       className="pt-header-btn pt-nav-collapse"
-      onClick={() => setNavOpen(!navOpen)}
+      onClick={toggle}
       title={label}
       type="button"
     >

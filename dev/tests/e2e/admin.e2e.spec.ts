@@ -122,6 +122,41 @@ test.describe('Admin Panel', () => {
     await page.setViewportSize({ height: 1000, width: 1600 })
   })
 
+  test('the desktop collapse chip is remembered across page loads', async () => {
+    // Payload decides whether the sidebar starts open from the user's `nav`
+    // preference on every page load. On desktop the chip is the only control
+    // the theme leaves, so unless it writes that preference a collapse is lost
+    // on reload, and a "closed" saved in the stock panel can never be undone.
+    const navPreference = (method: 'GET' | 'POST') =>
+      page.waitForResponse(
+        (res) =>
+          res.url().includes('/api/payload-preferences/nav') && res.request().method() === method,
+      )
+    // After hydration Payload fetches the stored preference and applies it to
+    // the sidebar; a click that lands before that is overwritten by it. So
+    // every load waits for that fetch before the chip is touched.
+    const load = async (go: () => Promise<unknown>) => {
+      const [res] = await Promise.all([navPreference('GET'), go()])
+      await res.finished()
+    }
+    const chip = page.locator('.pt-nav-collapse')
+
+    await load(() => page.goto('http://localhost:3000/admin'))
+    await expect(chip).toHaveAttribute('aria-expanded', 'true')
+
+    await Promise.all([navPreference('POST'), chip.click()])
+    await expect(chip).toHaveAttribute('aria-expanded', 'false')
+    await load(() => page.reload())
+    await expect(chip).toHaveAttribute('aria-expanded', 'false')
+
+    // Open again, which must stick as well (and leaves the panel as the
+    // following tests expect it).
+    await Promise.all([navPreference('POST'), chip.click()])
+    await expect(chip).toHaveAttribute('aria-expanded', 'true')
+    await load(() => page.reload())
+    await expect(chip).toHaveAttribute('aria-expanded', 'true')
+  })
+
   test('can navigate to list view', async () => {
     await page.goto('http://localhost:3000/admin/collections/users')
     // Payload may normalize the list URL with default query params
