@@ -6,6 +6,19 @@ All notable changes to `payload-theme` are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- **The desktop sidebar collapse chip was forgotten on every page load, and a
+  sidebar closed in the stock panel stayed closed for good.** Payload decides
+  whether the sidebar starts open from the user's `nav` preference
+  (`nav.open`), read on every page load. The chip only flipped the in-memory
+  state, and on desktop the theme replaces Payload's nav toggler, the only
+  control that wrote that preference. So a collapse was undone by the next
+  reload, and a user who had collapsed the sidebar before installing the
+  theme got it closed on every load with no way to change that from the
+  panel. The chip now saves `{ open }` under `nav` exactly as Payload's
+  toggler does (merged, so the stored group states survive).
+
 ## [0.11.0] — 2026-11-13
 
 ### Added
