@@ -4,7 +4,7 @@
 
 **Make your Payload admin panel look custom-built — in 2 lines.**
 
-One accent color in, a complete shadcn-style redesign out: dashboard with sparklines and 30-day trends, ⌘K command palette with recents, grouped icon sidebar, split-screen login, sticky document outlines, and a live theme customizer with one-click presets, five typefaces and a copy-paste config generator — light *and* dark, in eight languages.
+One accent color in, a complete shadcn-style redesign out: dashboard with sparklines and 30-day trends, ⌘K command palette with recents, grouped icon sidebar, split-screen login, sticky document outlines, and a live theme customizer with one-click presets, five typefaces and a copy-paste config generator — light *and* dark, in nine languages.
 
 [![CI](https://github.com/liderbektas/payload-theme/actions/workflows/ci.yml/badge.svg)](https://github.com/liderbektas/payload-theme/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/payload-theme?color=0d9488)](https://www.npmjs.com/package/payload-theme)
