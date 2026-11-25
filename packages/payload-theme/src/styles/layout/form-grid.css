@@ -89,6 +89,26 @@
       padding-top: calc(35px + (var(--pt-ctl-h, 40px) - 40px) / 2);
     }
 
+    /* react-select cells: keep the clear / chevron icons on the control's
+     * first line. Payload sizes a multi-value container to 100% + 5px, which
+     * leaves no room beside it, so as soon as the chips outgrow a half-width
+     * cell the indicators wrap underneath (and a long single value runs under
+     * them). Let the value container take the remaining space instead — the
+     * chips wrap inside it. (The control's own `flex-wrap` is react-select's
+     * unlayered emotion CSS; that half lives in overrides/unlayered.css.) */
+    .template-default__wrap
+      > .collection-edit
+      :is(
+        .document-fields__fields.render-fields,
+        .document-fields__fields .render-fields:not(.row__fields)
+      )
+      > :is(.field-type.select, .field-type.relationship)
+      .rs__value-container {
+      flex: 1 1 0;
+      min-width: 0;
+      width: auto;
+    }
+
     /* Lexical renders its own nested field UIs — keep those stacked */
     .template-default__wrap
       > .collection-edit

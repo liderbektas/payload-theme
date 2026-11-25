@@ -8,6 +8,15 @@ All notable changes to `payload-theme` are documented here. The format follows
 
 ### Fixed
 
+- **A select / relationship field's clear and chevron icons dropped to a second
+  line in the two-column form grid.** Once the selected chips (or a long
+  value) filled a half-width cell, the control wrapped and the icons sat
+  orphaned under the chips. Payload sizes a multi-value container to
+  `100% + 5px`, and react-select's control wraps by default. In the grid the
+  control no longer wraps and the value container takes the remaining width,
+  so the chips wrap inside it and the icons stay on the control's right edge.
+  Stock (non-grid) layouts are untouched.
+
 - **The desktop sidebar collapse chip was forgotten on every page load, and a
   sidebar closed in the stock panel stayed closed for good.** Payload decides
   whether the sidebar starts open from the user's `nav` preference
