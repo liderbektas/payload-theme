@@ -6,6 +6,15 @@ All notable changes to `payload-theme` are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **Russian translation** (`ru`). Every `payloadTheme:*` string is translated;
+  before, a panel set to Russian showed the theme's own copy in English. The
+  dashboard's document count uses all of Russian's plural forms: translation
+  files may now carry `documentCount_few` / `_many` (and `_zero` / `_two`)
+  next to `_one` / `_other` — Payload already resolves them by count — and
+  the locale test treats them as optional.
+
 ### Fixed
 
 - **The desktop sidebar collapse chip was forgotten on every page load, and a

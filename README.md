@@ -41,7 +41,7 @@ Payload is the best headless CMS in the Node ecosystem — and its admin panel l
 - 🌗 **Dark mode designed, not inverted** — every surface sits on a zinc ladder; dark gets its own remapped scale.
 - ⚡ **Zero runtime cost** — color math runs once at startup and lands as CSS custom properties. SSR-safe, no FOUC.
 - 📱 **A real phone experience** — a sliding drawer over a blurred scrim, wrapping bulk actions, aligned cards. Editors approve from the couch.
-- 🌍 **Not half-English** — every string the theme adds is translated in eight languages and follows the panel language your editors picked.
+- 🌍 **Not half-English** — every string the theme adds is translated in nine languages and follows the panel language your editors picked.
 
 ## Installation
 
@@ -123,7 +123,7 @@ Everything persists in the browser; **Reset** returns to your config — and **C
 
 ### It speaks your panel's language
 
-If your panel isn't in English, the theme isn't either. Every string it adds — the sidebar's search pill, the palette and its groups, the dashboard captions and trend tooltips, "On this page", the customizer's own labels, the login copy — ships translated in **English, German, French, Spanish, Italian, Dutch, Portuguese and Turkish**, and follows whatever language the user picked on their Account page.
+If your panel isn't in English, the theme isn't either. Every string it adds — the sidebar's search pill, the palette and its groups, the dashboard captions and trend tooltips, "On this page", the customizer's own labels, the login copy — ships translated in **English, German, French, Spanish, Italian, Dutch, Portuguese, Russian and Turkish**, and follows whatever language the user picked on their Account page.
 
 Nothing to configure: the plugin merges a `payloadTheme:*` namespace into `config.i18n.translations` for every language Payload accepts. A language without a translation yet falls back to English rather than leaking raw keys, and anything you declare under that namespace yourself wins — which is also the supported way to reword the theme without touching a component:
 
