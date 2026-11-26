@@ -6,6 +6,18 @@ All notable changes to `payload-theme` are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **Russian translation** (`ru`). Every `payloadTheme:*` string is translated;
+  before, a panel set to Russian showed the theme's own copy in English. The
+  Russian has three plural forms and Payload's own resolver only picks
+  `_few` for 3-5 and `_many` above 5 (so «5 документа», «21 документов»).
+  When a locale ships extra plural keys, the dashboard's "documents" caption
+  picks the CLDR form itself (`Intl.PluralRules`); locales with only
+  `_one` / `_other` still go through Payload, unchanged. Translation files may
+  carry `documentCount_few` / `_many` (and `_zero` / `_two`) next to
+  `_one` / `_other`; the locale test treats them as optional.
+
 ### Fixed
 
 - **A select / relationship field's clear and chevron icons dropped to a second

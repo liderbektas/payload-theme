@@ -98,8 +98,17 @@ export const en = {
   loginTagline: 'Sign in to manage your content.',
 }
 
+/**
+ * Payload's other plural forms (`getTranslationString` looks for `_zero`, `_two`,
+ * `_few` and `_many` before falling back to `_other`). Optional: English only
+ * needs `_one` / `_other`, languages with more plural forms add what they need.
+ */
+export type ThemePluralForms = Partial<
+  Record<`documentCount_${'zero' | 'two' | 'few' | 'many'}`, string>
+>
+
 /** The shape every locale file must satisfy. */
-export type ThemeTranslations = typeof en
+export type ThemeTranslations = typeof en & ThemePluralForms
 
 /** `payloadTheme:<key>` — the fully-qualified keys the components pass to `t`. */
 export type ThemeTranslationKey = `payloadTheme:${keyof ThemeTranslations extends infer K
