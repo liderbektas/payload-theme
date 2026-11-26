@@ -8,6 +8,14 @@ All notable changes to `payload-theme` are documented here. The format follows
 
 ### Added
 
+- **`nav.dockedMinWidth`: dock the sidebar on laptop widths.** Payload
+  force-closes its nav at 1440px and below (its hard-coded `l` breakpoint)
+  and the theme turned that range into an overlay drawer, so a 1440px laptop
+  started with only the drawer toggle visible. Set `nav: { dockedMinWidth:
+  1280 }` and from that width up to 1440px the sidebar is docked and open by
+  default, collapsible with the header chip, and the collapse is remembered
+  like it is above 1440px. Below it the drawer stays. Unset by default:
+  nothing changes for existing setups. ([#29](https://github.com/liderbektas/payload-theme/issues/29))
 - **Russian translation** (`ru`). Every `payloadTheme:*` string is translated;
   before, a panel set to Russian showed the theme's own copy in English. The
   Russian has three plural forms and Payload's own resolver only picks

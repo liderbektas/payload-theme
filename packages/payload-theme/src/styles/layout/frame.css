@@ -25,7 +25,7 @@
   /* the collapse/expand itself animates the grid track */
   @media (min-width: 1441px) and (prefers-reduced-motion: no-preference) {
     .template-default--nav-animate {
-      transition: grid-template-columns 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+      transition: grid-template-columns var(--pt-nav-slide);
     }
   }
 
@@ -67,7 +67,7 @@
    * (≤1440px the sidebar is an overlay drawer, so there is no seam) */
   @media (min-width: 1441px) {
     .template-default--nav-open .template-default__wrap {
-      border-inline-start-width: 1px;
+      border-inline-start-width: var(--pt-nav-edge);
     }
   }
 

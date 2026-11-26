@@ -68,6 +68,9 @@ export default buildConfig({
       // the placeholder images, everyone else falls back to initials.
       avatar: { field: 'avatar' },
       nav: {
+        // Docks the sidebar on laptop widths (1280–1440px), where Payload
+        // would otherwise leave only the drawer toggle.
+        dockedMinWidth: 1280,
         icons: {
           media: 'image',
           pages: 'file-text',

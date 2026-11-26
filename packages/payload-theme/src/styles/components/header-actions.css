@@ -70,7 +70,7 @@
   }
   @media (max-width: 1440px) {
     .pt-nav-collapse {
-      display: none; /* the mobile drawer brings its own toggler */
+      display: none; /* the mobile drawer brings its own toggler (theme/dock.ts undoes this for nav.dockedMinWidth) */
     }
   }
 

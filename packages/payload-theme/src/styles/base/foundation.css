@@ -70,6 +70,12 @@
     --pt-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.09), 0 2px 4px -2px rgb(0 0 0 / 0.09);
     --pt-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
+    /* Docked sidebar: the open/close slide of the grid and the hairline the
+     * content card keeps against it. Read by layout/frame.css and, for the
+     * `nav.dockedMinWidth` band, by theme/dock.ts — one value, two readers. */
+    --pt-nav-slide: 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    --pt-nav-edge: 1px;
+
     /* App-wide accent focus ring. Payload's outline is already 2px solid with
      * a 2px offset (the shadcn geometry); we only swap the colour to accent. */
     --accessibility-outline: 2px solid var(--pt-accent-ring);

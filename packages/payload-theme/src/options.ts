@@ -22,6 +22,8 @@ import type {
 import {
   DARK_MODES,
   DENSITIES,
+  DOCKED_MIN_WIDTH_FLOOR,
+  DRAWER_MAX_WIDTH,
   FRAMES,
   NEUTRALS,
   normalizeHex,
@@ -92,6 +94,17 @@ export interface NavOptions {
    * folder icon.
    */
   icons?: Record<string, string>
+  /**
+   * Dock the sidebar from this viewport width up, instead of only above
+   * 1440px. Payload force-closes its nav at 1440px and below, and the theme
+   * shows it as an overlay drawer there, so a 1440px laptop starts with no
+   * visible sidebar. Set this (e.g. `1280`) and from that width to 1440px the
+   * sidebar is docked, open by default and collapsible with the header chip,
+   * exactly as above 1440px; below it the drawer stays. A whole number from
+   * 1025 (Payload's tablet breakpoint is 1024) to 1440.
+   * @default undefined — the drawer covers everything up to 1440px
+   */
+  dockedMinWidth?: number
 }
 
 /** Grid width of one dashboard widget. @default 'half' */
@@ -251,7 +264,11 @@ export interface ResolvedThemeConfig {
   logoLink: null | ThemeLogoLink
   /** Avatar source, or null when the `avatar` option is omitted. */
   avatar: null | ResolvedAvatar
-  nav: { icons: Record<string, string> }
+  nav: {
+    /** Viewport width the docked sidebar starts at, or null for Payload's 1440px. */
+    dockedMinWidth: null | number
+    icons: Record<string, string>
+  }
   /** Unset fields fall back to the defaults at render time. */
   login: { heading?: string; tagline?: string }
   /** lucide icon name used when an entity has no mapping. */
@@ -512,6 +529,15 @@ export function resolveOptions(options: PayloadThemeOptions): {
     assert(typeof name === 'string', `nav.icons['${slug}'] must be a string lucide icon name.`)
   }
 
+  const dockedMinWidth = options.nav?.dockedMinWidth ?? null
+  assert(
+    dockedMinWidth === null ||
+      (Number.isInteger(dockedMinWidth) &&
+        dockedMinWidth >= DOCKED_MIN_WIDTH_FLOOR &&
+        dockedMinWidth <= DRAWER_MAX_WIDTH),
+    `nav.dockedMinWidth must be a whole number of pixels from ${DOCKED_MIN_WIDTH_FLOOR} to ${DRAWER_MAX_WIDTH}, got '${String(dockedMinWidth)}'. Tablets (1024px and below) always keep the drawer, and above ${DRAWER_MAX_WIDTH}px the sidebar is docked already.`,
+  )
+
   const logo = normalizeAsset(options.logo, 'logo')
   const icon = normalizeAsset(options.icon, 'icon')
   const logoLink = normalizeLogoLink(options.logoLink)
@@ -565,7 +591,7 @@ export function resolveOptions(options: PayloadThemeOptions): {
       icon,
       logoLink,
       avatar,
-      nav: { icons },
+      nav: { dockedMinWidth, icons },
       login: { heading: loginHeading, tagline: loginTagline },
       fallbackIconName: DEFAULTS.fallbackIconName,
       iconNodes: {}, // filled by the plugin (async)
