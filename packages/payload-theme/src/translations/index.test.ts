@@ -14,8 +14,13 @@ const namespaceFor = (i18n: Config['i18n'], language: string) =>
 describe('theme translations — locale files', () => {
   it('covers exactly the English key set in every locale', () => {
     const expected = Object.keys(en).sort()
+    // extra plural forms (`_few`, `_many`, …) are optional per language
+    const withoutExtraPlurals = (keys: string[]) =>
+      keys.filter((key) => !/_(zero|two|few|many)$/.test(key))
     for (const [language, translations] of Object.entries(THEME_TRANSLATIONS)) {
-      expect(Object.keys(translations).sort(), `locale '${language}'`).toEqual(expected)
+      expect(withoutExtraPlurals(Object.keys(translations)).sort(), `locale '${language}'`).toEqual(
+        expected,
+      )
     }
   })
 
@@ -49,6 +54,7 @@ describe('withThemeTranslations', () => {
     const i18n = withThemeTranslations(undefined)
     expect(namespaceFor(i18n, 'de')?.onThisPage).toBe('Auf dieser Seite')
     expect(namespaceFor(i18n, 'tr')?.onThisPage).toBe('Bu sayfada')
+    expect(namespaceFor(i18n, 'ru')?.onThisPage).toBe('На этой странице')
     // 'ja' has no theme locale file yet — English rather than a raw key
     expect(namespaceFor(i18n, 'ja')?.onThisPage).toBe(en.onThisPage)
   })

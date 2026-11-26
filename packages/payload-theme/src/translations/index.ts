@@ -27,6 +27,7 @@ import { fr } from './fr.js'
 import { it } from './it.js'
 import { nl } from './nl.js'
 import { pt } from './pt.js'
+import { ru } from './ru.js'
 import { tr } from './tr.js'
 
 /** The namespace key every theme string lives under. */
@@ -45,6 +46,7 @@ export const THEME_TRANSLATIONS: Partial<Record<AcceptedLanguages, ThemeTranslat
   it,
   nl,
   pt,
+  ru,
   tr,
 }
 

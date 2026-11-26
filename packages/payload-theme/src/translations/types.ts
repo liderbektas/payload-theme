@@ -29,3 +29,27 @@ export type ThemeTFunction = (
  */
 export const themeT = (i18n: I18n | I18nClient): ThemeTFunction =>
   i18n.t as unknown as ThemeTFunction
+
+/**
+ * A plural-aware `payloadTheme:<key>`. Payload's own resolver picks the suffix
+ * with fixed thresholds (`_few` for 3-5, `_many` above 5), which is wrong for
+ * languages whose rules differ: Russian says «5 документов» but «22 документа».
+ * When the locale ships any extra plural form (`_zero`, `_two`, `_few`, `_many`)
+ * for `key`, pick the CLDR form for `count` (`Intl.PluralRules`). Otherwise
+ * (en, de, fr, es, it, nl, pt, tr: `_one` / `_other` only) defer to Payload, so
+ * those languages resolve exactly as before.
+ */
+export const themePlural = (i18n: I18n | I18nClient, key: PluralKey, count: number): string => {
+  const namespace = (i18n.translations as unknown as Record<string, Record<string, unknown>>)
+    .payloadTheme
+  const hasExtraForms = ['zero', 'two', 'few', 'many'].some(
+    (form) => typeof namespace?.[`${key}_${form}`] === 'string',
+  )
+  if (hasExtraForms) {
+    const value = namespace?.[`${key}_${new Intl.PluralRules(i18n.language).select(count)}`]
+    if (typeof value === 'string') return value
+  }
+  return themeT(i18n)(`payloadTheme:${key}`, { count })
+}
+
+type PluralKey = 'documentCount'

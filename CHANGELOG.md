@@ -16,8 +16,26 @@ All notable changes to `payload-theme` are documented here. The format follows
   default, collapsible with the header chip, and the collapse is remembered
   like it is above 1440px. Below it the drawer stays. Unset by default:
   nothing changes for existing setups. ([#29](https://github.com/liderbektas/payload-theme/issues/29))
+- **Russian translation** (`ru`). Every `payloadTheme:*` string is translated;
+  before, a panel set to Russian showed the theme's own copy in English. The
+  Russian has three plural forms and Payload's own resolver only picks
+  `_few` for 3-5 and `_many` above 5 (so «5 документа», «21 документов»).
+  When a locale ships extra plural keys, the dashboard's "documents" caption
+  picks the CLDR form itself (`Intl.PluralRules`); locales with only
+  `_one` / `_other` still go through Payload, unchanged. Translation files may
+  carry `documentCount_few` / `_many` (and `_zero` / `_two`) next to
+  `_one` / `_other`; the locale test treats them as optional.
 
 ### Fixed
+
+- **A select / relationship field's clear and chevron icons dropped to a second
+  line in the two-column form grid.** Once the selected chips (or a long
+  value) filled a half-width cell, the control wrapped and the icons sat
+  orphaned under the chips. Payload sizes a multi-value container to
+  `100% + 5px`, and react-select's control wraps by default. In the grid the
+  control no longer wraps and the value container takes the remaining width,
+  so the chips wrap inside it and the icons stay on the control's right edge.
+  Stock (non-grid) layouts are untouched.
 
 - **The desktop sidebar collapse chip was forgotten on every page load, and a
   sidebar closed in the stock panel stayed closed for good.** Payload decides

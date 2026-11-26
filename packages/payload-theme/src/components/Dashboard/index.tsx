@@ -11,7 +11,7 @@ import React from 'react'
 import type { ResolvedDashboardWidget, ResolvedThemeConfig } from '../../options.js'
 import type { ThemeTFunction } from '../../translations/types.js'
 
-import { themeT } from '../../translations/types.js'
+import { themePlural, themeT } from '../../translations/types.js'
 import { Icon, type IconName } from '../Icon/index.js'
 import { resolveIconName } from '../navIcons.js'
 import { CountUp } from './client.js'
@@ -40,6 +40,8 @@ const SPARK_DOC_LIMIT = 400
 
 type CollectionCardData = {
   count: null | number
+  /** The "documents" noun, inflected for `count` (Russian, Polish… have 3+ forms). */
+  countNoun: string
   createHref: null | string
   /** 30-day creation trend vs the previous 30 days; null → no chip. */
   delta: null | { label: string; trend: 'down' | 'flat' | 'new' | 'up' }
@@ -110,7 +112,7 @@ const Sparkline: React.FC<{ id: string; points: number[] }> = ({ id, points }) =
 }
 
 const CollectionCard: React.FC<{ card: CollectionCardData; t: ThemeTFunction }> = ({ card, t }) => {
-  const { count, createHref, delta, href, iconName, label, slug, spark } = card
+  const { count, countNoun, createHref, delta, href, iconName, label, slug, spark } = card
 
   return (
     <article className="pt-dash__card">
@@ -146,7 +148,7 @@ const CollectionCard: React.FC<{ card: CollectionCardData; t: ThemeTFunction }> 
           ) : null}
         </span>
         <span className="pt-dash__card-caption">
-          {t('payloadTheme:documentCount', { count: count ?? 0 })}
+          {countNoun}
           {spark ? ` · ${t('payloadTheme:lastThirtyDays')}` : ''}
         </span>
       </div>
@@ -331,6 +333,7 @@ export async function Dashboard(props: DashboardViewServerProps) {
 
     collectionCards.push({
       count,
+      countNoun: themePlural(i18n, 'documentCount', count ?? 0),
       createHref: permissions?.collections?.[slug]?.create
         ? formatAdminURL({ adminRoute, path: `/collections/${slug}/create` })
         : null,

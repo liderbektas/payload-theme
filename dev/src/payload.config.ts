@@ -3,6 +3,7 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { de } from '@payloadcms/translations/languages/de'
 import { en } from '@payloadcms/translations/languages/en'
 import { fr } from '@payloadcms/translations/languages/fr'
+import { ru } from '@payloadcms/translations/languages/ru'
 import { tr } from '@payloadcms/translations/languages/tr'
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -42,10 +43,10 @@ export default buildConfig({
   //   ],
   // },
   // Payload's panel is English-only until a project opts into more languages.
-  // Four here so the Account page's language switcher is real — and so the
+  // Five here so the Account page's language switcher is real — and so the
   // theme's own chrome can be checked in a non-English panel.
   i18n: {
-    supportedLanguages: { de, en, fr, tr },
+    supportedLanguages: { de, en, fr, ru, tr },
   },
   collections: [Posts, Pages, Projects, Tags, Media, Users],
   globals: [Settings],
