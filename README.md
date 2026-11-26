@@ -281,8 +281,10 @@ payloadTheme({
   },
 
   // Sidebar + dashboard + palette icons per collection/global slug —
-  // any icon name from lucide.dev.
+  // any icon name from lucide.dev. `dockedMinWidth` docks the sidebar on
+  // laptops (see the options table).
   nav: {
+    dockedMinWidth: 1280,
     icons: {
       posts: 'newspaper',
       media: 'image',
@@ -324,6 +326,7 @@ payloadTheme({
 | `login.heading` | `string` | `'Welcome back'` | Big heading on the login brand panel. |
 | `login.tagline` | `string` | `'Sign in to manage your content.'` | Supporting line under the heading. |
 | `nav.icons` | `Record<slug, iconName>` | folder icon | Maps collections/globals to [lucide](https://lucide.dev) icons — sidebar, dashboard cards and palette. |
+| `nav.dockedMinWidth` | `number` (1025–1440) | — | Payload force-closes its nav at 1440px and below, and the theme shows it as a drawer there, so a 1440px laptop starts with no visible sidebar. Set this (e.g. `1280`) and from that width up to 1440px the sidebar is docked, open by default and collapsible with the header chip, as above 1440px. Below it the drawer stays. |
 | `dashboard.widgets` | `DashboardWidget[]` | `[]` | Custom components rendered below the built-in dashboard content. |
 | `cssVariables` | `Record<string, string>` | — | Escape hatch: override any raw `--pt-*` token directly. |
 

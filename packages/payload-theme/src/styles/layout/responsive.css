@@ -62,7 +62,9 @@
     display: none;
   }
 
-  /* ---- the drawer (≤1440px) ---- */
+  /* ---- the drawer (≤1440px) ----
+   * `nav.dockedMinWidth` docks the sidebar again from a lower width: every
+   * property set below must be undone in theme/dock.ts (dock.test.ts checks). */
   @media (max-width: 1440px) {
     /* The drawer is an OVERLAY — the template grid must never reserve a
      * nav column for it. Payload's stock rule pushes the content aside by
@@ -100,7 +102,6 @@
       z-index: 120; /* above the sticky app header, below palette/modals */
       width: 100%;
       height: 100dvh;
-      border-right: 0;
       background: transparent;
       opacity: 1;
       overflow: visible;

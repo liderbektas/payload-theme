@@ -37,6 +37,7 @@ import {
   FONT_LINK_ID,
 } from '../ThemeProvider/boot.js'
 import { UserMenu } from '../UserMenu/index.js'
+import { rememberSidebarWish } from '../useDockedNav.js'
 
 /**
  * Right side of the app header: the theme customizer (palette icon), a
@@ -289,8 +290,9 @@ async function copyText(text: string): Promise<boolean> {
  * CSS (the .pt-header-actions container sits on the right). Living inside
  * the header row keeps it perfectly aligned with the right-side buttons in
  * every scroll state — Payload's own toggler renders outside the content
- * card and could never line up. Hidden ≤1440px (the drawer has its own
- * toggler). `useNav` is Payload's context, so the grid animates as usual.
+ * card and could never line up. Hidden while the sidebar is a drawer (≤1440px,
+ * or below `nav.dockedMinWidth`): the drawer has its own toggler. `useNav` is
+ * Payload's context, so the grid animates as usual.
  *
  * The choice is saved the way Payload's own toggler saves it: Payload reads the
  * user's `nav` preference on every page load to decide whether the sidebar
@@ -305,6 +307,7 @@ const NavCollapse: React.FC = () => {
   const toggle = () => {
     const open = !navOpen
     setNavOpen(open)
+    rememberSidebarWish(open)
     // Payload's PREFERENCE_KEYS.NAV, spelled out: that constant only exists in
     // later 3.x releases, and the peer range starts at 3.0.
     void setPreference('nav', { open }, true)

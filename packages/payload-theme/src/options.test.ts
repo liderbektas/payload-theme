@@ -225,3 +225,27 @@ describe('resolveOptions — surface (neutral, darkMode, density, frame)', () =>
     expect(() => resolveOptions({ frame: 'boxed' as 'flat' })).toThrow(/Invalid frame/)
   })
 })
+
+describe('resolveOptions — nav.dockedMinWidth', () => {
+  it('resolves to null when omitted, so the drawer keeps covering up to 1440px', () => {
+    expect(resolveOptions({}).resolved.nav.dockedMinWidth).toBeNull()
+    expect(
+      resolveOptions({ nav: { icons: { posts: 'newspaper' } } }).resolved.nav.dockedMinWidth,
+    ).toBeNull()
+  })
+
+  it('passes a whole number from 1025 to 1440 through', () => {
+    expect(resolveOptions({ nav: { dockedMinWidth: 1280 } }).resolved.nav.dockedMinWidth).toBe(1280)
+    expect(resolveOptions({ nav: { dockedMinWidth: 1025 } }).resolved.nav.dockedMinWidth).toBe(1025)
+    expect(resolveOptions({ nav: { dockedMinWidth: 1440 } }).resolved.nav.dockedMinWidth).toBe(1440)
+  })
+
+  it.each([1024, 1441, 0, 1280.5, Number.NaN, '1280' as unknown as number])(
+    'rejects %s with the valid range in the message',
+    (dockedMinWidth) => {
+      expect(() => resolveOptions({ nav: { dockedMinWidth } })).toThrow(
+        /nav\.dockedMinWidth must be a whole number of pixels from 1025 to 1440/,
+      )
+    },
+  )
+})
